@@ -1,0 +1,54 @@
+{
+  "name": "tachesmed",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Application de gestion des tâches médicales avec React et Supabase",
+  "author": "Carlus1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Carlus1/tachesmed.git"
+  },
+  "homepage": "https://github.com/Carlus1/tachesmed",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/daygrid": "^6.1.10",
+    "@fullcalendar/interaction": "^6.1.10",
+    "@fullcalendar/react": "^6.1.10",
+    "@fullcalendar/timegrid": "^6.1.10",
+    "@supabase/supabase-js": "^2.39.7",
+    "date-fns": "^3.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.0"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "supabase",
+    "task-management",
+    "medical",
+    "healthcare",
+    "calendar",
+    "scheduling"
+  ]
+}
