@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './supabase';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import ModernDashboard from './components/ModernDashboard';
 import UserManagement from './components/UserManagement';
 import Reports from './components/Reports';
 import GroupManagement from './components/GroupManagement';
@@ -14,6 +15,7 @@ import type { User } from '@supabase/gotrue-js';
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [useModernUI, setUseModernUI] = useState(true); // Activer l'interface moderne par défaut
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,7 +42,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-        <Route path="/" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
+        <Route path="/" element={user ? (useModernUI ? <ModernDashboard user={user} /> : <Dashboard user={user} />) : <Navigate to="/login" />} />
         <Route path="/users" element={user ? <UserManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/reports" element={user ? <Reports user={user} /> : <Navigate to="/login" />} />
         <Route path="/groups" element={user ? <GroupManagement user={user} /> : <Navigate to="/login" />} />
