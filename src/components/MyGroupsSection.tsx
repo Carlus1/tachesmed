@@ -11,7 +11,7 @@ export default function MyGroupsSection() {
                         <span className="text-sm text-blue-600">5 membres</span>
                     </div>
                     <button className="absolute bottom-2 right-2 text-blue-600 hover:text-blue-800">
-                        <span className="sr-only">Voir détails</span>
+                        Voir détails
                     </button>
                 </div>
 
@@ -21,7 +21,7 @@ export default function MyGroupsSection() {
                         <span className="text-sm text-teal-600">8 membres</span>
                     </div>
                     <button className="absolute bottom-2 right-2 text-teal-600 hover:text-teal-800">
-                        <span className="sr-only">Voir détails</span>
+                        Voir détails
                     </button>
                 </div>
 
@@ -31,7 +31,7 @@ export default function MyGroupsSection() {
                         <span className="text-sm text-purple-600">3 membres</span>
                     </div>
                     <button className="absolute bottom-2 right-2 text-purple-600 hover:text-purple-800">
-                        <span className="sr-only">Voir détails</span>
+                        Voir détails
                     </button>
                 </div>
             </div>

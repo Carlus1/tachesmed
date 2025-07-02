@@ -42,7 +42,7 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                 <h2 className="text-lg font-semibold text-gray-900">Tâches à venir</h2>
                 <button
                     onClick={onAddTask}
-                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                    className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                     Ajouter
                 </button>

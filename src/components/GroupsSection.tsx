@@ -17,6 +17,7 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
                 <h2 className="text-lg font-semibold text-gray-900">Groupes</h2>
                 <button className="text-gray-400 hover:text-gray-600">
                     <span className="sr-only">Voir plus</span>
+                    Voir plus
                 </button>
             </div>
             <div className="divide-y divide-gray-200">
@@ -31,7 +32,7 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
                                 <p className="text-sm text-gray-500">{group.memberCount} membres</p>
                             </div>
                             <button className="ml-auto text-gray-400 hover:text-gray-600">
-                                <span className="sr-only">Voir détails</span>
+                                Voir détails
                             </button>
                         </div>
                     </div>
