@@ -52,7 +52,8 @@ export default function Login() {
             console.log('Tentative de connexion avec:', {
                 email: email.toLowerCase(),
                 supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
-                hasKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY
+                hasKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+                keyLength: import.meta.env.VITE_SUPABASE_ANON_KEY?.length || 0
             });
 
             if (isResetMode) {
@@ -112,6 +113,8 @@ export default function Login() {
                     throw new Error('Veuillez confirmer votre email avant de vous connecter');
                 } else if (signInError.message.includes('Too many requests')) {
                     throw new Error('Trop de tentatives. Veuillez attendre quelques minutes.');
+                } else if (signInError.message.includes('Invalid API key')) {
+                    throw new Error('Erreur de configuration Supabase. Contactez l\'administrateur.');
                 } else {
                     throw signInError;
                 }
