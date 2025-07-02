@@ -12,7 +12,7 @@ console.log('Configuration Supabase:', {
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('Variables d\'environnement Supabase manquantes:', {
-        VITE_SUPABASE_URL: supabaseUrl,
+        VITE_SUPABASE_URL: supabaseUrl ? supabaseUrl : 'undefined',
         VITE_SUPABASE_ANON_KEY: supabaseKey ? '[MASQUÉE]' : 'undefined'
     });
     throw new Error('Variables d\'environnement Supabase manquantes');
