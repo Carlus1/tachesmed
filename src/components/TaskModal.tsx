@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { supabase } from '../supabase';
 
+// NOTE: Normalized file to ensure no accidental line-wrapping within JSX attributes
+
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -59,6 +61,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       console.error('Erreur lors de la création de la tâche:', error);
     }
   };
+  const baseInputClass = "w-full border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-400 bg-background text-primary-700 placeholder:text-primary-300 transition-all";
   return (
     isOpen ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-900/60 backdrop-blur-sm">
@@ -66,13 +69,13 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
           <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">Créer une tâche</h2>
           <div className="space-y-5">
             <input
-              className="w-full border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-400 bg-background text-primary-700 placeholder:text-primary-300 transition-all"
+              className={baseInputClass}
               placeholder="Titre"
               value={newTask.title}
               onChange={e => setNewTask({ ...newTask, title: e.target.value })}
             />
             <textarea
-              className="w-full border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-400 bg-background text-primary-700 placeholder:text-primary-300 transition-all"
+              className={baseInputClass}
               placeholder="Description"
               value={newTask.description}
               onChange={e => setNewTask({ ...newTask, description: e.target.value })}
