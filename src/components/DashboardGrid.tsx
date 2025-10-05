@@ -48,13 +48,18 @@ export default function DashboardGrid() {
         .order('start_date', { ascending: true })
         .limit(10);
 
-      const { data: groupsData } = await supabase
+      const { data: groupsData, error: groupsError } = await supabase
         .from('groups')
         .select('*')
         .order('name');
 
+      if (groupsError) {
+        // Log full error details to the browser console so we can inspect 500 responses
+        console.error('Supabase groups fetch error:', groupsError);
+      }
+
       setTasks(tasksData || []);
-      
+
       const groupsWithColors = (groupsData || []).map((group, index) => ({
         ...group,
         memberCount: Math.floor(Math.random() * 10) + 3,
