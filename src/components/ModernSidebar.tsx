@@ -3,7 +3,7 @@ interface ModernSidebarProps {
     onClose?: () => void;
 }
 
-export default function ModernSidebar({ onSignOut }: ModernSidebarProps) {
+export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebarProps) {
     return (
         <aside className={`bg-white dark:bg-surface-dark border-r dark:border-surface p-4 transform transition-transform duration-200 ease-in-out ${isOpen ? 'translate-x-0 fixed z-40 left-0 top-16 h-[calc(100vh-64px)] w-64' : 'hidden md:block w-80 relative h-[calc(100vh-64px)]'}`}>
             <div className="flex flex-col h-full">
