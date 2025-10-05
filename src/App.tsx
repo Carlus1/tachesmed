@@ -58,14 +58,14 @@ function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full mx-4">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="bg-surface p-8 rounded-2xl shadow-lg max-w-md w-full mx-4 border border-border">
           <div className="text-center">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">Erreur de Configuration</h1>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded">
-              <p className="font-medium mb-2">Variables d'environnement requises :</p>
+            <div className="text-accent-400 text-6xl mb-4">⚠️</div>
+            <h1 className="text-2xl font-bold text-primary-700 mb-2">Erreur de Configuration</h1>
+            <p className="text-primary-400 mb-4">{error}</p>
+            <div className="text-sm text-primary-400 bg-background p-3 rounded-xl border border-border">
+              <p className="font-semibold mb-2">Variables d'environnement requises :</p>
               <ul className="text-left space-y-1">
                 <li>• VITE_SUPABASE_URL</li>
                 <li>• VITE_SUPABASE_ANON_KEY</li>
@@ -73,7 +73,7 @@ function App() {
             </div>
             <button 
               onClick={() => window.location.reload()} 
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-accent-400 text-white rounded-xl hover:bg-accent-500 shadow-md transition-all"
             >
               Réessayer
             </button>

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Application de gestion des tâches médicales avec React et Supabase",
+  "description": "Application de gestion des tï¿½ches mï¿½dicales avec React et Supabase",
   "author": "Carlus1",
   "license": "MIT",
   "repository": {
@@ -13,6 +13,7 @@
   "homepage": "https://github.com/Carlus1/tachesmed",
   "scripts": {
     "dev": "vite",
+    "test": "vitest",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
@@ -34,6 +35,9 @@
     "@tailwindcss/forms": "^0.5.7",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+  "vitest": "^0.34.1",
+  "@testing-library/react": "^14.0.0",
+  "@testing-library/jest-dom": "^6.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
