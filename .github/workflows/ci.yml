@@ -1,0 +1,46 @@
+name: CI - build & test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check (tsc)
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+      - name: Build (vite)
+        run: npm run build
+
+      - name: Run tests (Vitest)
+        run: |
+          npm run test -- --run
+        env:
+          CI: true
+
+      - name: Lint (if configured)
+        if: always()
+        run: |
+          if npm run -s lint; then echo "lint ok"; else echo "lint failed"; exit 1; fi
