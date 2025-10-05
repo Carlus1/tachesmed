@@ -227,11 +227,11 @@ export default function UserManagement({ user }: UserManagementProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-background">
         <Breadcrumb />
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-400"></div>
           </div>
         </div>
       </div>
@@ -239,35 +239,35 @@ export default function UserManagement({ user }: UserManagementProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <Breadcrumb />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-semibold text-gray-900">Gestion des utilisateurs</h1>
+      <div className="max-w-7xl mx-auto py-8 sm:px-8 lg:px-12">
+        <div className="bg-surface shadow-xl rounded-2xl overflow-hidden border border-border">
+          <div className="px-8 py-8 sm:p-10">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-extrabold text-primary-700 tracking-tight">Gestion des utilisateurs</h1>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-accent-400 text-white rounded-xl hover:bg-accent-500 shadow-md font-semibold transition-all"
               >
                 Nouvel utilisateur
               </button>
             </div>
 
-            <div className="mb-4 flex space-x-4">
+            <div className="mb-6 flex space-x-4">
               <div className="flex-1">
                 <input
                   type="text"
                   placeholder="Rechercher un utilisateur..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-5 py-3 border border-border rounded-xl bg-background text-primary-700 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 placeholder:text-primary-300 transition-all"
                 />
               </div>
               <select
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
-                className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-5 py-3 border border-border rounded-xl bg-background text-primary-700 focus:ring-2 focus:ring-accent-400 focus:border-accent-400 transition-all"
               >
                 <option value="all">Tous les rôles</option>
                 <option value="owner">Propriétaire</option>
@@ -277,44 +277,44 @@ export default function UserManagement({ user }: UserManagementProps) {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-background">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Utilisateur
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Rôle
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-surface divide-y divide-muted">
                   {filteredUsers.map((user) => (
                     <tr key={user.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-bold text-primary-700">
                           {user.full_name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-primary-400">
                           {user.email}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'owner' ? 'bg-purple-100 text-purple-800' :
-                          user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
+                        <span className={`px-3 inline-flex text-xs leading-5 font-bold rounded-xl shadow-sm border ${
+                          user.role === 'owner' ? 'bg-accent-100 text-accent-500 border-accent-200' :
+                          user.role === 'admin' ? 'bg-primary-100 text-primary-500 border-primary-200' :
+                          'bg-muted text-primary-400 border-border'
                         }`}>
                           {user.role === 'owner' ? 'Propriétaire' :
                            user.role === 'admin' ? 'Administrateur' :
@@ -322,10 +322,10 @@ export default function UserManagement({ user }: UserManagementProps) {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.subscription_status === 'active' ? 'bg-green-100 text-green-800' :
-                          user.subscription_status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                          'bg-yellow-100 text-yellow-800'
+                        <span className={`px-3 inline-flex text-xs leading-5 font-bold rounded-xl shadow-sm border ${
+                          user.subscription_status === 'active' ? 'bg-green-100 text-green-800 border-green-200' :
+                          user.subscription_status === 'cancelled' ? 'bg-accent-100 text-accent-500 border-accent-200' :
+                          'bg-yellow-100 text-yellow-800 border-yellow-200'
                         }`}>
                           {user.subscription_status === 'active' ? 'Actif' :
                            user.subscription_status === 'cancelled' ? 'Annulé' :

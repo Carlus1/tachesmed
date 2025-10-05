@@ -48,63 +48,63 @@ export default function TaskList() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'high': return 'bg-accent-400/10 text-accent-500 border-accent-200';
+      case 'medium': return 'bg-primary-100 text-primary-500 border-primary-200';
+      case 'low': return 'bg-background text-primary-400 border-muted';
+      default: return 'bg-muted text-primary-400 border-border';
     }
   };
 
   const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'Haute';
-      case 'medium': return 'Moyenne';
-      case 'low': return 'Basse';
-      default: return priority;
-    }
-  };
-
-  if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="p-8 bg-background min-h-[60vh] rounded-2xl shadow-md">
+        <h2 className="text-3xl font-extrabold mb-6 text-primary-700 tracking-tight">Liste des tâches</h2>
+        {loading ? (
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-400"></div>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {tasks.length === 0 ? (
+              <div className="text-primary-400 text-center">Aucune tâche trouvée.</div>
+            ) : (
+              tasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="bg-surface rounded-2xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between transition-all hover:shadow-xl cursor-pointer border border-border group"
+                  onClick={() => { setSelectedTask(task); setShowTaskModal(true); }}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className={`text-xs font-bold px-3 py-1 rounded-xl border ${getPriorityColor(task.priority)} shadow-sm tracking-wide uppercase`}>{getPriorityText(task.priority)}</span>
+                      {task.group && (
+                        <span className="ml-2 text-xs text-primary-400 bg-background px-2 py-1 rounded-xl border border-muted shadow-sm">{task.group.name}</span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-primary-700 mb-1 group-hover:text-accent-400 transition-colors">{task.title}</h3>
+                    <p className="text-primary-400 mb-1">{task.description}</p>
+                    <div className="text-xs text-primary-300">
+                      {format(new Date(task.start_date), 'PPPp', { locale: fr })} - {format(new Date(task.end_date), 'PPPp', { locale: fr })}
+                    </div>
+                  </div>
+                  <div className="mt-4 md:mt-0 md:ml-4 flex items-center space-x-2">
+                    <button
+                      className="px-5 py-2 bg-accent-400 hover:bg-accent-500 text-white rounded-xl shadow-md font-semibold transition-all"
+                      onClick={e => { e.stopPropagation(); setSelectedTask(task); setShowTaskModal(true); }}
+                    >
+                      Détails
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+        {showTaskModal && selectedTask && (
+          <TaskModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} onTaskCreated={loadTasks} groups={[]} />
+        )}
       </div>
     );
-  }
-
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Tâches à venir</h2>
-        <button 
-          onClick={() => setShowTaskModal(true)}
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-        >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Ajouter
-        </button>
-      </div>
-      
-      <div className="divide-y divide-gray-200">
-        {tasks.map((task) => (
-          <div 
-            key={task.id} 
-            className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-            onClick={() => setSelectedTask(task)}
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-medium text-gray-900">{task.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{task.description}</p>
-              </div>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
-                {getPriorityText(task.priority)}
-              </span>
-            </div>
-            <div className="flex items-center mt-3 text-sm text-gray-500">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>
