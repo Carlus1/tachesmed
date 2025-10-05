@@ -1,3 +1,5 @@
+![CI](https://github.com/Carlus1/tachesmed/actions/workflows/ci.yml/badge.svg)
+
 # 🏥 TachesMed - Application de Gestion des Tâches Médicales
 
 Une application moderne de gestion des tâches construite avec React, TypeScript, et Supabase, spécialement conçue pour les environnements médicaux.
