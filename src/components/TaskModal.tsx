@@ -133,23 +133,4 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       </div>
     ) : null
   );
-        </div>
-        
-        <div className="flex justify-end p-4 border-t border-gray-200 bg-gray-50">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 mr-2 hover:bg-gray-50 transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={handleCreateTask}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Enregistrer
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
