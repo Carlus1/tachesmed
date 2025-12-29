@@ -46,7 +46,8 @@ interface AvailabilityStats {
   mostAvailableDay: string;
 }
 
-export default function Reports({ user }: ReportsProps) {
+export default function Reports({ user: _user }: ReportsProps) {
+  void _user;
   const [selectedReport, setSelectedReport] = useState<string>('calendar');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -213,15 +214,15 @@ export default function Reports({ user }: ReportsProps) {
     if (loading) {
       return (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          </div>
       );
     }
 
     if (error) {
       return (
-        <div className="bg-red-50 p-4 rounded-md border border-red-200">
-          <p className="text-red-700">{error}</p>
+        <div className="bg-error-100 p-4 rounded-md border border-error-200">
+          <p className="text-error-700">{error}</p>
         </div>
       );
     }
@@ -234,57 +235,57 @@ export default function Reports({ user }: ReportsProps) {
         return taskStats && (
           <div className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-blue-900">Total des tâches</h3>
-                  <p className="text-4xl font-bold text-blue-600 mt-2">{taskStats.total}</p>
+                  <h3 className="text-lg font-medium text-primary-700">Total des tâches</h3>
+                  <p className="text-4xl font-bold text-primary-600 mt-2">{taskStats.total}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-green-900">Tâches terminées</h3>
-                  <p className="text-4xl font-bold text-green-600 mt-2">{taskStats.completed}</p>
+                  <h3 className="text-lg font-medium text-success-700">Tâches terminées</h3>
+                  <p className="text-4xl font-bold text-success-600 mt-2">{taskStats.completed}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-warning-50 to-warning-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-yellow-900">Tâches en cours</h3>
-                  <p className="text-4xl font-bold text-yellow-600 mt-2">{taskStats.inProgress}</p>
+                  <h3 className="text-lg font-medium text-warning-700">Tâches en cours</h3>
+                  <p className="text-4xl font-bold text-warning-600 mt-2">{taskStats.inProgress}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-lg font-medium mb-6 text-gray-900">Répartition par priorité</h3>
+            <div className="bg-surface p-6 rounded-xl shadow-sm">
+              <h3 className="text-lg font-medium mb-6 text-primary-700">Répartition par priorité</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Haute</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Haute</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-error-500 to-error-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${taskStats.total ? (taskStats.byPriority.high / taskStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{taskStats.byPriority.high}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{taskStats.byPriority.high}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Moyenne</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Moyenne</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-warning-500 to-warning-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${taskStats.total ? (taskStats.byPriority.medium / taskStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{taskStats.byPriority.medium}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{taskStats.byPriority.medium}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Basse</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Basse</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-success-500 to-success-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${taskStats.total ? (taskStats.byPriority.low / taskStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{taskStats.byPriority.low}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{taskStats.byPriority.low}</div>
                 </div>
               </div>
             </div>
@@ -295,51 +296,51 @@ export default function Reports({ user }: ReportsProps) {
         return userStats && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-purple-900">Total des utilisateurs</h3>
-                  <p className="text-4xl font-bold text-purple-600 mt-2">{userStats.total}</p>
+                  <h3 className="text-lg font-medium text-accent-700">Total des utilisateurs</h3>
+                  <p className="text-4xl font-bold text-accent-600 mt-2">{userStats.total}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-green-900">Utilisateurs actifs</h3>
-                  <p className="text-4xl font-bold text-green-600 mt-2">{userStats.active}</p>
+                  <h3 className="text-lg font-medium text-success-700">Utilisateurs actifs</h3>
+                  <p className="text-4xl font-bold text-success-600 mt-2">{userStats.active}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-lg font-medium mb-6 text-gray-900">Répartition par rôle</h3>
+            <div className="bg-surface p-6 rounded-xl shadow-sm">
+              <h3 className="text-lg font-medium mb-6 text-primary-700">Répartition par rôle</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Propriétaire</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Propriétaire</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-accent-500 to-accent-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${userStats.total ? (userStats.byRole.owner / userStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{userStats.byRole.owner}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{userStats.byRole.owner}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Admin</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Admin</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${userStats.total ? (userStats.byRole.admin / userStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{userStats.byRole.admin}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{userStats.byRole.admin}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-gray-600">Utilisateur</div>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-32 text-sm font-medium text-primary-400">Utilisateur</div>
+                  <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-500 ease-in-out" 
+                      className="h-full bg-gradient-to-r from-success-500 to-success-600 transition-all duration-500 ease-in-out" 
                       style={{ width: `${userStats.total ? (userStats.byRole.user / userStats.total) * 100 : 0}%` }}
                     ></div>
                   </div>
-                  <div className="w-16 text-right text-sm font-medium text-gray-600">{userStats.byRole.user}</div>
+                  <div className="w-16 text-right text-sm font-medium text-primary-400">{userStats.byRole.user}</div>
                 </div>
               </div>
             </div>
@@ -350,23 +351,23 @@ export default function Reports({ user }: ReportsProps) {
         return groupStats && (
           <div className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-indigo-900">Total des groupes</h3>
-                  <p className="text-4xl font-bold text-indigo-600 mt-2">{groupStats.total}</p>
+                  <h3 className="text-lg font-medium text-accent-700">Total des groupes</h3>
+                  <p className="text-4xl font-bold text-accent-600 mt-2">{groupStats.total}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-blue-900">Moyenne des membres</h3>
-                  <p className="text-4xl font-bold text-blue-600 mt-2">{groupStats.averageMembers.toFixed(1)}</p>
+                  <h3 className="text-lg font-medium text-primary-700">Moyenne des membres</h3>
+                  <p className="text-4xl font-bold text-primary-600 mt-2">{groupStats.averageMembers.toFixed(1)}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-green-900">Groupe le plus actif</h3>
-                  <p className="text-xl font-bold text-green-600 mt-2">{groupStats.mostActive.name}</p>
-                  <p className="text-sm text-green-500">{groupStats.mostActive.taskCount} tâches</p>
+                  <h3 className="text-lg font-medium text-success-700">Groupe le plus actif</h3>
+                  <p className="text-xl font-bold text-success-600 mt-2">{groupStats.mostActive.name}</p>
+                  <p className="text-sm text-success-500">{groupStats.mostActive.taskCount} tâches</p>
                 </div>
               </div>
             </div>
@@ -377,24 +378,24 @@ export default function Reports({ user }: ReportsProps) {
         return availabilityStats && (
           <div className="space-y-6">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-blue-900">Total des disponibilités</h3>
-                  <p className="text-4xl font-bold text-blue-600 mt-2">{availabilityStats.total}</p>
+                  <h3 className="text-lg font-medium text-primary-700">Total des disponibilités</h3>
+                  <p className="text-4xl font-bold text-primary-600 mt-2">{availabilityStats.total}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-green-900">Durée moyenne</h3>
-                  <p className="text-4xl font-bold text-green-600 mt-2">
+                  <h3 className="text-lg font-medium text-success-700">Durée moyenne</h3>
+                  <p className="text-4xl font-bold text-success-600 mt-2">
                     {Math.round(availabilityStats.averageDuration)} min
                   </p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-sm">
+              <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-purple-900">Jour le plus disponible</h3>
-                  <p className="text-xl font-bold text-purple-600 mt-2">{availabilityStats.mostAvailableDay}</p>
+                  <h3 className="text-lg font-medium text-accent-700">Jour le plus disponible</h3>
+                  <p className="text-xl font-bold text-accent-600 mt-2">{availabilityStats.mostAvailableDay}</p>
                 </div>
               </div>
             </div>
@@ -407,17 +408,17 @@ export default function Reports({ user }: ReportsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <Breadcrumb />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Rapports et statistiques</h1>
-          <p className="mt-2 text-gray-600">Sélectionnez un rapport pour voir les statistiques détaillées</p>
+          <h1 className="text-2xl font-semibold text-primary-700">Rapports et statistiques</h1>
+          <p className="mt-2 text-primary-400">Sélectionnez un rapport pour voir les statistiques détaillées</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Liste des rapports */}
-          <div className="lg:col-span-1 bg-white rounded-xl shadow-sm p-4 space-y-2">
+          <div className="lg:col-span-1 bg-surface rounded-xl shadow-sm p-4 space-y-2">
             {[
               {
                 id: 'calendar',
@@ -475,29 +476,29 @@ export default function Reports({ user }: ReportsProps) {
                 onClick={() => setSelectedReport(report.id)}
                 className={`w-full text-left p-4 rounded-lg transition-all duration-200 flex items-center ${
                   selectedReport === report.id
-                    ? 'bg-blue-50 shadow-sm transform scale-[1.02]'
-                    : 'hover:bg-gray-50'
+                    ? 'bg-primary-100 shadow-sm transform scale-[1.02]'
+                    : 'hover:bg-surface'
                 }`}
               >
                 <div className={`p-2 rounded-lg mr-3 ${
                   selectedReport === report.id
-                    ? 'bg-blue-100 text-blue-600'
-                    : 'bg-gray-100 text-gray-500'
+                    ? 'bg-primary-100 text-primary-600'
+                    : 'bg-surface text-primary-400'
                 }`}>
                   {report.icon}
                 </div>
                 <div>
                   <div className={`font-medium ${
                     selectedReport === report.id
-                      ? 'text-blue-700'
-                      : 'text-gray-900'
+                      ? 'text-primary-700'
+                      : 'text-primary-400'
                   }`}>
                     {report.title}
                   </div>
                   <div className={`text-sm ${
                     selectedReport === report.id
-                      ? 'text-blue-600'
-                      : 'text-gray-500'
+                      ? 'text-primary-600'
+                      : 'text-primary-400'
                   }`}>
                     {report.description}
                   </div>
@@ -507,7 +508,7 @@ export default function Reports({ user }: ReportsProps) {
           </div>
 
           {/* Contenu du rapport */}
-          <div className="lg:col-span-3 bg-white rounded-xl shadow-sm p-6">
+          <div className="lg:col-span-3 bg-surface rounded-xl shadow-sm p-6">
             {renderStats()}
           </div>
         </div>

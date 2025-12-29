@@ -3,11 +3,6 @@ import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import TaskModal from './TaskModal';
-import { useState, useEffect } from 'react';
-import { supabase } from '../supabase';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import TaskModal from './TaskModal';
 
 interface Task {
   id: string;
@@ -47,7 +42,7 @@ export default function TaskList() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-accent-400/10 text-accent-500 border-accent-200';
+      case 'high': return 'bg-accent-100/20 text-accent-500 border-accent-200';
       case 'medium': return 'bg-primary-100 text-primary-500 border-primary-200';
       case 'low': return 'bg-background text-primary-400 border-muted';
       default: return 'bg-muted text-primary-400 border-border';
@@ -66,7 +61,7 @@ export default function TaskList() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-500"></div>
       </div>
     );
   }
@@ -92,15 +87,15 @@ export default function TaskList() {
                     <span className="ml-2 text-xs text-primary-400 bg-background px-2 py-1 rounded-xl border border-muted shadow-sm">{task.group.name}</span>
                   )}
                 </div>
-                <h3 className="text-lg font-bold text-primary-700 mb-1 group-hover:text-accent-400 transition-colors">{task.title}</h3>
+                <h3 className="text-lg font-bold text-primary-700 mb-1 group-hover:text-accent-500 transition-colors">{task.title}</h3>
                 <p className="text-primary-400 mb-1">{task.description}</p>
                 <div className="text-xs text-primary-300">
                   {format(new Date(task.start_date), 'PPPp', { locale: fr })} - {format(new Date(task.end_date), 'PPPp', { locale: fr })}
                 </div>
               </div>
-              <div className="mt-4 md:mt-0 md:ml-4 flex items-center space-x-2">
+                <div className="mt-4 md:mt-0 md:ml-4 flex items-center space-x-2">
                 <button
-                  className="px-5 py-2 bg-accent-400 hover:bg-accent-500 text-white rounded-xl shadow-md font-semibold transition-all"
+                  className="px-5 py-2 bg-accent-500 hover:bg-accent-600 text-white rounded-xl shadow-md font-semibold transition-all"
                   onClick={e => { e.stopPropagation(); setSelectedTask(task); setShowTaskModal(true); }}
                 >
                   Détails

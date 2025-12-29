@@ -1,37 +1,39 @@
 /** @type {import('tailwindcss').Config} */
+const withAlpha = (variable) => ({
+  DEFAULT: `rgb(var(${variable}) / <alpha-value>)`,
+  50: `rgb(var(${variable}-50) / <alpha-value>)`,
+  100: `rgb(var(${variable}-100) / <alpha-value>)`,
+  200: `rgb(var(${variable}-200) / <alpha-value>)`,
+  300: `rgb(var(${variable}-300) / <alpha-value>)`,
+  400: `rgb(var(${variable}-400) / <alpha-value>)`,
+  500: `rgb(var(${variable}-500) / <alpha-value>)`,
+  600: `rgb(var(${variable}-600) / <alpha-value>)`,
+  700: `rgb(var(${variable}-700) / <alpha-value>)`,
+  800: `rgb(var(${variable}-800) / <alpha-value>)`,
+  900: `rgb(var(${variable}-900) / <alpha-value>)`,
+});
+
 module.exports = {
   darkMode: 'class',
   content: ['./src/**/*.{js,jsx,ts,tsx}', './index.html'],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Nunito', 'Inter var', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Nunito', 'Inter var', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter var', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Inter var', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
-        primary: {
-          50: '#f5f7fa',
-          100: '#e4e7ec',
-          200: '#c9d1d9',
-          300: '#a0aec0',
-          400: '#64748b',
-          500: '#3b4252',
-          600: '#222738',
-          700: '#181c2a',
-          800: '#101322',
-          900: '#0a0c16',
+        // Use CSS variables defined in src/index.css. This allows runtime theming.
+        primary: withAlpha('--color-primary'),
+        accent: withAlpha('--color-accent'),
+        background: {
+          DEFAULT: 'rgb(var(--color-background) / <alpha-value>)',
         },
-        accent: {
-          100: '#f3e8ff',
-          200: '#d8b4fe',
-          300: '#a78bfa',
-          400: '#7c3aed',
-          500: '#6d28d9',
+        surface: {
+          DEFAULT: 'rgb(var(--color-surface) / <alpha-value>)',
         },
-        background: { DEFAULT: '#f8fafc', dark: '#181c2a' },
-        surface: { DEFAULT: '#fff', dark: '#23263a' },
-        muted: '#e5e7eb',
-        border: '#e2e8f0',
+        muted: 'rgb(var(--color-muted) / <alpha-value>)',
+        border: 'rgb(var(--color-border) / <alpha-value>)',
       },
       boxShadow: {
         sm: '0 1px 2px 0 rgba(60, 72, 88, 0.05)',

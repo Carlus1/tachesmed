@@ -60,17 +60,13 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
       if (memberError) throw memberError;
 
       // Combiner et dédupliquer les groupes
-      const allGroups = [
-        ...adminGroups,
-        ...memberGroups
-          .map(mg => mg.groups)
-          .filter((group): group is { id: string; name: string } => group !== null)
-      ];
+      const memberGroupItems = ((memberGroups || []) as any[]).map((mg) => mg.groups).flat().filter(Boolean) as any[];
+      const allGroups = [ ...(adminGroups || []), ...memberGroupItems ];
 
       // Dédupliquer les groupes par ID
       const uniqueGroups = Array.from(
-        new Map(allGroups.map(group => [group.id, group])).values()
-      );
+        new Map((allGroups as any[]).map((group) => [group.id, group])).values()
+      ) as Group[];
 
       setGroups(uniqueGroups);
 
@@ -162,13 +158,13 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-background/60 overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border border-border w-96 shadow-lg rounded-md bg-surface">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium">{taskId ? 'Modifier la tâche' : 'Nouvelle tâche'}</h3>
+          <h3 className="text-lg font-medium text-primary-700">{taskId ? 'Modifier la tâche' : 'Nouvelle tâche'}</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500 transition-colors"
+            className="text-primary-300 hover:text-primary-400 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -178,13 +174,13 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Groupe
             </label>
             <select
               value={task.group_id}
               onChange={(e) => setTask({ ...task, group_id: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               required
             >
               <option value="">Sélectionner un groupe</option>
@@ -197,38 +193,38 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Titre
             </label>
             <input
               type="text"
               value={task.title}
               onChange={(e) => setTask({ ...task, title: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Description
             </label>
             <textarea
               value={task.description}
               onChange={(e) => setTask({ ...task, description: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={3}
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Priorité
             </label>
             <select
               value={task.priority}
               onChange={(e) => setTask({ ...task, priority: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="low">Basse</option>
               <option value="medium">Moyenne</option>
@@ -237,63 +233,63 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Durée (minutes)
             </label>
             <input
               type="number"
               value={task.duration}
               onChange={(e) => setTask({ ...task, duration: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               min="1"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Date de début
             </label>
             <input
               type="datetime-local"
               value={task.start_date}
               onChange={(e) => setTask({ ...task, start_date: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-primary-700 mb-2">
               Date de fin
             </label>
             <input
               type="datetime-local"
               value={task.end_date}
               onChange={(e) => setTask({ ...task, end_date: e.target.value })}
-              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               required
             />
           </div>
 
-          {error && (
-            <div className="mb-4 p-2 text-sm text-red-600 bg-red-50 rounded border border-red-200">
+            {error && (
+            <div className="mb-4 p-2 text-error-600 bg-error-50 rounded border border-error-200">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 border rounded-md hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-primary-400 border-border rounded-md hover:bg-surface transition-colors"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors"
             >
               {loading ? 'Enregistrement...' : (taskId ? 'Modifier' : 'Créer')}
             </button>

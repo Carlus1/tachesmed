@@ -144,10 +144,10 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
 
     if (loading) {
         return (
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4">
+            <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+                <div className="bg-surface rounded-lg p-6 max-w-4xl w-full mx-4">
                     <div className="flex justify-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
                     </div>
                 </div>
             </div>
@@ -155,15 +155,15 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
     }
 
     return (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+            <div className="bg-surface rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-900">
+                    <h2 className="text-2xl font-semibold text-primary-700">
                         {group?.name}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 transition-colors"
+                        className="text-primary-400 hover:text-primary-700 transition-colors"
                     >
                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -172,17 +172,17 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                 </div>
 
                 {group?.description && (
-                    <p className="text-gray-500 mb-6">{group.description}</p>
+                    <p className="text-primary-400 mb-6">{group.description}</p>
                 )}
 
                 {error && (
-                    <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+                    <div className="mb-4 p-4 text-error-700 bg-error-100 rounded-md border border-error-200">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="mb-4 p-4 text-green-700 bg-green-100 rounded-md border border-green-200">
+                    <div className="mb-4 p-4 text-success-700 bg-success-100 rounded-md border border-success-200">
                         {success}
                     </div>
                 )}
@@ -194,52 +194,52 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                             placeholder="Rechercher un membre..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                     </div>
                     <button
                         onClick={() => setShowAddMembers(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
                     >
                         Ajouter des membres
                     </button>
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                    <table className="min-w-full divide-y divide-border">
+                        <thead className="bg-primary-100">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-primary-400 uppercase tracking-wider">
                                     Membre
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-primary-400 uppercase tracking-wider">
                                     Email
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-primary-400 uppercase tracking-wider">
                                     Rôle
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-right text-xs font-medium text-primary-400 uppercase tracking-wider">
                                     Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-surface divide-y divide-border">
                             {filteredMembers.map((member) => (
-                                <tr key={member.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={member.id} className="hover:bg-surface transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">
+                                        <div className="text-sm font-medium text-primary-700">
                                             {member.full_name}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-sm text-primary-400">
                                             {member.email}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${member.role === 'owner' ? 'bg-purple-100 text-purple-800' :
-                                                member.role === 'admin' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${member.role === 'owner' ? 'bg-accent-100 text-accent-800' :
+                                                member.role === 'admin' ? 'bg-primary-100 text-primary-800' :
+                                                    'bg-primary-100 text-primary-700'
                                             }`}>
                                             {member.role === 'owner' ? 'Propriétaire' :
                                                 member.role === 'admin' ? 'Administrateur' :
@@ -249,7 +249,7 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button
                                             onClick={() => handleRemoveMember(member.id)}
-                                            className="text-red-600 hover:text-red-900 transition-colors"
+                                            className="text-error-600 hover:text-error-800 transition-colors"
                                         >
                                             Retirer
                                         </button>
@@ -262,16 +262,16 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
 
                 {/* Modal d'ajout de membres */}
                 {showAddMembers && (
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                    <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+                        <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-medium">Ajouter des membres</h3>
+                                <h3 className="text-lg font-medium text-primary-700">Ajouter des membres</h3>
                                 <button
                                     onClick={() => {
                                         setShowAddMembers(false);
                                         setSelectedUsers([]);
                                     }}
-                                    className="text-gray-400 hover:text-gray-500 transition-colors"
+                                    className="text-primary-400 hover:text-primary-700 transition-colors"
                                 >
                                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -282,9 +282,9 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                             <div className="max-h-96 overflow-y-auto">
                                 {availableUsers.map((user) => (
                                     <div
-                                        key={user.id}
-                                        className="flex items-center p-2 hover:bg-gray-50 transition-colors"
-                                    >
+                                            key={user.id}
+                                            className="flex items-center p-2 hover:bg-surface transition-colors"
+                                        >
                                         <input
                                             type="checkbox"
                                             checked={selectedUsers.includes(user.id)}
@@ -295,11 +295,11 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                                                     setSelectedUsers(prev => prev.filter(id => id !== user.id));
                                                 }
                                             }}
-                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-border rounded"
                                         />
                                         <div className="ml-3">
-                                            <p className="text-sm font-medium text-gray-700">{user.full_name}</p>
-                                            <p className="text-sm text-gray-500">{user.email}</p>
+                                            <p className="text-sm font-medium text-primary-700">{user.full_name}</p>
+                                            <p className="text-sm text-primary-400">{user.email}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -311,14 +311,14 @@ export default function GroupDetail({ groupId, onClose }: GroupDetailProps) {
                                         setShowAddMembers(false);
                                         setSelectedUsers([]);
                                     }}
-                                    className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors"
                                 >
                                     Annuler
                                 </button>
                                 <button
                                     onClick={handleAddMembers}
                                     disabled={selectedUsers.length === 0}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                    className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors"
                                 >
                                     Ajouter
                                 </button>

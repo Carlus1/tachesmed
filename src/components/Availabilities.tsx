@@ -6,8 +6,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+// date-fns imports removed (not used in this file)
 
 interface AvailabilitiesProps {
   user: User;
@@ -61,7 +60,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
       if (error) throw error;
       setIsOwner(data.role === 'owner');
     } catch (error) {
-      console.error('Erreur lors de la vérification du rôle:', error);
+      console.error('Erreur lors de la vï¿½rification du rï¿½le:', error);
     }
   };
 
@@ -93,8 +92,8 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
       if (error) throw error;
       setAvailabilities(data || []);
     } catch (error: any) {
-      console.error('Erreur lors du chargement des disponibilités:', error);
-      setError('Erreur lors du chargement des disponibilités');
+      console.error('Erreur lors du chargement des disponibilitï¿½s:', error);
+      setError('Erreur lors du chargement des disponibilitï¿½s');
     } finally {
       setLoading(false);
     }
@@ -114,11 +113,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilité ajoutée avec succès');
+      setSuccess('Disponibilitï¿½ ajoutï¿½e avec succï¿½s');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de l\'ajout de la disponibilité:', error);
-      setError('Erreur lors de l\'ajout de la disponibilité');
+      console.error('Erreur lors de l\'ajout de la disponibilitï¿½:', error);
+      setError('Erreur lors de l\'ajout de la disponibilitï¿½');
     }
   }, [selectedUserId]);
 
@@ -141,11 +140,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilité mise à jour avec succès');
+      setSuccess('Disponibilitï¿½ mise ï¿½ jour avec succï¿½s');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la mise à jour de la disponibilité:', error);
-      setError('Erreur lors de la mise à jour de la disponibilité');
+      console.error('Erreur lors de la mise ï¿½ jour de la disponibilitï¿½:', error);
+      setError('Erreur lors de la mise ï¿½ jour de la disponibilitï¿½');
       dropInfo.revert();
     }
   }, [selectedUserId]);
@@ -165,11 +164,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilité mise à jour avec succès');
+      setSuccess('Disponibilitï¿½ mise ï¿½ jour avec succï¿½s');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la mise à jour de la disponibilité:', error);
-      setError('Erreur lors de la mise à jour de la disponibilité');
+      console.error('Erreur lors de la mise ï¿½ jour de la disponibilitï¿½:', error);
+      setError('Erreur lors de la mise ï¿½ jour de la disponibilitï¿½');
       resizeInfo.revert();
     }
   }, [selectedUserId]);
@@ -188,13 +187,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilité supprimée avec succès');
+      setSuccess('Disponibilitï¿½ supprimï¿½e avec succï¿½s');
       setSelectedEvent(null);
       setShowDeleteConfirm(false);
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la suppression de la disponibilité:', error);
-      setError('Erreur lors de la suppression de la disponibilité');
+      console.error('Erreur lors de la suppression de la disponibilitï¿½:', error);
+      setError('Erreur lors de la suppression de la disponibilitï¿½');
     }
   };
 
@@ -203,8 +202,9 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
     title: 'Disponible',
     start: availability.start_time,
     end: availability.end_time,
-    backgroundColor: '#10B981',
-    borderColor: '#059669',
+    // Use CSS variable-based rgb so colors follow the theme tokens at runtime
+    backgroundColor: `rgb(var(--color-success-500) / 1)`,
+    borderColor: `rgb(var(--color-success-600) / 1)`,
     editable: true,
     durationEditable: true,
     startEditable: true,
@@ -215,11 +215,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-background">
         <Breadcrumb />
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
           </div>
         </div>
       </div>
@@ -227,26 +227,26 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <Breadcrumb />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="bg-surface shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:p-6">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {isOwner ? 'Gérer les disponibilités' : 'Mes disponibilités'}
+              <h1 className="text-2xl font-semibold text-primary-700">
+                {isOwner ? 'Gï¿½rer les disponibilitï¿½s' : 'Mes disponibilitï¿½s'}
               </h1>
             </div>
 
             {isOwner && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sélectionner un utilisateur
+                <label className="block text-sm font-medium text-primary-700 mb-2">
+                  Sï¿½lectionner un utilisateur
                 </label>
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
@@ -258,13 +258,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             )}
 
             {error && (
-              <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+              <div className="mb-4 p-4 text-error-600 bg-error-50 rounded-md">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mb-4 p-4 text-green-700 bg-green-100 rounded-md animate-fade-in">
+              <div className="mb-4 p-4 text-success-600 bg-success-50 rounded-md animate-fade-in">
                 {success}
               </div>
             )}
@@ -307,13 +307,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             </div>
 
             {selectedEvent && (
-              <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-end">
                 {showDeleteConfirm ? (
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Confirmer la suppression ?</span>
+                    <span className="text-sm text-primary-400">Confirmer la suppression ?</span>
                     <button
                       onClick={handleDeleteAvailability}
-                      className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                      className="px-3 py-1 bg-error-600 text-white text-sm rounded hover:bg-error-700"
                     >
                       Oui
                     </button>
@@ -322,7 +322,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                         setShowDeleteConfirm(false);
                         setSelectedEvent(null);
                       }}
-                      className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                      className="px-3 py-1 bg-primary-100 text-primary-700 text-sm rounded hover:bg-primary-200"
                     >
                       Non
                     </button>
@@ -330,7 +330,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 ) : (
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-error-600 hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error-600"
                   >
                     <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -362,7 +362,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
           transform: scale(1.02);
         }
         .fc-event.selected-event {
-          box-shadow: 0 0 0 2px #3B82F6;
+          box-shadow: 0 0 0 2px rgb(var(--color-primary-500) / 1);
           transform: scale(1.02);
         }
         @keyframes fade-in {

@@ -126,39 +126,39 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-surface rounded-lg shadow-lg p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Calendrier Global</h2>
+        <h2 className="text-2xl font-bold text-primary-700">Calendrier Global</h2>
         <div className="mt-2 flex items-center space-x-4">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-blue-500 rounded mr-2"></div>
-            <span className="text-sm text-gray-600">Tâches non assignées</span>
+            <div className="w-4 h-4 bg-primary-500 rounded mr-2"></div>
+            <span className="text-sm text-primary-400">Tâches non assignées</span>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-green-500 rounded mr-2"></div>
-            <span className="text-sm text-gray-600">Tâches assignées</span>
+            <div className="w-4 h-4 bg-success-500 rounded mr-2"></div>
+            <span className="text-sm text-primary-400">Tâches assignées</span>
           </div>
         </div>
         {error && (
-          <div className="mt-2 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+          <div className="mt-2 p-4 text-error-700 bg-error-100 rounded-md border border-error-200">
             {error}
           </div>
         )}
       </div>
 
-      {conflicts.length > 0 && (
+        {conflicts.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-red-600 mb-2">Conflits détectés</h3>
-          <div className="bg-red-50 p-4 rounded-md border border-red-200">
+          <h3 className="text-lg font-semibold text-error-600 mb-2">Conflits détectés</h3>
+          <div className="bg-error-50 p-4 rounded-md border border-error-200">
             <ul className="space-y-2">
               {conflicts.map((conflict, index) => (
-                <li key={index} className="text-red-700">
+                <li key={index} className="text-error-700">
                   <span className="font-medium">{conflict.userName}</span> est assigné à plusieurs tâches le{' '}
                   {format(new Date(conflict.date), 'PPP', { locale: fr })}
                 </li>
@@ -205,7 +205,7 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-surface p-4 rounded-lg">
           <h3 className="text-lg font-semibold mb-4">
             {selectedDate ? (
               format(selectedDate, 'PPP', { locale: fr })
@@ -219,20 +219,20 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
               {selectedEvents.map(event => (
                 <div
                   key={event.id}
-                  className="bg-white p-4 rounded-md shadow-sm border border-gray-200"
+                  className="bg-surface p-4 rounded-md shadow-sm border border-border"
                 >
-                  <h4 className="font-medium">{event.extendedProps.taskTitle}</h4>
+                  <h4 className="font-medium text-primary-700">{event.extendedProps.taskTitle}</h4>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-primary-400">
                       {event.extendedProps.description}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-primary-400 mt-1">
                       Groupe: {event.extendedProps.groupName}
                     </p>
-                    <p className="text-sm font-medium mt-2">
+                    <p className="text-sm font-medium mt-2 text-primary-700">
                       Assigné à: {event.extendedProps.assignedUser}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-primary-400 mt-1">
                       {format(new Date(event.start), 'HH:mm')} - {format(new Date(event.end), 'HH:mm')}
                     </p>
                   </div>
@@ -241,11 +241,11 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
             </div>
           ) : (
             <div className="text-center py-8">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="mx-auto h-12 w-12 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="mt-2 text-gray-500">Aucun événement sélectionné</p>
-              <p className="text-sm text-gray-400">Cliquez sur une date ou un événement pour voir les détails</p>
+              <p className="mt-2 text-primary-400">Aucun événement sélectionné</p>
+              <p className="text-sm text-primary-400">Cliquez sur une date ou un événement pour voir les détails</p>
             </div>
           )}
         </div>
@@ -270,7 +270,7 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .fc-event.selected-event {
-          box-shadow: 0 0 0 2px #3B82F6;
+          box-shadow: 0 0 0 2px rgb(var(--color-primary-500) / 1);
           transform: scale(1.02);
         }
       `}</style>

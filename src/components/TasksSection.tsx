@@ -20,10 +20,10 @@ interface TasksSectionProps {
 export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
     const getPriorityColor = (priority: string) => {
         switch (priority) {
-            case 'high': return 'bg-red-100 text-red-800 border-red-200';
-            case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'low': return 'bg-green-100 text-green-800 border-green-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'high': return 'bg-error-100 text-error-800 border-error-200';
+            case 'medium': return 'bg-warning-100 text-warning-800 border-warning-200';
+            case 'low': return 'bg-success-100 text-success-800 border-success-200';
+            default: return 'bg-primary-100 text-primary-700 border-border';
         }
     };
 
@@ -37,29 +37,29 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Tâches à venir</h2>
+        <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-border">
+                <h2 className="text-lg font-semibold text-primary-700">Tâches à venir</h2>
                 <button
                     onClick={onAddTask}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-primary-600 hover:text-primary-700 font-medium"
                 >
                     Ajouter
                 </button>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-border">
                 {tasks.slice(0, 3).map((task) => (
-                    <div key={task.id} className="p-4 hover:bg-gray-50 transition-colors">
+                    <div key={task.id} className="p-4 hover:bg-surface transition-colors">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="font-medium text-gray-900">{task.title}</h3>
-                                <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                                <h3 className="font-medium text-primary-700">{task.title}</h3>
+                                <p className="text-sm text-primary-400 mt-1">{task.description}</p>
                             </div>
                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
                                 {getPriorityText(task.priority)}
                             </span>
                         </div>
-                        <div className="flex items-center mt-3 text-sm text-gray-500">
+                        <div className="flex items-center mt-3 text-sm text-primary-400">
                             <span>
                                 {format(new Date(task.start_date), 'dd/MM/yyyy')} — {format(new Date(task.start_date), 'HH:mm')}-{format(new Date(task.end_date), 'HH:mm')}
                             </span>
@@ -67,13 +67,13 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                     </div>
                 ))}
                 {tasks.length === 0 && (
-                    <div className="p-6 text-center text-gray-500">
+                    <div className="p-6 text-center text-primary-400">
                         <p>Aucune tâche à venir</p>
                     </div>
                 )}
             </div>
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
-                <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <div className="p-4 border-t border-border bg-background">
+                <a href="#" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
                     Voir toutes les tâches →
                 </a>
             </div>

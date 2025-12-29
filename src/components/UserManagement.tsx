@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
 import Breadcrumb from './Breadcrumb';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 
 interface UserManagementProps {
   user: User;
@@ -323,9 +321,9 @@ export default function UserManagement({ user }: UserManagementProps) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 inline-flex text-xs leading-5 font-bold rounded-xl shadow-sm border ${
-                          user.subscription_status === 'active' ? 'bg-green-100 text-green-800 border-green-200' :
+                          user.subscription_status === 'active' ? 'bg-success-100 text-success-700 border-success-200' :
                           user.subscription_status === 'cancelled' ? 'bg-accent-100 text-accent-500 border-accent-200' :
-                          'bg-yellow-100 text-yellow-800 border-yellow-200'
+                          'bg-accent-100 text-accent-600 border-accent-200'
                         }`}>
                           {user.subscription_status === 'active' ? 'Actif' :
                            user.subscription_status === 'cancelled' ? 'Annulé' :
@@ -342,14 +340,14 @@ export default function UserManagement({ user }: UserManagementProps) {
                                 role: user.role,
                                 subscription_status: user.subscription_status
                               })}
-                              className="text-indigo-600 hover:text-indigo-900"
+                              className="text-primary-600 hover:text-primary-900"
                               disabled={processingAction === user.id}
                             >
                               Modifier
                             </button>
                             <button
                               onClick={() => setShowDeleteConfirm(user.id)}
-                              className="text-red-600 hover:text-red-900"
+                              className="text-error-600 hover:text-error-800"
                               disabled={processingAction === user.id}
                             >
                               {processingAction === user.id ? 'En cours...' : 'Supprimer'}
@@ -362,8 +360,8 @@ export default function UserManagement({ user }: UserManagementProps) {
                                 ref={el => messageRefs.current[user.id] = el}
                                 className={`mt-2 px-3 py-1 text-sm rounded-md animate-fade-in ${
                                   message.type === 'success' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-red-100 text-red-700'
+                                    ? 'bg-success-100 text-success-700' 
+                                    : 'bg-error-100 text-error-700'
                                 }`}
                               >
                                 {message.text}
@@ -381,16 +379,16 @@ export default function UserManagement({ user }: UserManagementProps) {
             {messages.map((message, index) => 
               !message.userId && (
                 <div
-                  key={index}
-                  ref={el => messageRefs.current['global'] = el}
-                  className={`mt-4 p-4 rounded-md animate-fade-in ${
-                    message.type === 'success' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {message.text}
-                </div>
+                    key={index}
+                    ref={el => messageRefs.current['global'] = el}
+                    className={`mt-4 p-4 rounded-md animate-fade-in ${
+                      message.type === 'success' 
+                        ? 'bg-success-100 text-success-700' 
+                        : 'bg-error-100 text-error-700'
+                    }`}
+                  >
+                    {message.text}
+                  </div>
               )
             )}
           </div>
@@ -399,25 +397,25 @@ export default function UserManagement({ user }: UserManagementProps) {
 
       {/* Modal de modification */}
       {editingUser && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-medium mb-4">Modifier l'utilisateur</h3>
+        <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+          <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+            <h3 className="text-lg font-medium mb-4 text-primary-700">Modifier l'utilisateur</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nom complet</label>
+                <label className="block text-sm font-medium text-primary-700">Nom complet</label>
                 <input
                   type="text"
                   value={editingUser.full_name}
                   onChange={(e) => setEditingUser({ ...editingUser, full_name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                <label className="block text-sm font-medium text-primary-700">Rôle</label>
                 <select
                   value={editingUser.role}
                   onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                 >
                   <option value="user">Utilisateur</option>
                   <option value="admin">Administrateur</option>
@@ -425,11 +423,11 @@ export default function UserManagement({ user }: UserManagementProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Statut</label>
+                <label className="block text-sm font-medium text-primary-700">Statut</label>
                 <select
                   value={editingUser.subscription_status}
                   onChange={(e) => setEditingUser({ ...editingUser, subscription_status: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                 >
                   <option value="active">Actif</option>
                   <option value="inactive">Inactif</option>
@@ -440,14 +438,14 @@ export default function UserManagement({ user }: UserManagementProps) {
             <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={() => setEditingUser(null)}
-                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border rounded-md text-primary-700 hover:bg-surface"
                 disabled={processingAction === editingUser.id}
               >
                 Annuler
               </button>
               <button
                 onClick={handleEditUser}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 bg-accent-400 text-white rounded-md hover:bg-accent-500 disabled:opacity-50"
                 disabled={processingAction === editingUser.id}
               >
                 {processingAction === editingUser.id ? 'Enregistrement...' : 'Enregistrer'}
@@ -459,23 +457,23 @@ export default function UserManagement({ user }: UserManagementProps) {
 
       {/* Modal de confirmation de suppression */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-medium mb-4">Confirmer la suppression</h3>
-            <p className="text-gray-500 mb-4">
+        <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+          <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+            <h3 className="text-lg font-medium mb-4 text-primary-700">Confirmer la suppression</h3>
+            <p className="text-primary-500 mb-4">
               Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border rounded-md text-primary-700 hover:bg-surface"
                 disabled={processingAction === showDeleteConfirm}
               >
                 Annuler
               </button>
               <button
                 onClick={() => handleDeleteUser(showDeleteConfirm)}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 bg-error-600 text-white rounded-md hover:bg-error-700 disabled:opacity-50"
                 disabled={processingAction === showDeleteConfirm}
               >
                 {processingAction === showDeleteConfirm ? 'Suppression...' : 'Supprimer'}
@@ -487,47 +485,47 @@ export default function UserManagement({ user }: UserManagementProps) {
 
       {/* Modal de création d'utilisateur */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-medium mb-4">Nouvel utilisateur</h3>
+        <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+          <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+            <h3 className="text-lg font-medium mb-4 text-primary-700">Nouvel utilisateur</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-primary-700">Email</label>
                 <input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nom complet</label>
+                <label className="block text-sm font-medium text-primary-700">Nom complet</label>
                 <input
                   type="text"
                   value={newUser.full_name}
                   onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                <label className="block text-sm font-medium text-primary-700">Mot de passe</label>
                 <input
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                   required
                   minLength={6}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                <label className="block text-sm font-medium text-primary-700">Rôle</label>
                 <select
                   value={newUser.role}
                   onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
                 >
                   <option value="user">Utilisateur</option>
                   <option value="admin">Administrateur</option>
@@ -546,14 +544,14 @@ export default function UserManagement({ user }: UserManagementProps) {
                     role: 'user'
                   });
                 }}
-                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border rounded-md text-primary-700 hover:bg-surface"
                 disabled={processingAction === 'new'}
               >
                 Annuler
               </button>
               <button
                 onClick={handleCreateUser}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 bg-accent-400 text-white rounded-md hover:bg-accent-500 disabled:opacity-50"
                 disabled={processingAction === 'new' || !newUser.email || !newUser.full_name || !newUser.password}
               >
                 {processingAction === 'new' ? 'Création...' : 'Créer'}

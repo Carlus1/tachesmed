@@ -63,7 +63,7 @@ export default function DashboardGrid() {
       const groupsWithColors = (groupsData || []).map((group, index) => ({
         ...group,
         memberCount: Math.floor(Math.random() * 10) + 3,
-        color: ['bg-blue-500', 'bg-teal-500', 'bg-purple-500'][index % 3]
+        color: ['bg-primary-500', 'bg-accent-500', 'bg-success-500'][index % 3]
       }));
       
       setGroups(groupsWithColors);
@@ -86,7 +86,7 @@ export default function DashboardGrid() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }

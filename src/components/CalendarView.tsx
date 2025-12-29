@@ -70,10 +70,10 @@ export default function CalendarView() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 border-red-200 text-red-800';
-      case 'medium': return 'bg-yellow-100 border-yellow-200 text-yellow-800';
-      case 'low': return 'bg-green-100 border-green-200 text-green-800';
-      default: return 'bg-gray-100 border-gray-200 text-gray-800';
+      case 'high': return 'bg-error-100 border-error-200 text-error-800';
+      case 'medium': return 'bg-accent-100 border-accent-200 text-accent-800';
+      case 'low': return 'bg-success-100 border-success-200 text-success-800';
+      default: return 'bg-primary-100 border-border text-primary-700';
     }
   };
 
@@ -99,50 +99,50 @@ export default function CalendarView() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Calendrier</h2>
+  <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
+  <div className="flex justify-between items-center p-4 border-b border-border">
+  <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
         <div className="flex items-center space-x-2">
           <button 
             onClick={previousWeek}
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-full hover:bg-surface transition-colors"
           >
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-primary-700">
             Semaine du {format(weekDays[0] || currentDate, 'dd/MM/yyyy', { locale: fr })}
           </span>
           <button 
             onClick={nextWeek}
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-full hover:bg-surface transition-colors"
           >
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
       </div>
       
-      <div className="grid grid-cols-7 border-b border-gray-200">
+  <div className="grid grid-cols-7 border-b border-border">
         {weekDays.map((day, index) => (
-          <div key={index} className="p-2 text-center border-r border-gray-200 last:border-r-0">
-            <p className="text-xs font-medium text-gray-500 uppercase">
+          <div key={index} className="p-2 text-center border-r border-border last:border-r-0">
+            <p className="text-xs font-medium text-primary-400 uppercase">
               {format(day, 'EEE', { locale: fr })}
             </p>
             <p className={`text-lg font-semibold ${
               day.getDate() === new Date().getDate() && 
               day.getMonth() === new Date().getMonth() && 
               day.getFullYear() === new Date().getFullYear() 
-                ? 'text-blue-600' 
-                : 'text-gray-900'
+                  ? 'text-primary-600' 
+                  : 'text-primary-700'
             }`}>
               {format(day, 'd')}
             </p>
@@ -154,13 +154,13 @@ export default function CalendarView() {
         {weekDays.map((day, index) => {
           const dayTasks = getTasksForDay(day);
           return (
-            <div 
+              <div 
               key={index} 
-              className={`border-r border-gray-200 last:border-r-0 p-2 ${
+              className={`border-r border-border last:border-r-0 p-2 ${
                 day.getDate() === new Date().getDate() && 
                 day.getMonth() === new Date().getMonth() && 
                 day.getFullYear() === new Date().getFullYear() 
-                  ? 'bg-blue-50' 
+                  ? 'bg-primary-100' 
                   : ''
               }`}
             >
@@ -181,7 +181,7 @@ export default function CalendarView() {
                 </div>
               ) : (
                 <div className="h-full flex items-center justify-center">
-                  <span className="text-xs text-gray-400">Aucune tâche</span>
+                  <span className="text-xs text-primary-400">Aucune tâche</span>
                 </div>
               )}
             </div>
@@ -189,11 +189,11 @@ export default function CalendarView() {
         })}
       </div>
       
-      <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
-        <span className="text-sm text-gray-600">
+  <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
+  <span className="text-sm text-primary-400">
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
         </span>
-        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
           Voir le calendrier complet →
         </button>
       </div>

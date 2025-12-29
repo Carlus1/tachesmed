@@ -129,11 +129,11 @@ export default function Profile({ user }: ProfileProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-background">
         <Breadcrumb />
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="animate-pulse flex justify-center items-center">
-            <div className="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="h-12 w-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
       </div>
@@ -141,32 +141,32 @@ export default function Profile({ user }: ProfileProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <Breadcrumb />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-surface shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
+            <h3 className="text-lg font-medium leading-6 text-primary-700 mb-4">
               Informations du profil
             </h3>
 
             <form onSubmit={handleUpdateProfile} className="space-y-6">
               {/* Email (non modifiable) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-primary-700">
                   Email
                 </label>
                 <input
                   type="email"
                   value={profile?.email || ''}
                   disabled
-                  className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-500"
+                  className="mt-1 block w-full px-3 py-2 bg-surface border border-border rounded-md shadow-sm text-primary-400"
                 />
               </div>
 
               {/* Nom complet */}
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="fullName" className="block text-sm font-medium text-primary-700">
                   Nom complet
                 </label>
                 <input
@@ -174,32 +174,32 @@ export default function Profile({ user }: ProfileProps) {
                   id="fullName"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
 
               {/* Rôle (non modifiable) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-primary-700">
                   Rôle
                 </label>
                 <input
                   type="text"
                   value={profile?.role || ''}
                   disabled
-                  className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-500"
+                  className="mt-1 block w-full px-3 py-2 bg-surface border border-border rounded-md shadow-sm text-primary-400"
                 />
               </div>
 
               {/* Changement de mot de passe */}
-              <div className="border-t border-gray-200 pt-6">
-                <h4 className="text-md font-medium text-gray-900 mb-4">
+              <div className="border-t border-border pt-6">
+                <h4 className="text-md font-medium text-primary-700 mb-4">
                   Changer le mot de passe
                 </h4>
 
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="newPassword" className="block text-sm font-medium text-primary-700">
                       Nouveau mot de passe
                     </label>
                     <input
@@ -207,12 +207,12 @@ export default function Profile({ user }: ProfileProps) {
                       id="newPassword"
                       value={formData.newPassword}
                       onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-primary-700">
                       Confirmer le nouveau mot de passe
                     </label>
                     <input
@@ -220,23 +220,23 @@ export default function Profile({ user }: ProfileProps) {
                       id="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
                 </div>
               </div>
 
               {error && (
-                <div className="rounded-md bg-red-50 p-4">
-                  <div className="text-sm text-red-700">
+                <div className="rounded-md bg-error-100 p-4">
+                  <div className="text-sm text-error-700">
                     {error}
                   </div>
                 </div>
               )}
 
               {success && (
-                <div className="rounded-md bg-green-50 p-4">
-                  <div className="text-sm text-green-700">
+                <div className="rounded-md bg-success-100 p-4">
+                  <div className="text-sm text-success-700">
                     {success}
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function Profile({ user }: ProfileProps) {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
                 >
                   {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </button>

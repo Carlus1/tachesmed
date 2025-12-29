@@ -149,14 +149,14 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100">
             <div className="w-full max-w-md px-6">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-surface rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-3xl font-bold text-primary-700 mb-2">
                             🏥 TachesMed
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-primary-400">
                             {isResetMode ? 'Réinitialiser le mot de passe' :
                                 isSignUpMode ? 'Créer un compte' :
                                     'Connexion à votre compte'}
@@ -165,7 +165,7 @@ export default function Login() {
 
                     {/* Debug Info (seulement en développement) */}
                     {debugInfo && (
-                        <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
+                        <div className="mb-4 p-3 bg-primary-100 rounded text-xs">
                             <details>
                                 <summary className="cursor-pointer font-medium">Debug Info</summary>
                                 <div className="mt-2 space-y-1">
@@ -180,14 +180,14 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-primary-700 mb-2">
                                 Email
                             </label>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value.toLowerCase())}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                                 required
                                 autoComplete="email"
                                 disabled={loading}
@@ -197,14 +197,14 @@ export default function Login() {
 
                         {!isResetMode && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-primary-700 mb-2">
                                     Mot de passe
                                 </label>
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                                     required
                                     autoComplete={isSignUpMode ? 'new-password' : 'current-password'}
                                     disabled={loading}
@@ -215,7 +215,7 @@ export default function Login() {
                                     <button
                                         type="button"
                                         onClick={() => setIsResetMode(true)}
-                                        className="text-sm text-blue-600 hover:text-blue-800 mt-2 transition-colors"
+                                        className="text-sm text-primary-600 hover:text-primary-800 mt-2 transition-colors"
                                     >
                                         Mot de passe oublié ?
                                     </button>
@@ -224,21 +224,21 @@ export default function Login() {
                         )}
 
                         {error && (
-                            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="text-sm text-red-600">{error}</p>
+                            <div className="p-4 bg-error-100 border border-error-200 rounded-lg">
+                                <p className="text-sm text-error-700">{error}</p>
                             </div>
                         )}
 
                         {status && (
-                            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-sm text-green-600">{status}</p>
+                            <div className="p-4 bg-success-100 border border-success-200 rounded-lg">
+                                <p className="text-sm text-success-700">{status}</p>
                             </div>
                         )}
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <div className="flex items-center justify-center">
@@ -260,7 +260,7 @@ export default function Login() {
                                     setError(null);
                                     setStatus('');
                                 }}
-                                className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
+                                className="w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
                             >
                                 {isSignUpMode ? 'Retour à la connexion' : 'Créer un compte'}
                             </button>
@@ -274,7 +274,7 @@ export default function Login() {
                                     setError(null);
                                     setStatus('');
                                 }}
-                                className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
+                                className="w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
                             >
                                 Retour à la connexion
                             </button>

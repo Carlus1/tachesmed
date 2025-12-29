@@ -24,7 +24,8 @@ interface Task {
   };
 }
 
-export default function TaskManagement({ user }: TaskManagementProps) {
+export default function TaskManagement({ user: _user }: TaskManagementProps) {
+  void _user;
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,13 +106,13 @@ export default function TaskManagement({ user }: TaskManagementProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-error-600 bg-error-50 border-error-200';
       case 'medium':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+        return 'text-accent-600 bg-accent-50 border-accent-200';
       case 'low':
-        return 'text-green-600 bg-green-50 border-green-200';
+        return 'text-success-600 bg-success-50 border-success-200';
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return 'text-primary-400 bg-primary-100 border-border';
     }
   };
 
@@ -121,24 +122,24 @@ export default function TaskManagement({ user }: TaskManagementProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <Breadcrumb />
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Gestion des tâches</h1>
+          <h1 className="text-2xl font-semibold text-primary-700">Gestion des tâches</h1>
           <button
             onClick={() => {
               setEditingTaskId(null);
               setShowTaskForm(true);
             }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            className="px-4 py-2 bg-accent-400 text-white rounded-lg hover:bg-accent-500 transition-colors flex items-center"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -148,81 +149,81 @@ export default function TaskManagement({ user }: TaskManagementProps) {
         </div>
 
         {error && (
-          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg border border-red-200">
+          <div className="mb-4 p-4 text-error-700 bg-error-100 rounded-lg border border-error-200">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-4 text-green-700 bg-green-100 rounded-lg border border-green-200 animate-fade-in">
+          <div className="mb-4 p-4 text-success-700 bg-success-100 rounded-lg border border-success-200 animate-fade-in">
             {success}
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+  <div className="bg-surface rounded-lg shadow-sm border overflow-hidden">
           <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
             {tasks.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="p-8 text-center text-primary-300">
+                <svg className="mx-auto h-12 w-12 text-primary-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 <p>Aucune tâche n'a été créée pour le moment.</p>
               </div>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 sticky top-0">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-primary-100 sticky top-0">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Titre
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Groupe
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Priorité
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Date de début
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Durée
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-surface divide-y divide-border">
                   {tasks.map((task) => (
-                    <tr key={task.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={task.id} className="hover:bg-surface transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{task.title}</div>
-                        <div className="text-sm text-gray-500">{task.description}</div>
+                        <div className="text-sm font-medium text-primary-700">{task.title}</div>
+                        <div className="text-sm text-primary-300">{task.description}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{task.group?.name || 'Groupe inconnu'}</div>
+                        <div className="text-sm text-primary-700">{task.group?.name || 'Groupe inconnu'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getPriorityColor(task.priority)}`}>
                           {task.priority === 'high' ? 'Haute' : task.priority === 'medium' ? 'Moyenne' : 'Basse'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
                         {formatDate(task.start_date)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
                         {task.duration} minutes
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleEditTask(task.id)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-4 transition-colors"
+                          className="text-primary-600 hover:text-primary-700 mr-4 transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => setShowDeleteConfirm(task.id)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
+                          className="text-error-600 hover:text-error-800 transition-colors"
                           disabled={deletingTask === task.id}
                         >
                           {deletingTask === task.id ? 'Suppression...' : 'Supprimer'}
@@ -245,16 +246,16 @@ export default function TaskManagement({ user }: TaskManagementProps) {
 
         {/* Modal de confirmation de suppression */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-medium mb-4">Confirmer la suppression</h3>
-              <p className="text-gray-500 mb-4">
+          <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+            <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+              <h3 className="text-lg font-medium mb-4 text-primary-700">Confirmer la suppression</h3>
+              <p className="text-primary-400 mb-4">
                 Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowDeleteConfirm(null)}
-                  className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border rounded-md text-primary-700 hover:bg-surface transition-colors"
                   disabled={deletingTask !== null}
                 >
                   Annuler
@@ -264,7 +265,7 @@ export default function TaskManagement({ user }: TaskManagementProps) {
                     if (showDeleteConfirm) handleDeleteTask(showDeleteConfirm);
                   }}
                   disabled={deletingTask !== null}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-error-600 text-white rounded-md hover:bg-error-700 disabled:opacity-50 transition-colors"
                 >
                   {deletingTask ? 'Suppression...' : 'Supprimer'}
                 </button>

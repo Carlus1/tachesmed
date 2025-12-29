@@ -15,14 +15,15 @@ export default function ModernLayout({ user, children }: ModernLayoutProps) {
   useEffect(() => {
     if (dark) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
+    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (_e) { void _e; /* ignore */ }
   }, [dark]);
 
   return (
-    <div className="min-h-screen bg-background dark:bg-background-dark text-primary-700 dark:text-surface">
+    <div className="min-h-screen bg-background text-primary-700 dark:text-surface">
       <ModernHeader
         user={user}
-        onToggleSidebar={() => setSidebarOpen(open => !open)}
-        onToggleDark={() => setDark(d => !d)}
+        onToggleSidebar={() => setSidebarOpen(prev => !prev)}
+        onToggleDark={() => setDark((d: boolean) => !d)}
         dark={dark}
       />
 
