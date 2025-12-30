@@ -44,10 +44,25 @@ export default function GroupManagement({ user }: GroupManagementProps) {
       setLoading(true);
       setError(null);
 
-      const { data: groupsData, error: groupsError } = await supabase
+      // Get user role
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      const userRole = userData?.role;
+
+      // If owner, show all groups; otherwise show only user's admin groups
+      let query = supabase
         .from('groups')
-        .select('*')
-        .eq('admin_id', user.id)
+        .select('*');
+
+      if (userRole !== 'owner') {
+        query = query.eq('admin_id', user.id);
+      }
+
+      const { data: groupsData, error: groupsError } = await query
         .order('created_at', { ascending: false });
 
       if (groupsError) throw groupsError;

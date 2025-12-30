@@ -44,7 +44,7 @@ export default function DashboardLayout({ user, onSignOut }: DashboardLayoutProp
       <div className="flex">
         <ModernSidebar />
         <main className="flex-1 p-6 overflow-auto">
-          <DashboardGrid />
+          <DashboardGrid user={user} />
         </main>
       </div>
     </div>

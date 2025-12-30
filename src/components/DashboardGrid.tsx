@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import type { User } from '@supabase/gotrue-js';
 import TasksSection from './TasksSection';
 import CalendarProposal from './CalendarProposal';
 import GroupsSection from './GroupsSection';
 import AvailabilityReminder from './AvailabilityReminder';
 import MyGroupsSection from './MyGroupsSection';
 import TaskModal from './TaskModal';
+import GroupModal from './GroupModal';
 
 interface Task {
   id: string;
@@ -29,11 +31,16 @@ interface Group {
   color: string;
 }
 
-export default function DashboardGrid() {
+interface DashboardGridProps {
+  user: User;
+}
+
+export default function DashboardGrid({ user }: DashboardGridProps) {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showGroupModal, setShowGroupModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -82,8 +89,12 @@ export default function DashboardGrid() {
   };
 
   const handleCreateGroup = () => {
-    // Navigate to the full Group Management page where group creation modal is available
-    navigate('/groups');
+    // Open group creation modal directly
+    setShowGroupModal(true);
+  };
+
+  const handleGroupCreated = () => {
+    loadData();
   };
 
   if (loading) {
@@ -110,6 +121,15 @@ export default function DashboardGrid() {
           onClose={() => setShowTaskModal(false)}
           onTaskCreated={handleTaskCreated}
           groups={groups}
+        />
+      )}
+
+      {showGroupModal && (
+        <GroupModal
+          isOpen={showGroupModal}
+          onClose={() => setShowGroupModal(false)}
+          onGroupCreated={handleGroupCreated}
+          user={user}
         />
       )}
     </>
