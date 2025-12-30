@@ -47,22 +47,22 @@ END$$;
 --    These policies favor using auth.uid() and the helper function instead
 --    of performing queries on users from within policy expressions.
 -- Allow authenticated users to INSERT their own user row (with check that id equals auth.uid())
-CREATE POLICY IF NOT EXISTS users_insert_auth ON public.users
+CREATE POLICY users_insert_auth ON public.users
   FOR INSERT
   WITH CHECK ( auth.uid() IS NOT NULL AND id = auth.uid()::uuid );
 
 -- Allow users to SELECT/UPDATE their own row
-CREATE POLICY IF NOT EXISTS users_select_own ON public.users
+CREATE POLICY users_select_own ON public.users
   FOR SELECT
   USING ( id = auth.uid()::uuid );
 
-CREATE POLICY IF NOT EXISTS users_update_own ON public.users
+CREATE POLICY users_update_own ON public.users
   FOR UPDATE
   USING ( id = auth.uid()::uuid )
   WITH CHECK ( id = auth.uid()::uuid );
 
 -- Allow administrators (checked via helper) to perform SELECT/UPDATE/DELETE
-CREATE POLICY IF NOT EXISTS users_admin_full ON public.users
+CREATE POLICY users_admin_full ON public.users
   FOR ALL
   USING ( public._is_user_admin(auth.uid()::uuid) )
   WITH CHECK ( public._is_user_admin(auth.uid()::uuid) );
