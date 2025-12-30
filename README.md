@@ -19,6 +19,52 @@ Une application moderne de gestion des tâches construite avec React, TypeScript
 
 - **Frontend**: React 18, TypeScript, Vite
 - **Styling**: Tailwind CSS
+  
+## 🎨 Design tokens et couleurs
+
+Le projet utilise un système de design tokens centralisé pour les couleurs (définies en variables CSS) afin de permettre un theming runtime et des classes Tailwind cohérentes.
+
+- Fichier principal des tokens : `src/index.css` — contient les variables CSS suivantes (exemples) :
+	- `--color-primary-50` … `--color-primary-900` (nuances de la couleur primaire)
+	- `--color-accent-*`, `--color-success-*`, `--color-warning-*`, `--color-error-*`
+	- `--color-background`, `--color-surface`, `--color-border`, `--color-muted`
+
+- Mapping Tailwind : `tailwind.config.js` utilise la fonction `withAlpha` pour exposer ces variables comme couleurs utilisables par Tailwind :
+
+	- Exemple d'usage dans `tailwind.config.js` :
+
+		```js
+		const withAlpha = (variable) => ({
+			DEFAULT: `rgb(var(${variable}) / <alpha-value>)`,
+			50: `rgb(var(${variable}-50) / <alpha-value>)`,
+			100: `rgb(var(${variable}-100) / <alpha-value>)`,
+			// ...
+		});
+
+		// puis
+		colors: {
+			primary: withAlpha('--color-primary'),
+			error: withAlpha('--color-error'),
+			warning: withAlpha('--color-warning'),
+			success: withAlpha('--color-success'),
+			surface: { DEFAULT: 'rgb(var(--color-surface) / <alpha-value>)' },
+			background: { DEFAULT: 'rgb(var(--color-background) / <alpha-value>)' },
+		}
+		```
+
+- Exemples d'utilisation dans le code :
+	- `className="bg-primary-100 text-primary-900"` — surface légère
+	- `className="hover:bg-surface"` — utiliser `bg-surface` pour les survols de surface
+	- `className="border-error-500"` — bordure d'erreur
+	- `style={{ backgroundColor: `rgb(var(--color-primary-500) / 0.08)` }}` — utilisation direct des variables RGB quand un alpha précis est nécessaire
+
+- Bonnes pratiques :
+	- Préférez les tokens (`bg-primary-100`, `bg-surface`, `text-primary-900`) plutôt que des couleurs hex directement dans les composants.
+	- Pour des variantes fines (opacité personnalisée), utilisez `rgb(var(--color-...)/<alpha>)`.
+	- Mettez à jour `src/index.css` si vous ajoutez de nouvelles teintes et adaptez `tailwind.config.js` si vous souhaitez exposer d'autres maps.
+
+Si vous voulez une page de style plus complète (ex : un sprite de couleurs ou Storybook), je peux en ajouter une sous `docs/colors.md` ou configurer Storybook pour visualiser les tokens.
+
 - **Backend**: Supabase (PostgreSQL, Auth, RLS)
 - **Calendrier**: FullCalendar
 - **Routing**: React Router DOM

@@ -26,6 +26,9 @@ module.exports = {
         // Use CSS variables defined in src/index.css. This allows runtime theming.
         primary: withAlpha('--color-primary'),
         accent: withAlpha('--color-accent'),
+        success: withAlpha('--color-success'),
+        warning: withAlpha('--color-warning'),
+        error: withAlpha('--color-error'),
         background: {
           DEFAULT: 'rgb(var(--color-background) / <alpha-value>)',
         },
