@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface Task {
     id: string;
@@ -73,9 +74,9 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                 )}
             </div>
             <div className="p-4 border-t border-border bg-background">
-                <a href="#" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                <Link to="/tasks" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
                     Voir toutes les tâches →
-                </a>
+                </Link>
             </div>
         </div>
     );

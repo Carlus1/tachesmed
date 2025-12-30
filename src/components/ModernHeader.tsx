@@ -1,4 +1,5 @@
 import type { User } from '@supabase/gotrue-js';
+import { Link } from 'react-router-dom';
 
 interface ModernHeaderProps {
     user: User;
@@ -42,8 +43,8 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                             <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-200">{user.email?.split('@')[0]}</span>
                         </button>
                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                                <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Mon profil</a>
-                                <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Paramètres</a>
+                                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Mon profil</Link>
+                                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Paramètres</Link>
                                 <button onClick={() => onSignOut?.()} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Déconnexion</button>
                             </div>
                     </div>
