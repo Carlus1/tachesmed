@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './supabase';
 import Login from './components/Login';
 import ModernDashboard from './components/ModernDashboard';
+import ModernCalendarPage from './pages/ModernCalendarPage';
 import UserManagement from './components/UserManagement';
 import Reports from './components/Reports';
 import GroupManagement from './components/GroupManagement';
@@ -90,6 +91,7 @@ function App() {
         <Route path="/" element={user ? <ModernDashboard user={user} /> : <Navigate to="/login" />} />
         <Route path="/users" element={user ? <UserManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/reports" element={user ? <Reports user={user} /> : <Navigate to="/login" />} />
+        <Route path="/calendar" element={user ? <ModernCalendarPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/groups" element={user ? <GroupManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/tasks" element={user ? <TaskManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/availabilities" element={user ? <Availabilities user={user} /> : <Navigate to="/login" />} />
