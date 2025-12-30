@@ -24,6 +24,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
 
   const handleCreateTask = async () => {
     try {
+      console.log('TaskModal: creating task', newTask);
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
 
@@ -59,6 +60,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       onTaskCreated();
     } catch (error) {
       console.error('Erreur lors de la création de la tâche:', error);
+      try { alert('Erreur lors de la création de la tâche : ' + (error?.message || String(error))); } catch (_e) { /* ignore */ }
     }
   };
 

@@ -113,6 +113,7 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
     setLoading(true);
 
     try {
+      console.log('TaskForm: submit', task);
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
@@ -151,7 +152,9 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
       onClose();
     } catch (error: any) {
       console.error('Erreur lors de la sauvegarde de la tâche:', error);
-      setError(error.message);
+      const msg = error?.message || String(error);
+      setError(msg);
+      try { alert('Erreur lors de la création de la tâche : ' + msg); } catch (_e) { /* ignore */ }
     } finally {
       setLoading(false);
     }
