@@ -139,7 +139,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
               setEditingTaskId(null);
               setShowTaskForm(true);
             }}
-            className="px-4 py-2 bg-accent-400 text-white rounded-lg hover:bg-accent-500 transition-colors flex items-center"
+            className="px-4 py-2.5 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 transition-colors flex items-center shadow-md"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
