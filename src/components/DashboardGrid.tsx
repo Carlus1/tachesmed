@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import TasksSection from './TasksSection';
 import CalendarProposal from './CalendarProposal';
@@ -80,7 +81,8 @@ export default function DashboardGrid() {
   };
 
   const handleCreateGroup = () => {
-    console.log('Créer un groupe');
+    // Navigate to the full Group Management page where group creation modal is available
+    navigate('/groups');
   };
 
   if (loading) {
