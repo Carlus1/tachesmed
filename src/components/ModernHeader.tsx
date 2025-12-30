@@ -1,5 +1,7 @@
 import type { User } from '@supabase/gotrue-js';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabase';
 
 interface ModernHeaderProps {
     user: User;
@@ -10,6 +12,23 @@ interface ModernHeaderProps {
 }
 
 export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark }: ModernHeaderProps) {
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        const loadRole = async () => {
+            try {
+                const { data, error } = await supabase.from('users').select('role').eq('id', user.id).maybeSingle();
+                if (error) throw error;
+                if (mounted) setRole(data?.role || 'user');
+            } catch (_e) {
+                if (mounted) setRole('user');
+            }
+        };
+        loadRole();
+        return () => { mounted = false; };
+    }, [user]);
+
     return (
         <header className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-surface p-4">
             <div className="flex items-center justify-between">
@@ -40,7 +59,14 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                                 <span className="text-white text-sm font-medium">{user.email?.charAt(0).toUpperCase()}</span>
                             </div>
-                            <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-200">{user.email?.split('@')[0]}</span>
+                            <div className="hidden md:flex md:items-center md:space-x-2">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.email?.split('@')[0]}</span>
+                                {role && (
+                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${role === 'owner' ? 'bg-primary-600 text-white' : role === 'admin' ? 'bg-accent-600 text-white' : 'bg-primary-100 text-primary-700'}`}>
+                                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                                    </span>
+                                )}
+                            </div>
                         </button>
                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
                                 <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Mon profil</Link>
