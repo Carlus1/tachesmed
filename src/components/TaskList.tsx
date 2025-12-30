@@ -13,6 +13,7 @@ interface Task {
   end_date: string;
   duration?: number;
   group?: { name: string } | null;
+  groups?: Array<{ id: string; name: string }>;
 }
 
 export default function TaskList() {
@@ -132,10 +133,16 @@ export default function TaskList() {
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <span className={`text-xs font-bold px-3 py-1 rounded-xl border ${getPriorityColor(task.priority)} shadow-sm tracking-wide uppercase`}>{getPriorityLabel(task.priority)}</span>
-                  {task.group && (
-                    <span className="ml-2 text-xs text-primary-400 bg-background px-2 py-1 rounded-xl border border-muted shadow-sm">{task.group.name}</span>
-                  )}
                 </div>
+                {(task.groups && task.groups.length > 0) && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {task.groups.map((g) => (
+                      <span key={g.id} className="text-xs font-medium bg-primary-100 text-primary-700 px-2 py-1 rounded-xl border border-primary-200 shadow-sm">
+                        {g.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <h3 className="text-lg font-bold text-primary-700 mb-1 group-hover:text-accent-500 transition-colors">{task.title}</h3>
                 <p className="text-primary-400 mb-1">{task.description}</p>
                 <div className="text-xs text-primary-300">

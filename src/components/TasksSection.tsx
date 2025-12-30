@@ -11,6 +11,10 @@ interface Task {
     group?: {
         name: string;
     };
+    groups?: Array<{
+        id: string;
+        name: string;
+    }>;
 }
 
 interface TasksSectionProps {
@@ -52,9 +56,18 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                 {tasks.slice(0, 3).map((task) => (
                     <div key={task.id} className="p-4 hover:bg-surface transition-colors">
                         <div className="flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
                                 <h3 className="font-medium text-primary-700">{task.title}</h3>
                                 <p className="text-sm text-primary-400 mt-1">{task.description}</p>
+                                {(task.groups && task.groups.length > 0) && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {task.groups.map((g) => (
+                                            <span key={g.id} className="inline-block px-2 py-1 text-xs font-medium bg-primary-100 text-primary-700 rounded-full border border-primary-200">
+                                                {g.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
                                 {getPriorityText(task.priority)}
