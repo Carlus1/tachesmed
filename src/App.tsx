@@ -4,6 +4,8 @@ import { supabase } from './supabase';
 import Login from './components/Login';
 import ModernDashboard from './components/ModernDashboard';
 import ModernCalendarPage from './pages/ModernCalendarPage';
+import MessagesPage from './pages/MessagesPage';
+import SettingsPage from './pages/SettingsPage';
 import UserManagement from './components/UserManagement';
 import Reports from './components/Reports';
 import GroupManagement from './components/GroupManagement';
@@ -94,6 +96,8 @@ function App() {
         <Route path="/calendar" element={user ? <ModernCalendarPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/groups" element={user ? <GroupManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/tasks" element={user ? <TaskManagement user={user} /> : <Navigate to="/login" />} />
+        <Route path="/messages" element={user ? <MessagesPage user={user} /> : <Navigate to="/login" />} />
+        <Route path="/settings" element={user ? <SettingsPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/availabilities" element={user ? <Availabilities user={user} /> : <Navigate to="/login" />} />
         <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
       </Routes>

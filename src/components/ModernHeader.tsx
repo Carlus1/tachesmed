@@ -44,7 +44,7 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                         </button>
                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
                                 <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Mon profil</Link>
-                                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Paramètres</Link>
+                                <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Paramètres</Link>
                                 <button onClick={() => onSignOut?.()} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Déconnexion</button>
                             </div>
                     </div>
