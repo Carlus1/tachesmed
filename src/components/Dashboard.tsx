@@ -145,6 +145,11 @@ export default function Dashboard({ user }: DashboardProps) {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-primary-400">Bonjour, {profile.full_name}</span>
+              {profile.role && (
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${profile.role === 'owner' ? 'bg-primary-600 text-white' : profile.role === 'admin' ? 'bg-accent-600 text-white' : 'bg-primary-100 text-primary-700'}`}>
+                  {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
+                </span>
+              )}
               <button onClick={() => navigate('/profile')} className="px-4 py-2 text-primary-700 hover:text-primary-900 font-medium transition-colors">
                 Mon Profil
               </button>
