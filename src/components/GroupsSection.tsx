@@ -47,6 +47,11 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
                     </div>
                 )}
             </div>
+            <div className="p-4 border-t border-border bg-background">
+                <Link to="/groups" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                    Voir tous les groupes →
+                </Link>
+            </div>
         </div>
     );
 }
