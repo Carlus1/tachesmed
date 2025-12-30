@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function MyGroupsSection() {
     return (
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
@@ -10,9 +12,9 @@ export default function MyGroupsSection() {
                         <h3 className="font-medium text-primary-700">Équipe A</h3>
                         <span className="text-sm text-primary-600">5 membres</span>
                     </div>
-                    <button className="absolute bottom-2 right-2 text-primary-600 hover:text-primary-800">
+                    <Link to="/groups/1" className="absolute bottom-2 right-2 text-primary-600 hover:text-primary-800">
                         Voir détails
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="bg-accent-50 rounded-lg p-4 relative overflow-hidden">
@@ -20,9 +22,9 @@ export default function MyGroupsSection() {
                         <h3 className="font-medium text-accent-800">Équipe B</h3>
                         <span className="text-sm text-accent-600">8 membres</span>
                     </div>
-                    <button className="absolute bottom-2 right-2 text-accent-600 hover:text-accent-800">
+                    <Link to="/groups/2" className="absolute bottom-2 right-2 text-accent-600 hover:text-accent-800">
                         Voir détails
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="bg-accent-50 rounded-lg p-4 relative overflow-hidden">
@@ -30,9 +32,9 @@ export default function MyGroupsSection() {
                         <h3 className="font-medium text-accent-800">Équipe C</h3>
                         <span className="text-sm text-accent-600">3 membres</span>
                     </div>
-                    <button className="absolute bottom-2 right-2 text-accent-600 hover:text-accent-800">
+                    <Link to="/groups/3" className="absolute bottom-2 right-2 text-accent-600 hover:text-accent-800">
                         Voir détails
-                    </button>
+                    </Link>
                 </div>
             </div>
         </div>

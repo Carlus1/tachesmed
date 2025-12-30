@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 interface Group {
     id: string;
     name: string;
@@ -33,9 +35,9 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
                                 <h3 className="font-medium text-primary-700">{group.name}</h3>
                                 <p className="text-sm text-primary-400">{group.memberCount} membres</p>
                             </div>
-                            <button className="ml-auto text-primary-400 hover:text-primary-700">
+                            <Link to={`/groups/${group.id}`} className="ml-auto text-primary-600 hover:text-primary-700 font-medium">
                                 Voir détails
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 ))}

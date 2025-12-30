@@ -6,6 +6,7 @@ import ModernDashboard from './components/ModernDashboard';
 import ModernCalendarPage from './pages/ModernCalendarPage';
 import MessagesPage from './pages/MessagesPage';
 import SettingsPage from './pages/SettingsPage';
+import GroupDetailPage from './pages/GroupDetailPage';
 import UserManagement from './components/UserManagement';
 import Reports from './components/Reports';
 import GroupManagement from './components/GroupManagement';
@@ -95,6 +96,7 @@ function App() {
         <Route path="/reports" element={user ? <Reports user={user} /> : <Navigate to="/login" />} />
         <Route path="/calendar" element={user ? <ModernCalendarPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/groups" element={user ? <GroupManagement user={user} /> : <Navigate to="/login" />} />
+        <Route path="/groups/:id" element={user ? <GroupDetailPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/tasks" element={user ? <TaskManagement user={user} /> : <Navigate to="/login" />} />
         <Route path="/messages" element={user ? <MessagesPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/settings" element={user ? <SettingsPage user={user} /> : <Navigate to="/login" />} />
