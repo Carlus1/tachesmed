@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabase';
 
 interface ModernSidebarProps {
     isOpen?: boolean;
@@ -8,6 +10,25 @@ interface ModernSidebarProps {
 export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebarProps) {
     const baseClass = 'flex items-center px-3 py-2 rounded-lg transition-colors';
     const activeClass = 'text-primary-700 bg-primary-100';
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        const loadRole = async () => {
+            try {
+                const { data: authData } = await supabase.auth.getUser();
+                const userId = authData?.user?.id;
+                if (!userId) return;
+                const { data, error } = await supabase.from('users').select('role').eq('id', userId).maybeSingle();
+                if (error) throw error;
+                if (mounted) setRole(data?.role || 'user');
+            } catch (_e) {
+                if (mounted) setRole('user');
+            }
+        };
+        loadRole();
+        return () => { mounted = false; };
+    }, []);
 
     return (
         <aside className={`bg-surface dark:bg-surface-dark border-r border-border dark:border-surface p-4 transform transition-transform duration-200 ease-in-out ${isOpen ? 'translate-x-0 fixed z-40 left-0 top-16 h-[calc(100vh-64px)] w-64' : 'hidden md:block w-80 relative h-[calc(100vh-64px)]'}`}>
@@ -35,6 +56,12 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                         Rapports
                     </NavLink>
                 </nav>
+
+                {role && (
+                    <div className="mt-4 px-3">
+                        <RoleBadge role={role} />
+                    </div>
+                )}
 
                 <div className="mt-auto">
                     <NavLink to="/profile" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>

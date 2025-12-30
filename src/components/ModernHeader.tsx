@@ -2,6 +2,7 @@ import type { User } from '@supabase/gotrue-js';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import RoleBadge from './RoleBadge';
 
 interface ModernHeaderProps {
     user: User;
@@ -61,11 +62,7 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                             </div>
                             <div className="hidden md:flex md:items-center md:space-x-2">
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.email?.split('@')[0]}</span>
-                                {role && (
-                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${role === 'owner' ? 'bg-primary-600 text-white' : role === 'admin' ? 'bg-accent-600 text-white' : 'bg-primary-100 text-primary-700'}`}>
-                                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                                    </span>
-                                )}
+                                <RoleBadge role={role} />
                             </div>
                         </button>
                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
