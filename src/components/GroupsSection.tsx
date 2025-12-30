@@ -15,9 +15,11 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b border-border">
                 <h2 className="text-lg font-semibold text-primary-700">Groupes</h2>
-                <button className="text-primary-400 hover:text-primary-700">
-                    <span className="sr-only">Voir plus</span>
-                    Voir plus
+                <button
+                    onClick={onCreateGroup}
+                    className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                >
+                    Créer un groupe
                 </button>
             </div>
             <div className="divide-y divide-border">
@@ -42,14 +44,6 @@ export default function GroupsSection({ groups, onCreateGroup }: GroupsSectionPr
                         <p>Aucun groupe disponible</p>
                     </div>
                 )}
-            </div>
-            <div className="p-4 border-t border-border bg-primary-100">
-                <button
-                    onClick={onCreateGroup}
-                    className="w-full py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
-                >
-                    Créer un groupe
-                </button>
             </div>
         </div>
     );

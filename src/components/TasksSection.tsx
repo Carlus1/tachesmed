@@ -43,9 +43,9 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                 <h2 className="text-lg font-semibold text-primary-700">Tâches à venir</h2>
                 <button
                     onClick={onAddTask}
-                    className="text-primary-600 hover:text-primary-700 font-medium"
+                    className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
                 >
-                    Ajouter
+                    Créer une tâche
                 </button>
             </div>
             <div className="divide-y divide-border">
