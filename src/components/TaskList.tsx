@@ -20,8 +20,11 @@ export default function TaskList() {
   const [loading, setLoading] = useState(true);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => { loadTasks(); }, []);
+
+  useEffect(() => { loadUserGroups(); }, []);
 
   const loadTasks = async () => {
     try {
@@ -37,6 +40,38 @@ export default function TaskList() {
       console.error('Erreur lors du chargement des tâches:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUserGroups = async () => {
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const userId = authData?.user?.id;
+      if (!userId) return;
+
+      const { data: adminGroups } = await supabase
+        .from('groups')
+        .select('id, name')
+        .eq('admin_id', userId);
+
+      const { data: memberGroups } = await supabase
+        .from('group_members')
+        .select(`
+          group_id,
+          groups (
+            id,
+            name
+          )
+        `)
+        .eq('user_id', userId);
+
+      const memberGroupItems = ((memberGroups || []) as any[]).map((mg) => mg.groups).flat().filter(Boolean) as any[];
+      const allGroups = [ ...(adminGroups || []), ...memberGroupItems ];
+
+      const unique = Array.from(new Map(allGroups.map((g: any) => [g.id, g])).values());
+      setGroups(unique);
+    } catch (err) {
+      console.error('Erreur lors du chargement des groupes utilisateur:', err);
     }
   };
 
@@ -107,7 +142,7 @@ export default function TaskList() {
       )}
 
       {showTaskModal && selectedTask && (
-        <TaskModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} onTaskCreated={loadTasks} groups={[]} />
+        <TaskModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} onTaskCreated={loadTasks} groups={groups} />
       )}
     </div>
   );

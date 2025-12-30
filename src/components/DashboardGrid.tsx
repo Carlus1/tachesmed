@@ -50,17 +50,38 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
   const loadData = async () => {
     try {
       setLoading(true);
-      
       const { data: tasksData } = await supabase
         .from('tasks')
         .select(`*, group:groups (name)`)
         .order('start_date', { ascending: true })
         .limit(10);
 
-      const { data: groupsData, error: groupsError } = await supabase
-        .from('groups')
-        .select('*')
-        .order('name');
+      // Charger uniquement les groupes auxquels l'utilisateur a accès (admin ou membre)
+      const { data: authData } = await supabase.auth.getUser();
+      const userId = authData?.user?.id;
+
+      let groupsData: any[] = [];
+      if (userId) {
+        const { data: adminGroups } = await supabase
+          .from('groups')
+          .select('id, name, description')
+          .eq('admin_id', userId);
+
+        const { data: memberGroups } = await supabase
+          .from('group_members')
+          .select(`
+            group_id,
+            groups (
+              id,
+              name,
+              description
+            )
+          `)
+          .eq('user_id', userId);
+
+        const memberGroupItems = ((memberGroups || []) as any[]).map(m => m.groups).flat().filter(Boolean) as any[];
+        groupsData = [ ...(adminGroups || []), ...memberGroupItems ];
+      }
 
       if (groupsError) {
         // Log full error details to the browser console so we can inspect 500 responses
