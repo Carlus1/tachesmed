@@ -30,6 +30,7 @@ interface Group {
 }
 
 export default function DashboardGrid() {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
