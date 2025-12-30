@@ -19,9 +19,17 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
     startTime: '10:30',
     endTime: '16:30',
     priority: 'high',
-    group: 'Équipe B'
+    group: 'Équipe B',
+    group_id: ''
   });
   const [error, setError] = useState<string | null>(null);
+
+  // Keep group_id in sync when modal opens or groups change
+  React.useEffect(() => {
+    if (isOpen && groups && groups.length > 0) {
+      setNewTask(prev => ({ ...prev, group_id: groups[0].id, group: groups[0].name }));
+    }
+  }, [isOpen, groups]);
 
   const handleCreateTask = async () => {
     try {
@@ -33,7 +41,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       const startDateTime = new Date(`${newTask.startDate}T${newTask.startTime}`);
       const endDateTime = new Date(`${newTask.endDate}T${newTask.endTime}`);
 
-      const groupId = groups[0]?.id;
+      const groupId = newTask.group_id || groups[0]?.id;
       if (!groupId) {
         const msg = 'Aucun groupe disponible — créez ou rejoignez un groupe avant de créer une tâche.';
         setError(msg);
@@ -65,7 +73,8 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
         startTime: '10:30',
         endTime: '16:30',
         priority: 'high',
-        group: 'Équipe B'
+        group: 'Équipe B',
+        group_id: ''
       });
       onTaskCreated();
     } catch (error) {
@@ -84,6 +93,22 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
         <div className="bg-surface rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-border animate-fade-in">
           <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">Créer une tâche</h2>
           <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-primary-700 mb-2">Groupe</label>
+              <select
+                className="w-full border border-border rounded-xl px-4 py-3 bg-background text-primary-700"
+                value={newTask.group_id}
+                onChange={(e) => {
+                  const sel = groups.find(g => g.id === e.target.value);
+                  setNewTask({ ...newTask, group_id: e.target.value, group: sel?.name || '' });
+                }}
+              >
+                <option value="">Sélectionner un groupe</option>
+                {groups.map(g => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            </div>
             <input
               className={baseInputClass}
               placeholder="Titre"
