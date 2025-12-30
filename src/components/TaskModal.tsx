@@ -21,15 +21,25 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
     priority: 'high',
     group: 'Équipe B'
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreateTask = async () => {
     try {
+      setError(null);
       console.log('TaskModal: creating task', newTask);
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
 
       const startDateTime = new Date(`${newTask.startDate}T${newTask.startTime}`);
       const endDateTime = new Date(`${newTask.endDate}T${newTask.endTime}`);
+
+      const groupId = groups[0]?.id;
+      if (!groupId) {
+        const msg = 'Aucun groupe disponible — créez ou rejoignez un groupe avant de créer une tâche.';
+        setError(msg);
+        try { alert(msg); } catch (_e) {}
+        return;
+      }
 
       const { error } = await supabase
         .from('tasks')
@@ -41,7 +51,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
           end_date: endDateTime.toISOString(),
           duration: Math.floor((endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60)),
           created_by: userData.user.id,
-          group_id: groups[0]?.id
+          group_id: groupId
         }]);
 
       if (error) throw error;
@@ -60,7 +70,9 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       onTaskCreated();
     } catch (error) {
       console.error('Erreur lors de la création de la tâche:', error);
-      try { alert('Erreur lors de la création de la tâche : ' + (error?.message || String(error))); } catch (_e) { /* ignore */ }
+      const msg = error?.message || String(error);
+      setError(msg);
+      try { alert('Erreur lors de la création de la tâche : ' + msg); } catch (_e) { /* ignore */ }
     }
   };
 
@@ -122,6 +134,9 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
               <option value="low">Basse priorité</option>
             </select>
           </div>
+          {error && (
+            <div className="mt-4 p-3 rounded border border-error-200 bg-error-50 text-error-700">{error}</div>
+          )}
           <div className="flex justify-end space-x-3 mt-8">
             <button
               className="px-5 py-2 bg-muted text-primary-400 rounded-xl hover:bg-primary-100 font-semibold transition-all"
