@@ -11,11 +11,22 @@ interface Group {
   name: string;
 }
 
+interface TaskData {
+  title: string;
+  description: string;
+  priority: string;
+  duration: string;
+  start_date: string;
+  end_date: string;
+  group_id: string; // Keep for backward compat; will be primary group
+}
+
 export default function TaskForm({ onClose, taskId }: TaskFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [groups, setGroups] = useState<Group[]>([]);
-  const [task, setTask] = useState({
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+  const [task, setTask] = useState<TaskData>({
     title: '',
     description: '',
     priority: 'medium',
@@ -72,7 +83,9 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
 
       // Si c'est une nouvelle tâche et qu'il y a des groupes, sélectionner le premier par défaut
       if (!taskId && uniqueGroups.length > 0) {
-        setTask(prev => ({ ...prev, group_id: uniqueGroups[0].id }));
+        const firstGroupId = uniqueGroups[0].id;
+        setTask(prev => ({ ...prev, group_id: firstGroupId }));
+        setSelectedGroupIds([firstGroupId]);
       }
     } catch (error: any) {
       console.error('Erreur lors du chargement des groupes:', error);
@@ -100,6 +113,19 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
           end_date: new Date(data.end_date).toISOString().slice(0, 16),
           group_id: data.group_id
         });
+
+        // Load associated groups from task_groups table
+        const { data: taskGroups, error: tgError } = await supabase
+          .from('task_groups')
+          .select('group_id')
+          .eq('task_id', taskId);
+
+        if (!tgError && taskGroups) {
+          setSelectedGroupIds(taskGroups.map(tg => tg.group_id));
+        } else if (data.group_id) {
+          // Fallback to old group_id field if task_groups doesn't exist yet
+          setSelectedGroupIds([data.group_id]);
+        }
       }
     } catch (error: any) {
       console.error('Erreur lors du chargement de la tâche:', error);
@@ -113,14 +139,15 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
     setLoading(true);
 
     try {
-      console.log('TaskForm: submit', task);
+      console.log('TaskForm: submit', task, 'selectedGroups:', selectedGroupIds);
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      if (!task.group_id) {
-        throw new Error('Veuillez sélectionner un groupe');
+      if (selectedGroupIds.length === 0) {
+        throw new Error('Veuillez sélectionner au moins un groupe');
       }
 
+      // Use first selected group as primary group_id for backward compat
       const taskData = {
         title: task.title,
         description: task.description,
@@ -128,7 +155,7 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
         duration: parseInt(task.duration),
         start_date: new Date(task.start_date).toISOString(),
         end_date: new Date(task.end_date).toISOString(),
-        group_id: task.group_id,
+        group_id: selectedGroupIds[0],
         created_by: userData.user.id
       };
 
@@ -140,13 +167,27 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
           .eq('id', taskId);
 
         if (updateError) throw updateError;
+
+        // Delete old task_groups and insert new ones
+        await supabase.from('task_groups').delete().eq('task_id', taskId);
+        const taskGroupsData = selectedGroupIds.map(gid => ({ task_id: taskId, group_id: gid }));
+        const { error: insertError } = await supabase.from('task_groups').insert(taskGroupsData);
+        if (insertError) throw insertError;
       } else {
         // Création d'une nouvelle tâche
-        const { error: insertError } = await supabase
+        const { data: insertedTask, error: insertError } = await supabase
           .from('tasks')
-          .insert([taskData]);
+          .insert([taskData])
+          .select('id')
+          .single();
 
         if (insertError) throw insertError;
+
+        // Insert associations in task_groups table
+        const newTaskId = insertedTask.id;
+        const taskGroupsData = selectedGroupIds.map(gid => ({ task_id: newTaskId, group_id: gid }));
+        const { error: tgInsertError } = await supabase.from('task_groups').insert(taskGroupsData);
+        if (tgInsertError) throw tgInsertError;
       }
 
       onClose();
@@ -178,21 +219,34 @@ export default function TaskForm({ onClose, taskId }: TaskFormProps) {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-primary-700 mb-2">
-              Groupe
+              Groupes associés
             </label>
-            <select
-              value={task.group_id}
-              onChange={(e) => setTask({ ...task, group_id: e.target.value })}
-              className="w-full p-2 border-border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              required
-            >
-              <option value="">Sélectionner un groupe</option>
-              {groups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-            </select>
+            <div className="border border-border rounded-md p-3 max-h-48 overflow-y-auto bg-background">
+              {groups.length === 0 ? (
+                <p className="text-primary-400 text-sm">Aucun groupe disponible</p>
+              ) : (
+                groups.map((group) => (
+                  <label key={group.id} className="flex items-center mb-2 cursor-pointer hover:bg-primary-50 p-1 rounded">
+                    <input
+                      type="checkbox"
+                      checked={selectedGroupIds.includes(group.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedGroupIds([...selectedGroupIds, group.id]);
+                        } else {
+                          setSelectedGroupIds(selectedGroupIds.filter(id => id !== group.id));
+                        }
+                      }}
+                      className="w-4 h-4 accent-primary-600 cursor-pointer"
+                    />
+                    <span className="ml-2 text-sm text-primary-700">{group.name}</span>
+                  </label>
+                ))
+              )}
+            </div>
+            {selectedGroupIds.length === 0 && (
+              <p className="text-error-600 text-xs mt-1">Au moins un groupe doit être sélectionné</p>
+            )}
           </div>
 
           <div className="mb-4">

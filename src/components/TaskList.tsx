@@ -35,7 +35,21 @@ export default function TaskList() {
         .order('start_date', { ascending: true });
 
       if (error) throw error;
-      setTasks(data || []);
+
+      // Load task_groups associations
+      const tasksWithGroups = await Promise.all((data || []).map(async (task) => {
+        const { data: taskGroups } = await supabase
+          .from('task_groups')
+          .select('group:groups (id, name)')
+          .eq('task_id', task.id);
+        
+        return {
+          ...task,
+          groups: taskGroups?.map((tg: any) => tg.group).filter(Boolean) || []
+        };
+      }));
+
+      setTasks(tasksWithGroups || []);
     } catch (err) {
       console.error('Erreur lors du chargement des tâches:', err);
     } finally {

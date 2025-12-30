@@ -56,6 +56,19 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
         .order('start_date', { ascending: true })
         .limit(10);
 
+      // Load task_groups associations for each task
+      const tasksWithGroups = await Promise.all((tasksData || []).map(async (task) => {
+        const { data: taskGroups } = await supabase
+          .from('task_groups')
+          .select('group:groups (id, name)')
+          .eq('task_id', task.id);
+        
+        return {
+          ...task,
+          groups: taskGroups?.map((tg: any) => tg.group).filter(Boolean) || []
+        };
+      }));
+
       // Charger uniquement les groupes auxquels l'utilisateur a accès (admin ou membre)
       const { data: authData } = await supabase.auth.getUser();
       const userId = authData?.user?.id;
@@ -88,7 +101,7 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
         console.error('Supabase groups fetch error:', groupsError);
       }
 
-      setTasks(tasksData || []);
+      setTasks(tasksWithGroups || []);
 
       const groupsWithColors = (groupsData || []).map((group, index) => ({
         ...group,

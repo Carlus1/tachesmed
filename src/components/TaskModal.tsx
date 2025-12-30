@@ -22,34 +22,36 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
     group: 'Équipe B',
     group_id: ''
   });
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Keep group_id in sync when modal opens or groups change
   useEffect(() => {
     if (isOpen && groups && groups.length > 0) {
-      setNewTask(prev => ({ ...prev, group_id: groups[0].id, group: groups[0].name }));
+      const firstGroupId = groups[0].id;
+      setNewTask(prev => ({ ...prev, group_id: firstGroupId, group: groups[0].name }));
+      setSelectedGroupIds([firstGroupId]);
     }
   }, [isOpen, groups]);
 
   const handleCreateTask = async () => {
     try {
       setError(null);
-      console.log('TaskModal: creating task', newTask);
+      console.log('TaskModal: creating task', newTask, 'groups:', selectedGroupIds);
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
 
       const startDateTime = new Date(`${newTask.startDate}T${newTask.startTime}`);
       const endDateTime = new Date(`${newTask.endDate}T${newTask.endTime}`);
 
-      const groupId = newTask.group_id || groups[0]?.id;
-      if (!groupId) {
-        const msg = 'Aucun groupe disponible — créez ou rejoignez un groupe avant de créer une tâche.';
+      if (selectedGroupIds.length === 0) {
+        const msg = 'Aucun groupe sélectionné — sélectionnez au moins un groupe avant de créer une tâche.';
         setError(msg);
         try { alert(msg); } catch (_e) {}
         return;
       }
 
-      const { error } = await supabase
+      const { data: insertedTask, error: insertError } = await supabase
         .from('tasks')
         .insert([{
           title: newTask.title,
@@ -59,10 +61,21 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
           end_date: endDateTime.toISOString(),
           duration: Math.floor((endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60)),
           created_by: userData.user.id,
-          group_id: groupId
-        }]);
+          group_id: selectedGroupIds[0] // Primary group for backward compat
+        }])
+        .select('id')
+        .single();
 
-      if (error) throw error;
+      if (insertError) throw insertError;
+
+      // Insert task_groups associations
+      const taskGroupsData = selectedGroupIds.map(gid => ({
+        task_id: insertedTask.id,
+        group_id: gid
+      }));
+      
+      const { error: tgError } = await supabase.from('task_groups').insert(taskGroupsData);
+      if (tgError) throw tgError;
 
       onClose();
       setNewTask({
@@ -76,6 +89,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
         group: 'Équipe B',
         group_id: ''
       });
+      setSelectedGroupIds([]);
       onTaskCreated();
     } catch (error) {
       console.error('Erreur lors de la création de la tâche:', error);
@@ -94,20 +108,33 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
           <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">Créer une tâche</h2>
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-2">Groupe</label>
-              <select
-                className="w-full border border-border rounded-xl px-4 py-3 bg-background text-primary-700"
-                value={newTask.group_id}
-                onChange={(e) => {
-                  const sel = groups.find(g => g.id === e.target.value);
-                  setNewTask({ ...newTask, group_id: e.target.value, group: sel?.name || '' });
-                }}
-              >
-                <option value="">Sélectionner un groupe</option>
-                {groups.map(g => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium text-primary-700 mb-2">Groupes associés</label>
+              <div className="border border-border rounded-xl p-3 max-h-40 overflow-y-auto bg-background space-y-2">
+                {groups.length === 0 ? (
+                  <p className="text-primary-400 text-sm">Aucun groupe disponible</p>
+                ) : (
+                  groups.map(g => (
+                    <label key={g.id} className="flex items-center cursor-pointer hover:bg-primary-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={selectedGroupIds.includes(g.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedGroupIds([...selectedGroupIds, g.id]);
+                          } else {
+                            setSelectedGroupIds(selectedGroupIds.filter(id => id !== g.id));
+                          }
+                        }}
+                        className="w-4 h-4 accent-primary-600 cursor-pointer"
+                      />
+                      <span className="ml-2 text-sm text-primary-700">{g.name}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+              {selectedGroupIds.length === 0 && (
+                <p className="text-error-600 text-xs mt-1">Au moins un groupe doit être sélectionné</p>
+              )}
             </div>
             <input
               className={baseInputClass}
