@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import RoleBadge from './RoleBadge';
 
 interface ModernSidebarProps {
     isOpen?: boolean;
