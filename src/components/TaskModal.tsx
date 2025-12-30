@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 
 // Normalized file to ensure no accidental line-wrapping within JSX attributes
@@ -25,7 +25,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
   const [error, setError] = useState<string | null>(null);
 
   // Keep group_id in sync when modal opens or groups change
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && groups && groups.length > 0) {
       setNewTask(prev => ({ ...prev, group_id: groups[0].id, group: groups[0].name }));
     }
