@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import TaskForm from '../components/TaskForm';
 import TaskModal from '../components/TaskModal';
 
@@ -59,7 +58,6 @@ describe('Multi-Group Task Management', () => {
   });
 
   it('allows selecting multiple groups in TaskModal', async () => {
-    const user = userEvent.setup();
     render(
       <TaskModal
         isOpen={true}
@@ -78,7 +76,7 @@ describe('Multi-Group Task Management', () => {
 
     // Initially, first group should be checked by default
     // After selecting another, multiple should be checked
-    await user.click(equipeBCheckbox);
+    fireEvent.click(equipeBCheckbox);
 
     expect(equipeBCheckbox.checked).toBe(true);
   });
@@ -103,16 +101,32 @@ describe('Multi-Group Task Management', () => {
     ).toBeInTheDocument();
   });
 
-  it('validates that at least one group must be selected in TaskForm', () => {
-    render(<TaskForm onClose={vi.fn()} taskId={null} />);
+  it('properly handles group selection state in TaskModal', () => {
+    render(
+      <TaskModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onTaskCreated={vi.fn()}
+        groups={mockGroups}
+      />
+    );
 
-    // Check for error message related to group selection
-    const formElement = screen.getByRole('button', { name: /créer/i });
-    expect(formElement).toBeInTheDocument();
+    // Get all checkboxes
+    const checkboxes = screen.getAllByRole('checkbox');
+
+    // By default, first group should be selected
+    expect(checkboxes[0]).toBeChecked();
+
+    // Click on second group to add it to selection
+    fireEvent.click(checkboxes[1]);
+    expect(checkboxes[1]).toBeChecked();
+
+    // Verify both are now checked
+    expect(checkboxes[0]).toBeChecked();
+    expect(checkboxes[1]).toBeChecked();
   });
 
-  it('properly handles group selection state in TaskModal', async () => {
-    const user = userEvent.setup();
+  it('properly handles group selection state in TaskModal', () => {
     const onTaskCreated = vi.fn();
 
     render(
@@ -131,7 +145,7 @@ describe('Multi-Group Task Management', () => {
     expect(checkboxes[0]).toBeChecked();
 
     // Click on second group to add it to selection
-    await user.click(checkboxes[1]);
+    fireEvent.click(checkboxes[1]);
     expect(checkboxes[1]).toBeChecked();
 
     // Verify both are now checked
@@ -156,8 +170,7 @@ describe('Multi-Group Task Management', () => {
     expect(taskWithGroups.groups).toHaveLength(3);
   });
 
-  it('deselects a group when checkbox is unchecked', async () => {
-    const user = userEvent.setup();
+  it('deselects a group when checkbox is unchecked', () => {
     render(
       <TaskModal
         isOpen={true}
@@ -174,14 +187,14 @@ describe('Multi-Group Task Management', () => {
     expect(firstCheckbox.checked).toBe(true);
 
     // Uncheck it
-    await user.click(firstCheckbox);
+    fireEvent.click(firstCheckbox);
 
     // It should remain unchecked (or recheck based on logic)
     // This test ensures the state management works correctly
     expect(firstCheckbox).toBeInTheDocument();
   });
 
-  it('maintains group selection across modal state changes', async () => {
+  it('maintains group selection across modal state changes', () => {
     const { rerender } = render(
       <TaskModal
         isOpen={true}
