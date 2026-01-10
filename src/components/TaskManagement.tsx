@@ -22,6 +22,10 @@ interface Task {
   group?: {
     name: string;
   };
+  groups?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 export default function TaskManagement({ user: _user }: TaskManagementProps) {
@@ -60,7 +64,21 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
         .order('start_date', { ascending: true });
 
       if (error) throw error;
-      setTasks(data || []);
+
+      // Load task_groups associations for each task
+      const tasksWithGroups = await Promise.all((data || []).map(async (task) => {
+        const { data: taskGroups } = await supabase
+          .from('task_groups')
+          .select('group:groups (id, name)')
+          .eq('task_id', task.id);
+        
+        return {
+          ...task,
+          groups: taskGroups?.map((tg: any) => tg.group).filter(Boolean) || []
+        };
+      }));
+
+      setTasks(tasksWithGroups || []);
     } catch (error: any) {
       console.error('Erreur lors du chargement des tâches:', error);
       setError(error.message);
@@ -201,7 +219,17 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                         <div className="text-sm text-primary-300">{task.description}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-primary-700">{task.group?.name || 'Groupe inconnu'}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {task.groups && task.groups.length > 0 ? (
+                            task.groups.map((g) => (
+                              <span key={g.id} className="inline-block text-xs font-medium bg-primary-100 text-primary-700 px-2 py-1 rounded-full border border-primary-200">
+                                {g.name}
+                              </span>
+                            ))
+                          ) : (
+                            <div className="text-sm text-primary-700">{task.group?.name || 'Groupe inconnu'}</div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getPriorityColor(task.priority)}`}>
