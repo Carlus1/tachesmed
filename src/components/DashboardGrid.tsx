@@ -96,11 +96,6 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
         groupsData = [ ...(adminGroups || []), ...memberGroupItems ];
       }
 
-      if (groupsError) {
-        // Log full error details to the browser console so we can inspect 500 responses
-        console.error('Supabase groups fetch error:', groupsError);
-      }
-
       setTasks(tasksWithGroups || []);
 
       const groupsWithColors = (groupsData || []).map((group, index) => ({
