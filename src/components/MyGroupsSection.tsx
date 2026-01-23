@@ -5,6 +5,7 @@ import type { User } from '@supabase/gotrue-js';
 
 interface MyGroupsSectionProps {
     user: User;
+    onCreateGroup: () => void;
 }
 
 interface Group {
@@ -14,7 +15,7 @@ interface Group {
     member_count?: number;
 }
 
-export default function MyGroupsSection({ user }: MyGroupsSectionProps) {
+export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSectionProps) {
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -106,9 +107,17 @@ export default function MyGroupsSection({ user }: MyGroupsSectionProps) {
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-primary-700">Mes groupes</h2>
-                <Link to="/groups" className="text-sm text-primary-600 hover:text-primary-700 hover:underline">
-                    Voir tous les groupes →
-                </Link>
+                <div className="flex items-center space-x-2">
+                    <button
+                        onClick={onCreateGroup}
+                        className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                    >
+                        Créer un groupe
+                    </button>
+                    <Link to="/groups" className="text-sm text-primary-600 hover:text-primary-700 hover:underline">
+                        Voir tous →
+                    </Link>
+                </div>
             </div>
             {groups.length > 0 ? (
                 <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">

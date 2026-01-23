@@ -4,7 +4,6 @@ import { supabase } from '../supabase';
 import type { User } from '@supabase/gotrue-js';
 import TasksSection from './TasksSection';
 import CalendarProposal from './CalendarProposal';
-import GroupsSection from './GroupsSection';
 import AvailabilityReminder from './AvailabilityReminder';
 import MyGroupsSection from './MyGroupsSection';
 import TaskModal from './TaskModal';
@@ -139,9 +138,8 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TasksSection tasks={tasks} onAddTask={() => setShowTaskModal(true)} />
         <CalendarProposal />
-        <GroupsSection groups={groups} onCreateGroup={handleCreateGroup} />
+        <MyGroupsSection user={user} onCreateGroup={handleCreateGroup} />
         <AvailabilityReminder />
-        <MyGroupsSection user={user} />
       </div>
 
       {showTaskModal && (
