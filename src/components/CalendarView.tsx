@@ -93,12 +93,16 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
 
   const getTasksForDay = (day: Date) => {
     return tasks.filter(task => {
-      const taskDate = parseISO(task.start_date);
-      return (
-        taskDate.getDate() === day.getDate() &&
-        taskDate.getMonth() === day.getMonth() &&
-        taskDate.getFullYear() === day.getFullYear()
-      );
+      const taskStartDate = parseISO(task.start_date);
+      const taskEndDate = parseISO(task.end_date);
+      
+      // Normaliser les dates pour comparer uniquement les jours (sans les heures)
+      const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+      const taskStart = new Date(taskStartDate.getFullYear(), taskStartDate.getMonth(), taskStartDate.getDate());
+      const taskEnd = new Date(taskEndDate.getFullYear(), taskEndDate.getMonth(), taskEndDate.getDate());
+      
+      // La tâche est visible si le jour est entre la date de début et de fin (inclus)
+      return dayStart >= taskStart && dayStart <= taskEnd;
     });
   };
 
