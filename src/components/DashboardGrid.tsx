@@ -139,7 +139,7 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
         <TasksSection tasks={tasks} onAddTask={() => setShowTaskModal(true)} />
         <CalendarProposal />
         <MyGroupsSection user={user} onCreateGroup={handleCreateGroup} />
-        <AvailabilityReminder />
+        <AvailabilityReminder user={user} />
       </div>
 
       {showTaskModal && (
