@@ -98,7 +98,9 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         taskDate.getDate() === day.getDate() &&
         taskDate.getMonth() === day.getMonth() &&
         taskDate.getFullYear() === day.getFullYear()
-    
+      );
+    });
+  };
 
   const previousMonth = () => {
     setCurrentDate(prev => {
