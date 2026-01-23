@@ -88,7 +88,29 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
                 <option value={2}>Toutes les 2 semaines</option>
                 <option value={4}>Chaque mois (4 semaines)</option>
                 <option value={8}>Tous les 2 mois (8 semaines)</option>
+                <option value={12}>Tous les 3 mois (12 semaines)</option>
+                <option value={24}>Tous les 6 mois (24 semaines)</option>
+                <option value={52}>Chaque année (52 semaines)</option>
+                <option value={0}>Personnalisé</option>
               </select>
+              {newGroup.unavailability_period_weeks === 0 && (
+                <div className="mt-3">
+                  <input
+                    type="number"
+                    min="1"
+                    max="104"
+                    className={baseInputClass}
+                    placeholder="Nombre de semaines"
+                    onChange={e => {
+                      const weeks = parseInt(e.target.value) || 2;
+                      setNewGroup({ ...newGroup, unavailability_period_weeks: weeks });
+                    }}
+                  />
+                  <p className="text-xs text-primary-400 mt-1">
+                    Entrez le nombre de semaines (1 à 104)
+                  </p>
+                </div>
+              )}
               <p className="text-xs text-primary-400 mt-1">
                 Les membres devront mettre à jour leurs indisponibilités selon cette fréquence
               </p>
