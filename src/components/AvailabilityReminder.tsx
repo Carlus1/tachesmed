@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import type { User } from '@supabase/gotrue-js';
-import { startOfWeek, endOfWeek, addDays, format } from 'date-fns';
+import { startOfWeek, endOfWeek, addDays, addWeeks, format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface AvailabilityReminderProps {
@@ -11,38 +11,49 @@ interface AvailabilityReminderProps {
 
 export default function AvailabilityReminder({ user }: AvailabilityReminderProps) {
   const navigate = useNavigate();
-  const [hasAvailabilities, setHasAvailabilities] = useState(false);
+  const [lastUpdateDate, setLastUpdateDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
-  const [nextWeekStart, setNextWeekStart] = useState<Date>(new Date());
+  const [periodWeeks, setPeriodWeeks] = useState(2); // Par défaut 2 semaines
+  const [daysRemaining, setDaysRemaining] = useState(0);
 
   useEffect(() => {
-    checkAvailabilities();
+    checkLastUpdate();
   }, [user]);
 
-  const checkAvailabilities = async () => {
+  const checkLastUpdate = async () => {
     try {
       setLoading(true);
       
-      // Calculer la semaine prochaine
-      const today = new Date();
-      const nextWeek = addDays(today, 7);
-      const weekStart = startOfWeek(nextWeek, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(nextWeek, { weekStartsOn: 1 });
-      setNextWeekStart(weekStart);
+      // TODO: Récupérer la fréquence depuis les groupes de l'utilisateur
+      // Pour l'instant, utilisons une valeur par défaut de 2 semaines
+      const weeksPeriod = 2;
+      setPeriodWeeks(weeksPeriod);
 
-      // Vérifier s'il y a des disponibilités pour la semaine prochaine
+      // Vérifier la dernière mise à jour des indisponibilités
       const { data, error } = await supabase
         .from('availabilities')
-        .select('id')
+        .select('created_at, updated_at')
         .eq('user_id', user.id)
-        .gte('start_time', weekStart.toISOString())
-        .lte('end_time', weekEnd.toISOString())
+        .order('updated_at', { ascending: false })
         .limit(1);
 
       if (error) throw error;
-      setHasAvailabilities((data?.length || 0) > 0);
+
+      if (data && data.length > 0) {
+        const lastUpdate = new Date(data[0].updated_at || data[0].created_at);
+        setLastUpdateDate(lastUpdate);
+        
+        // Calculer les jours restants avant la prochaine mise à jour
+        const nextUpdateDate = addWeeks(lastUpdate, weeksPeriod);
+        const daysLeft = differenceInDays(nextUpdateDate, new Date());
+        setDaysRemaining(Math.max(0, daysLeft));
+      } else {
+        // Aucune indisponibilité saisie
+        setLastUpdateDate(null);
+        setDaysRemaining(0);
+      }
     } catch (error) {
-      console.error('Erreur lors de la vérification des disponibilités:', error);
+      console.error('Erreur lors de la vérification des indisponibilités:', error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +67,7 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
     return (
       <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-primary-700">Rappel de disponibilités</h2>
+          <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
         </div>
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
@@ -65,11 +76,12 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
     );
   }
 
-  if (hasAvailabilities) {
+  // Si la mise à jour est encore valide (plus de jours restants)
+  if (daysRemaining > 3) {
     return (
       <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-primary-700">Rappel de disponibilités</h2>
+          <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
         </div>
         <div className="p-6 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-success-50 rounded-full flex items-center justify-center mb-4">
@@ -77,39 +89,47 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-center mb-2 text-success-700">Disponibilités à jour</h3>
+          <h3 className="text-lg font-medium text-center mb-2 text-success-700">Indisponibilités à jour</h3>
           <p className="text-primary-400 text-center mb-4">
-            Vos disponibilités pour la semaine du {format(nextWeekStart, 'dd/MM', { locale: fr })} sont complètes.
+            Prochaine mise à jour dans {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}
           </p>
           <button 
             onClick={handleComplete}
             className="w-full py-3 bg-primary-100 hover:bg-primary-200 text-primary-700 font-medium rounded-lg transition-colors"
           >
-            Modifier mes disponibilités
+            Gérer mes indisponibilités
           </button>
         </div>
       </div>
     );
   }
 
+  // Affichage d'alerte si mise à jour bientôt nécessaire ou jamais faite
+  const isUrgent = daysRemaining === 0 || lastUpdateDate === null;
+  
   return (
     <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-primary-700">Rappel de disponibilités</h2>
+        <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
       </div>
       <div className="p-6 flex flex-col items-center justify-center">
-        <div className="w-16 h-16 bg-warning-50 rounded-full flex items-center justify-center mb-4">
-          <span className="text-warning-600 font-bold text-2xl">!</span>
+        <div className={`w-16 h-16 ${isUrgent ? 'bg-error-50' : 'bg-warning-50'} rounded-full flex items-center justify-center mb-4`}>
+          <span className={`${isUrgent ? 'text-error-600' : 'text-warning-600'} font-bold text-2xl`}>!</span>
         </div>
-        <h3 className="text-lg font-medium text-center mb-2 text-warning-700">Action requise</h3>
+        <h3 className={`text-lg font-medium text-center mb-2 ${isUrgent ? 'text-error-700' : 'text-warning-700'}`}>
+          {isUrgent ? 'Action requise' : `${daysRemaining} jour${daysRemaining > 1 ? 's' : ''} restant${daysRemaining > 1 ? 's' : ''}`}
+        </h3>
         <p className="text-primary-400 text-center mb-6">
-          Complétez vos disponibilités pour la semaine du {format(nextWeekStart, 'dd/MM', { locale: fr })}.
+          {lastUpdateDate 
+            ? `Mettez à jour vos indisponibilités (période de ${periodWeeks} semaine${periodWeeks > 1 ? 's' : ''})`
+            : `Saisissez vos indisponibilités pour les ${periodWeeks} prochaines semaines`
+          }
         </p>
         <button 
           onClick={handleComplete}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+          className={`w-full py-3 ${isUrgent ? 'bg-error-600 hover:bg-error-700' : 'bg-primary-600 hover:bg-primary-700'} text-white font-medium rounded-lg transition-colors`}
         >
-          Compléter maintenant
+          {lastUpdateDate ? 'Mettre à jour maintenant' : 'Saisir maintenant'}
         </button>
       </div>
     </div>
