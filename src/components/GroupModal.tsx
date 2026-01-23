@@ -12,7 +12,8 @@ interface GroupModalProps {
 export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: GroupModalProps) {
   const [newGroup, setNewGroup] = useState({
     name: '',
-    description: ''
+    description: '',
+    unavailability_period_weeks: 2
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,12 +35,13 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
             name: newGroup.name.trim(),
             description: newGroup.description.trim(),
             admin_id: user.id,
+            unavailability_period_weeks: newGroup.unavailability_period_weeks,
           },
         ]);
 
       if (insertError) throw insertError;
 
-      setNewGroup({ name: '', description: '' });
+      setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 });
       onClose();
       onGroupCreated();
     } catch (err: any) {
@@ -73,6 +75,24 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
               onChange={e => setNewGroup({ ...newGroup, description: e.target.value })}
               rows={3}
             />
+            <div>
+              <label className="block text-sm font-medium text-primary-700 mb-2">
+                Fréquence de mise à jour des indisponibilités
+              </label>
+              <select
+                className={baseInputClass}
+                value={newGroup.unavailability_period_weeks}
+                onChange={e => setNewGroup({ ...newGroup, unavailability_period_weeks: parseInt(e.target.value) })}
+              >
+                <option value={1}>Chaque semaine</option>
+                <option value={2}>Toutes les 2 semaines</option>
+                <option value={4}>Chaque mois (4 semaines)</option>
+                <option value={8}>Tous les 2 mois (8 semaines)</option>
+              </select>
+              <p className="text-xs text-primary-400 mt-1">
+                Les membres devront mettre à jour leurs indisponibilités selon cette fréquence
+              </p>
+            </div>
           </div>
 
           {error && (

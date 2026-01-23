@@ -24,9 +24,46 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
     try {
       setLoading(true);
       
-      // TODO: Récupérer la fréquence depuis les groupes de l'utilisateur
-      // Pour l'instant, utilisons une valeur par défaut de 2 semaines
-      const weeksPeriod = 2;
+      // Récupérer la fréquence depuis les groupes de l'utilisateur
+      let weeksPeriod = 2; // Valeur par défaut
+      
+      // Récupérer les groupes dont l'utilisateur est admin
+      const { data: adminGroups } = await supabase
+        .from('groups')
+        .select('unavailability_period_weeks')
+        .eq('admin_id', user.id)
+        .order('unavailability_period_weeks', { ascending: false })
+        .limit(1);
+      
+      // Récupérer les groupes dont l'utilisateur est membre
+      const { data: memberGroups } = await supabase
+        .from('group_members')
+        .select(`
+          groups (
+            unavailability_period_weeks
+          )
+        `)
+        .eq('user_id', user.id);
+      
+      // Prendre la période la plus courte (la plus contraignante)
+      const allPeriods: number[] = [];
+      
+      if (adminGroups && adminGroups.length > 0) {
+        allPeriods.push(...adminGroups.map(g => g.unavailability_period_weeks).filter(Boolean));
+      }
+      
+      if (memberGroups && memberGroups.length > 0) {
+        memberGroups.forEach((m: any) => {
+          if (m.groups?.unavailability_period_weeks) {
+            allPeriods.push(m.groups.unavailability_period_weeks);
+          }
+        });
+      }
+      
+      if (allPeriods.length > 0) {
+        weeksPeriod = Math.min(...allPeriods);
+      }
+      
       setPeriodWeeks(weeksPeriod);
 
       // Vérifier la dernière mise à jour des indisponibilités
