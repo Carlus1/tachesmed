@@ -233,13 +233,16 @@ export default function CalendarView({ view = 'week', onViewChange }: CalendarVi
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
         </span>
         <button 
-          onClick={() => onViewChange?.('month')}
-          className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline transition-all"
+          onClick={() => {
+            console.log('Changement de vue vers mois, onViewChange:', onViewChange);
+            onViewChange?.('month');
+          }}
+          className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline transition-all cursor-pointer"
         >
           Voir le calendrier complet →
         </button>
       </div>
-      </div>
+    </div>
     );
   }
 
