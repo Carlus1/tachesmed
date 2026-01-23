@@ -46,7 +46,7 @@ export default function ModernCalendarPage({ user }: ModernCalendarPageProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        <CalendarView view={view} onViewChange={setView} />
+        <CalendarView view={view} />
         
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="p-4 border-b border-border">

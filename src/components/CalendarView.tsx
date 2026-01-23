@@ -18,16 +18,14 @@ interface Task {
 
 interface CalendarViewProps {
   view?: 'week' | 'month';
-  onViewChange?: (view: 'week' | 'month') => void;
 }
 
-export default function CalendarView({ view = 'week', onViewChange }: CalendarViewProps) {
+export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDays, setWeekDays] = useState<Date[]>([]);
   const [selectedDayTasks, setSelectedDayTasks] = useState<{ date: Date; tasks: Task[] } | null>(null);
-  const [showAllTasksModal, setShowAllTasksModal] = useState(false);
 
   useEffect(() => {
     loadTasks();
@@ -229,19 +227,10 @@ export default function CalendarView({ view = 'week', onViewChange }: CalendarVi
         })}
       </div>
       
-      <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
+      <div className="p-4 border-t border-border bg-primary-100">
         <span className="text-sm text-primary-400">
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
         </span>
-        <button 
-          onClick={() => {
-            console.log('Changement de vue vers mois, onViewChange:', onViewChange);
-            onViewChange?.('month');
-          }}
-          className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline transition-all cursor-pointer"
-        >
-          Voir le calendrier complet →
-        </button>
       </div>
     </div>
     );
@@ -341,73 +330,12 @@ export default function CalendarView({ view = 'week', onViewChange }: CalendarVi
         })}
       </div>
 
-      <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
+      <div className="p-4 border-t border-border bg-primary-100">
         <span className="text-sm text-primary-400">
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} ce mois
         </span>
-        <button 
-          onClick={() => setShowAllTasksModal(true)}
-          className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline transition-all cursor-pointer"
-        >
-          Voir plus →
-        </button>
       </div>
     </div>
-
-    {/* Modal pour afficher toutes les tâches du mois */}
-    {showAllTasksModal && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowAllTasksModal(false)}>
-        <div className="bg-surface rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-          <div className="p-4 border-b border-border flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-primary-700">
-              Toutes les tâches - {format(currentDate, 'MMMM yyyy', { locale: fr })}
-            </h3>
-            <button 
-              onClick={() => setShowAllTasksModal(false)}
-              className="text-primary-400 hover:text-primary-700 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
-            {tasks.length > 0 ? (
-              <div className="space-y-3">
-                {tasks.map(task => (
-                  <div 
-                    key={task.id} 
-                    className={`p-3 rounded-lg border ${getPriorityColor(task.priority)}`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold">{task.title}</h4>
-                      <span className="text-xs px-2 py-1 rounded bg-white bg-opacity-50">
-                        {task.priority === 'high' ? 'Haute' : task.priority === 'medium' ? 'Moyenne' : 'Basse'}
-                      </span>
-                    </div>
-                    {task.description && (
-                      <p className="text-xs opacity-75 mb-2">{task.description}</p>
-                    )}
-                    <div className="flex items-center justify-between text-xs">
-                      <span>
-                        📅 {format(parseISO(task.start_date), 'dd/MM/yyyy HH:mm', { locale: fr })} → {format(parseISO(task.end_date), 'dd/MM/yyyy HH:mm', { locale: fr })}
-                      </span>
-                      {task.user && (
-                        <span className="italic">👤 {task.user.full_name}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-primary-400">
-                Aucune tâche ce mois
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    )}
 
     {/* Modal pour afficher toutes les tâches d'un jour */}
     {selectedDayTasks && (
