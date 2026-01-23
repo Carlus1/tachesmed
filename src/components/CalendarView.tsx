@@ -25,6 +25,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDays, setWeekDays] = useState<Date[]>([]);
+  const [selectedDayTasks, setSelectedDayTasks] = useState<{ date: Date; tasks: Task[] } | null>(null);
 
   useEffect(() => {
     loadTasks();
@@ -318,8 +319,8 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
                   ))}
                   {dayTasks.length > 2 && (
                     <button 
-                      className="text-xs text-primary-600 hover:text-primary-700 font-medium w-full text-left"
-                      title={dayTasks.slice(2).map(t => t.title).join(', ')}
+                      onClick={() => setSelectedDayTasks({ date: day, tasks: dayTasks })}
+                      className="text-xs text-primary-600 hover:text-primary-700 hover:underline font-medium w-full text-left"
                     >
                       +{dayTasks.length - 2} tâche{dayTasks.length - 2 > 1 ? 's' : ''}
                     </button>
@@ -340,5 +341,49 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         </button>
       </div>
     </div>
+
+    {/* Modal pour afficher toutes les tâches d'un jour */}
+    {selectedDayTasks && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setSelectedDayTasks(null)}>
+        <div className="bg-surface rounded-2xl shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="p-4 border-b border-border flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-primary-700">
+              Tâches du {format(selectedDayTasks.date, 'd MMMM yyyy', { locale: fr })}
+            </h3>
+            <button 
+              onClick={() => setSelectedDayTasks(null)}
+              className="text-primary-400 hover:text-primary-700 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+            <div className="space-y-3">
+              {selectedDayTasks.tasks.map(task => (
+                <div 
+                  key={task.id} 
+                  className={`p-3 rounded-lg border ${getPriorityColor(task.priority)}`}
+                >
+                  <h4 className="font-semibold mb-1">{task.title}</h4>
+                  {task.description && (
+                    <p className="text-xs opacity-75 mb-2">{task.description}</p>
+                  )}
+                  <div className="flex items-center justify-between text-xs">
+                    <span>
+                      {format(parseISO(task.start_date), 'HH:mm')} - {format(parseISO(task.end_date), 'HH:mm')}
+                    </span>
+                    {task.user && (
+                      <span className="italic">{task.user.full_name}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
   );
 }
