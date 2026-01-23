@@ -18,9 +18,10 @@ interface Task {
 
 interface CalendarViewProps {
   view?: 'week' | 'month';
+  onViewChange?: (view: 'week' | 'month') => void;
 }
 
-export default function CalendarView({ view = 'week' }: CalendarViewProps) {
+export default function CalendarView({ view = 'week', onViewChange }: CalendarViewProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -231,7 +232,10 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         <span className="text-sm text-primary-400">
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
         </span>
-        <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+        <button 
+          onClick={() => onViewChange?.('month')}
+          className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline transition-all"
+        >
           Voir le calendrier complet →
         </button>
       </div>
