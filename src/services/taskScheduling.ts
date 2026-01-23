@@ -37,7 +37,7 @@ export const taskSchedulingService = {
         hasConflict: assignment.has_conflict
       }));
     } catch (error) {
-      console.error('Erreur lors de la génération du planning:', error);
+      console.error('Erreur lors de la gï¿½nï¿½ration du planning:', error);
       throw error;
     }
   },
@@ -84,7 +84,7 @@ export const taskSchedulingService = {
         status: data.status
       };
     } catch (error) {
-      console.error('Erreur lors de la récupération du planning de tâche:', error);
+      console.error('Erreur lors de la rï¿½cupï¿½ration du planning de tï¿½che:', error);
       throw error;
     }
   },
@@ -111,7 +111,7 @@ export const taskSchedulingService = {
         hasConflict: false
       }));
     } catch (error) {
-      console.error('Erreur lors de la récupération des assignations:', error);
+      console.error('Erreur lors de la rï¿½cupï¿½ration des assignations:', error);
       throw error;
     }
   },
@@ -158,7 +158,7 @@ export const taskSchedulingService = {
 
       if (assignmentsError) throw assignmentsError;
 
-      // Obtenir les conflits (utilisateurs assignés à plusieurs tâches en même temps)
+      // Obtenir les conflits (utilisateurs assignÃ©s Ã  plusieurs tÃ¢ches en mÃªme temps)
       const conflicts = assignments.reduce((acc: any[], curr: any) => {
         const overlapping = assignments.filter(a => 
           a.id !== curr.id && 
@@ -170,7 +170,7 @@ export const taskSchedulingService = {
           acc.push({
             date: curr.assigned_date,
             userId: curr.user_id,
-            userName: curr.user.full_name,
+            userName: curr.user?.full_name || 'Utilisateur inconnu',
             taskIds: [curr.task_id, ...overlapping.map((o: any) => o.task_id)]
           });
         }
@@ -184,7 +184,7 @@ export const taskSchedulingService = {
         conflicts
       };
     } catch (error) {
-      console.error('Erreur lors de la récupération du calendrier global:', error);
+      console.error('Erreur lors de la rï¿½cupï¿½ration du calendrier global:', error);
       throw error;
     }
   }

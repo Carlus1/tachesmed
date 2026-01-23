@@ -55,42 +55,118 @@ export default function GlobalCalendar({ groupId }: GlobalCalendarProps) {
       // Convert tasks and assignments to calendar events
       const calendarEvents = tasks.flatMap(task => {
         const taskAssignmentsList = taskAssignments.get(task.id) || [];
-        
-        // Create an event for each assignment
-        if (taskAssignmentsList.length > 0) {
-          return taskAssignmentsList.map(assignment => ({
-            id: `${task.id}-${assignment.userId}`,
-            title: `${task.title} - ${assignment.userName}`,
-            start: task.start_date,
-            end: task.end_date,
-            backgroundColor: '#10B981', // Green for assigned tasks
-            borderColor: '#059669',
-            extendedProps: {
-              type: 'task',
-              description: task.description,
-              groupName: task.group.name,
-              assignedUser: assignment.userName,
-              taskTitle: task.title
+
+        const toDate = (d: any) => (d ? new Date(d) : null);
+        const isMidnight = (dt: Date | null) => {
+          if (!dt) return false;
+          return dt.getHours() === 0 && dt.getMinutes() === 0 && dt.getSeconds() === 0 && dt.getMilliseconds() === 0;
+        };
+
+        const buildEvent = (id: string, title: string, startDate: Date | null, endDate: Date | null, bg: string, border: string, ext: any) => {
+          if (!startDate) return null;
+
+          let allDay = false;
+          let end = endDate ? new Date(endDate) : null;
+          const start = new Date(startDate);
+
+          // If both start and end are midnight (date-only), treat as all-day and make end exclusive by adding one day
+          if (isMidnight(start) && (end === null || isMidnight(end))) {
+            allDay = true;
+            if (end) {
+              const e = new Date(end.getTime());
+              e.setHours(0, 0, 0, 0);
+              e.setTime(e.getTime() + 24 * 60 * 60 * 1000);
+              end = e;
+            } else {
+              const e = new Date(start.getTime());
+              e.setHours(0, 0, 0, 0);
+              e.setTime(e.getTime() + 24 * 60 * 60 * 1000);
+              end = e;
             }
-          }));
+          }
+
+          // If there is an end and duration >= 24 hours, treat as multi-day all-day event
+          if (end) {
+            const durationMs = end.getTime() - start.getTime();
+            if (durationMs >= 24 * 60 * 60 * 1000) {
+              allDay = true;
+              const s = new Date(start.getTime());
+              s.setHours(0, 0, 0, 0);
+              const e = new Date(end.getTime());
+              e.setHours(0, 0, 0, 0);
+              // make end exclusive for FullCalendar
+              e.setTime(e.getTime() + 24 * 60 * 60 * 1000);
+              return {
+                id,
+                title,
+                start: s,
+                end: e,
+                allDay,
+                backgroundColor: bg,
+                borderColor: border,
+                extendedProps: ext
+              };
+            }
+          }
+
+          // If no end provided and not all-day, set a default 1-hour duration
+          if (!end && !allDay) {
+            end = new Date(start.getTime() + 60 * 60 * 1000);
+          }
+
+          return {
+            id,
+            title,
+            start,
+            end,
+            allDay,
+            backgroundColor: bg,
+            borderColor: border,
+            extendedProps: ext
+          };
+        };
+
+        // Create an event for each assignment — use the assignment date as the event date
+        if (taskAssignmentsList.length > 0) {
+          return taskAssignmentsList.map(assignment => {
+            const assignedDate = toDate(assignment.date || assignment.assigned_date || assignment.assignedDate);
+            return buildEvent(
+              `${task.id}-${assignment.userId}`,
+              `${task.title} - ${assignment.userName}`,
+              assignedDate,
+              null,
+              '#10B981', // Green for assigned tasks
+              '#059669',
+              {
+                type: 'task',
+                description: task.description,
+                groupName: task.group?.name,
+                assignedUser: assignment.userName,
+                taskTitle: task.title
+              }
+            );
+          }).filter(Boolean);
         }
 
-        // Create a single event for unassigned task
-        return [{
-          id: task.id,
-          title: `${task.title} - Non assigné`,
-          start: task.start_date,
-          end: task.end_date,
-          backgroundColor: '#3B82F6', // Blue for unassigned tasks
-          borderColor: '#2563EB',
-          extendedProps: {
+        // Create a single event for unassigned task — use task start/end and handle multi-day all-day events
+        const start = toDate(task.start_date);
+        const end = toDate(task.end_date);
+
+        return [buildEvent(
+          task.id,
+          `${task.title} - Non assigné`,
+          start,
+          end,
+          '#3B82F6', // Blue for unassigned tasks
+          '#2563EB',
+          {
             type: 'task',
             description: task.description,
-            groupName: task.group.name,
+            groupName: task.group?.name,
             assignedUser: 'Non assigné',
             taskTitle: task.title
           }
-        }];
+        )].filter(Boolean);
       });
 
       setEvents(calendarEvents);

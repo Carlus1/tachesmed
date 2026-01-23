@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
-import { format, startOfWeek, endOfWeek, addDays, parseISO } from 'date-fns';
+import { format, startOfWeek, endOfWeek, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface Task {
@@ -16,7 +16,11 @@ interface Task {
   };
 }
 
-export default function CalendarView() {
+interface CalendarViewProps {
+  view?: 'week' | 'month';
+}
+
+export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -24,8 +28,10 @@ export default function CalendarView() {
 
   useEffect(() => {
     loadTasks();
-    generateWeekDays();
-  }, [currentDate]);
+    if (view === 'week') {
+      generateWeekDays();
+    }
+  }, [currentDate, view]);
 
   const generateWeekDays = () => {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Lundi
@@ -46,8 +52,16 @@ export default function CalendarView() {
     try {
       setLoading(true);
       
-      const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-      const end = endOfWeek(currentDate, { weekStartsOn: 1 });
+      let start: Date;
+      let end: Date;
+      
+      if (view === 'week') {
+        start = startOfWeek(currentDate, { weekStartsOn: 1 });
+        end = endOfWeek(currentDate, { weekStartsOn: 1 });
+      } else {
+        start = startOfMonth(currentDate);
+        end = endOfMonth(currentDate);
+      }
       
       const { data, error } = await supabase
         .from('tasks')
@@ -84,7 +98,21 @@ export default function CalendarView() {
         taskDate.getDate() === day.getDate() &&
         taskDate.getMonth() === day.getMonth() &&
         taskDate.getFullYear() === day.getFullYear()
-      );
+    
+
+  const previousMonth = () => {
+    setCurrentDate(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() - 1);
+      return newDate;
+    });
+  };
+
+  const nextMonth = () => {
+    setCurrentDate(prev => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + 1);
+      return newDate;
     });
   };
 
@@ -104,10 +132,11 @@ export default function CalendarView() {
     );
   }
 
-  return (
-  <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
-  <div className="flex justify-between items-center p-4 border-b border-border">
-  <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
+  if (view === 'week') {
+    return (
+      <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
         <div className="flex items-center space-x-2">
           <button 
             onClick={previousWeek}
@@ -189,14 +218,113 @@ export default function CalendarView() {
         })}
       </div>
       
-  <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
-  <span className="text-sm text-primary-400">
+      <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
+        <span className="text-sm text-primary-400">
           {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
         </span>
         <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
           Voir le calendrier complet →
         </button>
       </div>
+      </div>
+    );
+  }
+
+  // Vue par mois
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
+  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  
+  // Obtenir les jours du mois précédent et suivant pour compléter la grille
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
+
+  return (
+    <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
+      <div className="flex justify-between items-center p-4 border-b border-border">
+        <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={previousMonth}
+            className="p-1 rounded-full hover:bg-surface transition-colors"
+          >
+            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span className="text-sm font-medium text-primary-700">
+            {format(currentDate, 'MMMM yyyy', { locale: fr })}
+          </span>
+          <button 
+            onClick={nextMonth}
+            className="p-1 rounded-full hover:bg-surface transition-colors"
+          >
+            <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Days of week header */}
+      <div className="grid grid-cols-7 border-b border-border bg-primary-50">
+        {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, index) => (
+          <div key={index} className="p-2 text-center border-r border-border last:border-r-0">
+            <p className="text-xs font-medium text-primary-400 uppercase">{day}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 min-h-[500px]">
+        {calendarDays.map((day, index) => {
+          const dayTasks = getTasksForDay(day);
+          const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+          const isToday = day.getDate() === new Date().getDate() && 
+                         day.getMonth() === new Date().getMonth() && 
+                         day.getFullYear() === new Date().getFullYear();
+
+          return (
+            <div 
+              key={index} 
+              className={`border-r border-border last:border-r-0 p-2 min-h-[70px] ${
+                !isCurrentMonth ? 'bg-primary-50 opacity-50' : ''
+              } ${isToday ? 'bg-primary-100' : ''}`}
+            >
+              <p className={`text-sm font-semibold mb-1 ${
+                isToday ? 'text-primary-600' : 'text-primary-700'
+              }`}>
+                {format(day, 'd')}
+              </p>
+              {dayTasks.length > 0 && (
+                <div className="space-y-1">
+                  {dayTasks.slice(0, 2).map(task => (
+                    <div 
+                      key={task.id} 
+                      className={`p-1 rounded text-xs font-medium truncate ${getPriorityColor(task.priority)}`}
+                      title={task.title}
+                    >
+                      {task.title}
+                    </div>
+                  ))}
+                  {dayTasks.length > 2 && (
+                    <p className="text-xs text-primary-400">+{dayTasks.length - 2}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="p-4 border-t border-border bg-primary-100 flex justify-between items-center">
+        <span className="text-sm text-primary-400">
+          {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} ce mois
+        </span>
+        <button className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+          Voir plus →
+        </button>
+      </div>
     </div>
   );
-}

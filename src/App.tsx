@@ -41,12 +41,16 @@ function App() {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       console.log('Auth state changed:', _event, session?.user ? 'Utilisateur connecté' : 'Pas d\'utilisateur');
       setUser(session?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (data?.subscription) {
+        data.subscription.unsubscribe();
+      }
+    };
   }, []);
 
   if (loading) {
