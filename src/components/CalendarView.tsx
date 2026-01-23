@@ -330,3 +330,4 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
       </div>
     </div>
   );
+}
