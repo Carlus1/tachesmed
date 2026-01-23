@@ -63,14 +63,16 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         end = endOfMonth(currentDate);
       }
       
+      // Charger toutes les tâches qui chevauchent la période
+      // Une tâche est visible si : start_date <= end_period ET end_date >= start_period
       const { data, error } = await supabase
         .from('tasks')
         .select(`
           *,
           user:users (full_name)
         `)
-        .gte('start_date', start.toISOString())
-        .lte('end_date', end.toISOString())
+        .lte('start_date', end.toISOString())
+        .gte('end_date', start.toISOString())
         .order('start_date', { ascending: true });
 
       if (error) throw error;
@@ -315,7 +317,12 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
                     </div>
                   ))}
                   {dayTasks.length > 2 && (
-                    <p className="text-xs text-primary-400">+{dayTasks.length - 2}</p>
+                    <button 
+                      className="text-xs text-primary-600 hover:text-primary-700 font-medium w-full text-left"
+                      title={dayTasks.slice(2).map(t => t.title).join(', ')}
+                    >
+                      +{dayTasks.length - 2} tâche{dayTasks.length - 2 > 1 ? 's' : ''}
+                    </button>
                   )}
                 </div>
               )}
