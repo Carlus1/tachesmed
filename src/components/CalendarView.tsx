@@ -250,6 +250,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
 
   return (
+    <>
     <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
       <div className="flex justify-between items-center p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
@@ -385,5 +386,6 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         </div>
       </div>
     )}
+    </>
   );
 }
