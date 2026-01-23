@@ -141,7 +141,7 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
         <CalendarProposal />
         <GroupsSection groups={groups} onCreateGroup={handleCreateGroup} />
         <AvailabilityReminder />
-        <MyGroupsSection />
+        <MyGroupsSection user={user} />
       </div>
 
       {showTaskModal && (
