@@ -19,6 +19,9 @@ interface Task {
   end_date: string;
   duration: number;
   group_id: string;
+  recurrence_type?: string;
+  recurrence_interval?: number;
+  recurrence_end_date?: string;
   group?: {
     name: string;
   };
@@ -183,6 +186,25 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
     return format(new Date(date), 'PPP', { locale: fr });
   };
 
+  const getRecurrenceText = (task: Task) => {
+    if (!task.recurrence_type || task.recurrence_type === 'none') {
+      return null;
+    }
+
+    const recurrenceLabels: { [key: string]: string } = {
+      'weekly': t.tasks.weekly,
+      'bi-weekly': t.tasks.biWeekly,
+      'monthly': t.tasks.monthly,
+      'bi-monthly': t.tasks.biMonthly,
+      'quarterly': t.tasks.quarterly,
+      'semi-annually': t.tasks.semiAnnually,
+      'yearly': t.tasks.yearly,
+      'custom': task.recurrence_interval ? `${t.tasks.custom} (${task.recurrence_interval} ${t.tasks.customWeeks.toLowerCase()})` : t.tasks.custom
+    };
+
+    return recurrenceLabels[task.recurrence_type] || task.recurrence_type;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -248,6 +270,9 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                       {t.tasks.startDate}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
+                      {t.tasks.recurrenceLabel}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
                       {t.tasks.duration}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
@@ -282,6 +307,18 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
                         {formatDate(task.start_date)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getRecurrenceText(task) ? (
+                          <span className="inline-flex items-center text-xs font-medium bg-accent-50 text-accent-700 px-2 py-1 rounded-full border border-accent-200">
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            {getRecurrenceText(task)}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-primary-400">—</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
                         {task.duration} {t.tasks.minutes}
