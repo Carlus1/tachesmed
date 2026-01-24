@@ -39,11 +39,9 @@ export default function SettingsPage({ user }: SettingsPageProps) {
   });
   
   // États de sauvegarde
-  const [savingPrefs, setSavingPrefs] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successPrefs, setSuccessPrefs] = useState<string | null>(null);
-  const [successProfile, setSuccessProfile] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     loadProfile();
@@ -75,13 +73,14 @@ export default function SettingsPage({ user }: SettingsPageProps) {
     }
   };
 
-  const handleSavePreferences = async (e: React.FormEvent) => {
+  const handleSaveAll = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSavingPrefs(true);
-    setSuccessPrefs(null);
     setError(null);
+    setSuccess(null);
+    setSaving(true);
 
     try {
+      // Sauvegarde des préférences
       localStorage.setItem('pref_notifications', notifications ? '1' : '0');
       localStorage.setItem('pref_timezone', timezone);
 
@@ -91,24 +90,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
         console.warn('Preferences not persisted server-side:', err);
       }
 
-      setSuccessPrefs('Préférences enregistrées');
-    } catch (err: any) {
-      console.error('Erreur lors de la sauvegarde des préférences:', err);
-      setError('Erreur lors de la sauvegarde des préférences');
-    } finally {
-      setSavingPrefs(false);
-      setTimeout(() => setSuccessPrefs(null), 3000);
-    }
-  };
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccessProfile(null);
-    setSavingProfile(true);
-
-    try {
-      // Mise à jour du nom complet
+      // Mise à jour du profil
       const { error: updateError } = await supabase
         .from('users')
         .update({ 
@@ -132,7 +114,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
         if (passwordError) throw passwordError;
       }
 
-      setSuccessProfile('Profil mis à jour avec succès');
+      setSuccess(t.settings.savedSuccessfully);
       setFormData(prev => ({
         ...prev,
         newPassword: '',
@@ -140,14 +122,16 @@ export default function SettingsPage({ user }: SettingsPageProps) {
       }));
       
       await loadProfile();
-    } catch (error: any) {
-      console.error('Erreur lors de la mise à jour du profil:', error);
-      setError(error.message);
+    } catch (err: any) {
+      console.error('Erreur lors de la sauvegarde:', err);
+      setError(err.message);
     } finally {
-      setSavingProfile(false);
-      setTimeout(() => setSuccessProfile(null), 3000);
+      setSaving(false);
+      setTimeout(() => setSuccess(null), 3000);
     }
   };
+
+
 
   if (loading) {
     return (
@@ -161,14 +145,52 @@ export default function SettingsPage({ user }: SettingsPageProps) {
 
   return (
     <ModernLayout user={user}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary-700">{t.settings.title}</h1>
-        <p className="text-primary-400 mt-2">{t.settings.subtitle}</p>
-      </div>
+      <form onSubmit={handleSaveAll}>
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-primary-700">{t.settings.title}</h1>
+            <p className="text-primary-400 mt-2">{t.settings.subtitle}</p>
+          </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
+            {saving ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                {t.settings.saving}
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {t.settings.save}
+              </>
+            )}
+          </button>
+        </div>
 
-      <div className="space-y-6">
-        {/* Section Profil */}
-        <form onSubmit={handleUpdateProfile} className="bg-surface rounded-lg shadow-sm border border-border p-6">
+        {/* Messages de succès et d'erreur globaux */}
+        {success && (
+          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4 mb-4">
+            <div className="text-sm text-green-700 dark:text-green-400">
+              {success}
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4 mb-4">
+            <div className="text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          {/* Section Profil */}
+          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
           <h2 className="text-lg font-medium text-primary-700 mb-4">{t.settings.profileInfo}</h2>
           
           <div className="space-y-4">
@@ -248,26 +270,10 @@ export default function SettingsPage({ user }: SettingsPageProps) {
               </div>
             </div>
           </div>
+        </div>
 
-          {successProfile && (
-            <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm text-green-700 dark:text-green-400 mt-4">
-              {successProfile}
-            </div>
-          )}
-
-          <div className="flex justify-end mt-4">
-            <button
-              type="submit"
-              disabled={savingProfile}
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
-            >
-              {savingProfile ? t.settings.saving : t.settings.saveProfile}
-            </button>
-          </div>
-        </form>
-
-        {/* Section Préférences */}
-        <form onSubmit={handleSavePreferences} className="bg-surface rounded-lg shadow-sm border border-border p-6">
+          {/* Section Préférences */}
+          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
           <h2 className="text-lg font-medium text-primary-700 mb-4">{t.settings.preferences}</h2>
           
           <div className="space-y-4">
@@ -327,33 +333,9 @@ export default function SettingsPage({ user }: SettingsPageProps) {
               </div>
             </div>
           </div>
-
-          {successPrefs && (
-            <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm text-green-700 dark:text-green-400 mt-4">
-              {successPrefs}
-            </div>
-          )}
-
-          <div className="flex justify-end mt-4">
-            <button
-              type="submit"
-              disabled={savingPrefs}
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
-            >
-              {savingPrefs ? t.settings.saving : t.settings.savePreferences}
-            </button>
-          </div>
-        </form>
-
-        {/* Messages d'erreur globaux */}
-        {error && (
-          <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-            <div className="text-sm text-red-700 dark:text-red-400">
-              {error}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+        </div>
+      </form>
     </ModernLayout>
   );
 }

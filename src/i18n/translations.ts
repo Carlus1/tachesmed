@@ -68,7 +68,9 @@ export interface Translations {
     selectTimezone: string;
     saveProfile: string;
     savePreferences: string;
+    save: string;
     saving: string;
+    savedSuccessfully: string;
     profileSaved: string;
     preferencesSaved: string;
     profileInfo: string;
@@ -352,7 +354,9 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: 'Sélectionnez votre fuseau horaire pour les heures affichées.',
       saveProfile: 'Enregistrer le profil',
       savePreferences: 'Enregistrer les préférences',
+      save: 'Enregistrer',
       saving: 'Enregistrement...',
+      savedSuccessfully: 'Paramètres enregistrés avec succès',
       profileSaved: 'Profil mis à jour avec succès',
       preferencesSaved: 'Préférences enregistrées',
       profileInfo: 'Informations du profil',
@@ -618,7 +622,9 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: 'Select your timezone for displayed times.',
       saveProfile: 'Save Profile',
       savePreferences: 'Save Preferences',
+      save: 'Save',
       saving: 'Saving...',
+      savedSuccessfully: 'Settings saved successfully',
       profileSaved: 'Profile updated successfully',
       preferencesSaved: 'Preferences saved',
       profileInfo: 'Profile Information',
@@ -884,7 +890,9 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: 'Select your time zone for displayed times.',
       saveProfile: 'Save Profile',
       savePreferences: 'Save Preferences',
+      save: 'Save',
       saving: 'Saving...',
+      savedSuccessfully: 'Settings saved successfully',
       profileSaved: 'Profile updated successfully',
       preferencesSaved: 'Preferences saved',
       profileInfo: 'Profile Information',
@@ -1150,7 +1158,9 @@ export const translations: Record<Language, Translations> = {
       selectTimezone: 'Selecciona tu zona horaria para las horas mostradas.',
       saveProfile: 'Guardar perfil',
       savePreferences: 'Guardar preferencias',
+      save: 'Guardar',
       saving: 'Guardando...',
+      savedSuccessfully: 'Configuración guardada correctamente',
       profileSaved: 'Perfil actualizado correctamente',
       preferencesSaved: 'Preferencias guardadas',
       profileInfo: 'Información del perfil',
