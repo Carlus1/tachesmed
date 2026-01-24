@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 import type { User } from '@supabase/gotrue-js';
 import { startOfWeek, endOfWeek, addDays, addWeeks, format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { sendUnavailabilityReminder, setLastNotificationTime, wasNotificationSentToday } from '../services/notificationService';
 
 interface AvailabilityReminderProps {
   user: User;
@@ -19,6 +20,25 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
   useEffect(() => {
     checkLastUpdate();
   }, [user]);
+
+  // Envoyer une notification si nécessaire
+  useEffect(() => {
+    if (loading) return;
+
+    // Ne pas envoyer si déjà envoyé aujourd'hui
+    if (wasNotificationSentToday()) return;
+
+    // Envoyer la notification selon le statut
+    if (lastUpdateDate === null) {
+      // Jamais saisi d'indisponibilités
+      sendUnavailabilityReminder(0, true);
+      setLastNotificationTime();
+    } else if (daysRemaining <= 3) {
+      // Mise à jour bientôt nécessaire ou urgent
+      sendUnavailabilityReminder(daysRemaining, false);
+      setLastNotificationTime();
+    }
+  }, [loading, lastUpdateDate, daysRemaining]);
 
   const checkLastUpdate = async () => {
     try {

@@ -3,6 +3,7 @@ import type { User } from '@supabase/gotrue-js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import DashboardLayout from './DashboardLayout';
+import { usePeriodicNotification } from '../hooks/usePeriodicNotification';
 
 interface ModernDashboardProps {
     user: User;
@@ -11,6 +12,9 @@ interface ModernDashboardProps {
 export default function ModernDashboard({ user }: ModernDashboardProps) {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+
+    // Activer les notifications périodiques (toutes les heures)
+    usePeriodicNotification({ user, intervalMinutes: 60 });
 
     useEffect(() => {
         const timer = setTimeout(() => setLoading(false), 500);
