@@ -6,7 +6,7 @@ const routes = {
     '/users': 'Gestion des utilisateurs',
     '/reports': 'Rapports',
     '/groups': 'Gestion des groupes',
-    '/availabilities': 'Mes disponibilités',
+    '/availabilities': 'Mes indisponibilités',
     '/profile': 'Mon profil'
 };
 

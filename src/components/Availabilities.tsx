@@ -92,8 +92,8 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
       if (error) throw error;
       setAvailabilities(data || []);
     } catch (error: any) {
-      console.error('Erreur lors du chargement des disponibilit�s:', error);
-      setError('Erreur lors du chargement des disponibilit�s');
+      console.error('Erreur lors du chargement des indisponibilités:', error);
+      setError('Erreur lors du chargement des indisponibilités');
     } finally {
       setLoading(false);
     }
@@ -113,11 +113,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilit� ajout�e avec succ�s');
+      setSuccess('Indisponibilité ajoutée avec succès');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de l\'ajout de la disponibilit�:', error);
-      setError('Erreur lors de l\'ajout de la disponibilit�');
+      console.error('Erreur lors de l\'ajout de l\'indisponibilité:', error);
+      setError('Erreur lors de l\'ajout de l\'indisponibilité');
     }
   }, [selectedUserId]);
 
@@ -140,11 +140,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilit� mise � jour avec succ�s');
+      setSuccess('Indisponibilité mise à jour avec succès');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la mise � jour de la disponibilit�:', error);
-      setError('Erreur lors de la mise � jour de la disponibilit�');
+      console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
+      setError('Erreur lors de la mise à jour de l\'indisponibilité');
       dropInfo.revert();
     }
   }, [selectedUserId]);
@@ -164,11 +164,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilit� mise � jour avec succ�s');
+      setSuccess('Indisponibilité mise à jour avec succès');
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la mise � jour de la disponibilit�:', error);
-      setError('Erreur lors de la mise � jour de la disponibilit�');
+      console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
+      setError('Erreur lors de la mise à jour de l\'indisponibilité');
       resizeInfo.revert();
     }
   }, [selectedUserId]);
@@ -187,24 +187,24 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
-      setSuccess('Disponibilit� supprim�e avec succ�s');
+      setSuccess('Indisponibilité supprimée avec succès');
       setSelectedEvent(null);
       setShowDeleteConfirm(false);
       loadAvailabilities();
     } catch (error: any) {
-      console.error('Erreur lors de la suppression de la disponibilit�:', error);
-      setError('Erreur lors de la suppression de la disponibilit�');
+      console.error('Erreur lors de la suppression de l\'indisponibilité:', error);
+      setError('Erreur lors de la suppression de l\'indisponibilité');
     }
   };
 
   const events = availabilities.map(availability => ({
     id: availability.id,
-    title: 'Disponible',
+    title: 'Indisponible',
     start: availability.start_time,
     end: availability.end_time,
     // Use CSS variable-based rgb so colors follow the theme tokens at runtime
-    backgroundColor: `rgb(var(--color-success-500) / 1)`,
-    borderColor: `rgb(var(--color-success-600) / 1)`,
+    backgroundColor: `rgb(var(--color-error-500) / 1)`,
+    borderColor: `rgb(var(--color-error-600) / 1)`,
     editable: true,
     durationEditable: true,
     startEditable: true,
@@ -234,14 +234,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
           <div className="px-4 py-5 sm:p-6">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-semibold text-primary-700">
-                {isOwner ? 'G�rer les disponibilit�s' : 'Mes disponibilit�s'}
+                {isOwner ? 'Gérer les indisponibilités' : 'Mes indisponibilités'}
               </h1>
             </div>
 
             {isOwner && (
               <div className="mb-4">
                 <label className="block text-sm font-medium text-primary-700 mb-2">
-                  S�lectionner un utilisateur
+                  Sélectionner un utilisateur
                 </label>
                 <select
                   value={selectedUserId}
