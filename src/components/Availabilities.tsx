@@ -376,7 +376,8 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                       Supprimer
                     </button>
                   </div>
-                </div>v>
+                </div>
+              </div>
             )}
           </div>
         </div>
