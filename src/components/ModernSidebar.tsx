@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Settings } from 'lucide-react';
 import { supabase } from '../supabase';
 import RoleBadge from './RoleBadge';
 
