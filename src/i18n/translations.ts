@@ -181,6 +181,41 @@ export interface Translations {
     sun: string;
   };
   
+  // Reports
+  reports: {
+    title: string;
+    subtitle: string;
+    errorLoading: string;
+    globalCalendar: string;
+    globalCalendarDesc: string;
+    taskReport: string;
+    taskReportDesc: string;
+    userReport: string;
+    userReportDesc: string;
+    groupReport: string;
+    groupReportDesc: string;
+    availabilityReport: string;
+    availabilityReportDesc: string;
+    totalTasks: string;
+    completedTasks: string;
+    tasksInProgress: string;
+    priorityDistribution: string;
+    totalUsers: string;
+    activeUsers: string;
+    roleDistribution: string;
+    owner: string;
+    admin: string;
+    user: string;
+    totalGroups: string;
+    averageMembers: string;
+    mostActiveGroup: string;
+    totalAvailabilities: string;
+    averageDuration: string;
+    mostAvailableDay: string;
+    noData: string;
+    noGroup: string;
+  };
+  
   // Unavailabilities
   unavailabilities: {
     title: string;
@@ -389,6 +424,39 @@ export const translations: Record<Language, Translations> = {
       sat: 'Sam',
       sun: 'Dim',
     },
+    reports: {
+      title: 'Rapports et statistiques',
+      subtitle: 'Sélectionnez un rapport pour voir les statistiques détaillées',
+      errorLoading: 'Erreur lors du chargement des statistiques',
+      globalCalendar: 'Calendrier Global',
+      globalCalendarDesc: 'Vue globale des tâches et assignations',
+      taskReport: 'Rapport des tâches',
+      taskReportDesc: 'Statistiques sur les tâches',
+      userReport: 'Rapport des utilisateurs',
+      userReportDesc: 'Vue d\'ensemble des utilisateurs',
+      groupReport: 'Rapport des groupes',
+      groupReportDesc: 'Analyse des groupes',
+      availabilityReport: 'Rapport des disponibilités',
+      availabilityReportDesc: 'Statistiques des disponibilités',
+      totalTasks: 'Total des tâches',
+      completedTasks: 'Tâches terminées',
+      tasksInProgress: 'Tâches en cours',
+      priorityDistribution: 'Répartition par priorité',
+      totalUsers: 'Total des utilisateurs',
+      activeUsers: 'Utilisateurs actifs',
+      roleDistribution: 'Répartition par rôle',
+      owner: 'Propriétaire',
+      admin: 'Admin',
+      user: 'Utilisateur',
+      totalGroups: 'Total des groupes',
+      averageMembers: 'Moyenne des membres',
+      mostActiveGroup: 'Groupe le plus actif',
+      totalAvailabilities: 'Total des disponibilités',
+      averageDuration: 'Durée moyenne',
+      mostAvailableDay: 'Jour le plus disponible',
+      noData: 'Aucune donnée',
+      noGroup: 'Aucun groupe',
+    },
     unavailabilities: {
       title: 'Indisponibilités',
       reminder: 'Rappel d\'indisponibilités',
@@ -591,6 +659,39 @@ export const translations: Record<Language, Translations> = {
       fri: 'Fri',
       sat: 'Sat',
       sun: 'Sun',
+    },
+    reports: {
+      title: 'Reports and Statistics',
+      subtitle: 'Select a report to view detailed statistics',
+      errorLoading: 'Error loading statistics',
+      globalCalendar: 'Global Calendar',
+      globalCalendarDesc: 'Global view of tasks and assignments',
+      taskReport: 'Task Report',
+      taskReportDesc: 'Task statistics',
+      userReport: 'User Report',
+      userReportDesc: 'User overview',
+      groupReport: 'Group Report',
+      groupReportDesc: 'Group analysis',
+      availabilityReport: 'Availability Report',
+      availabilityReportDesc: 'Availability statistics',
+      totalTasks: 'Total Tasks',
+      completedTasks: 'Completed Tasks',
+      tasksInProgress: 'Tasks in Progress',
+      priorityDistribution: 'Priority Distribution',
+      totalUsers: 'Total Users',
+      activeUsers: 'Active Users',
+      roleDistribution: 'Role Distribution',
+      owner: 'Owner',
+      admin: 'Admin',
+      user: 'User',
+      totalGroups: 'Total Groups',
+      averageMembers: 'Average Members',
+      mostActiveGroup: 'Most Active Group',
+      totalAvailabilities: 'Total Availabilities',
+      averageDuration: 'Average Duration',
+      mostAvailableDay: 'Most Available Day',
+      noData: 'No data',
+      noGroup: 'No group',
     },
     unavailabilities: {
       title: 'Unavailabilities',
@@ -795,6 +896,39 @@ export const translations: Record<Language, Translations> = {
       sat: 'Sat',
       sun: 'Sun',
     },
+    reports: {
+      title: 'Reports and Statistics',
+      subtitle: 'Select a report to view detailed statistics',
+      errorLoading: 'Error loading statistics',
+      globalCalendar: 'Global Calendar',
+      globalCalendarDesc: 'Global view of tasks and assignments',
+      taskReport: 'Task Report',
+      taskReportDesc: 'Task statistics',
+      userReport: 'User Report',
+      userReportDesc: 'User overview',
+      groupReport: 'Group Report',
+      groupReportDesc: 'Group analysis',
+      availabilityReport: 'Availability Report',
+      availabilityReportDesc: 'Availability statistics',
+      totalTasks: 'Total Tasks',
+      completedTasks: 'Completed Tasks',
+      tasksInProgress: 'Tasks in Progress',
+      priorityDistribution: 'Priority Distribution',
+      totalUsers: 'Total Users',
+      activeUsers: 'Active Users',
+      roleDistribution: 'Role Distribution',
+      owner: 'Owner',
+      admin: 'Admin',
+      user: 'User',
+      totalGroups: 'Total Groups',
+      averageMembers: 'Average Members',
+      mostActiveGroup: 'Most Active Group',
+      totalAvailabilities: 'Total Availabilities',
+      averageDuration: 'Average Duration',
+      mostAvailableDay: 'Most Available Day',
+      noData: 'No data',
+      noGroup: 'No group',
+    },
     unavailabilities: {
       title: 'Unavailabilities',
       reminder: 'Unavailability Reminder',
@@ -997,6 +1131,39 @@ export const translations: Record<Language, Translations> = {
       fri: 'Vie',
       sat: 'Sáb',
       sun: 'Dom',
+    },
+    reports: {
+      title: 'Informes y Estadísticas',
+      subtitle: 'Seleccione un informe para ver estadísticas detalladas',
+      errorLoading: 'Error al cargar las estadísticas',
+      globalCalendar: 'Calendario Global',
+      globalCalendarDesc: 'Vista global de tareas y asignaciones',
+      taskReport: 'Informe de Tareas',
+      taskReportDesc: 'Estadísticas de tareas',
+      userReport: 'Informe de Usuarios',
+      userReportDesc: 'Vista general de usuarios',
+      groupReport: 'Informe de Grupos',
+      groupReportDesc: 'Análisis de grupos',
+      availabilityReport: 'Informe de Disponibilidades',
+      availabilityReportDesc: 'Estadísticas de disponibilidades',
+      totalTasks: 'Total de Tareas',
+      completedTasks: 'Tareas Completadas',
+      tasksInProgress: 'Tareas en Curso',
+      priorityDistribution: 'Distribución por Prioridad',
+      totalUsers: 'Total de Usuarios',
+      activeUsers: 'Usuarios Activos',
+      roleDistribution: 'Distribución por Rol',
+      owner: 'Propietario',
+      admin: 'Admin',
+      user: 'Usuario',
+      totalGroups: 'Total de Grupos',
+      averageMembers: 'Promedio de Miembros',
+      mostActiveGroup: 'Grupo Más Activo',
+      totalAvailabilities: 'Total de Disponibilidades',
+      averageDuration: 'Duración Promedio',
+      mostAvailableDay: 'Día Más Disponible',
+      noData: 'Sin datos',
+      noGroup: 'Sin grupo',
     },
     unavailabilities: {
       title: 'Indisponibilidades',

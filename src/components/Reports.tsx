@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import GlobalCalendar from './GlobalCalendar';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ReportsProps {
   user: User;
@@ -47,6 +48,7 @@ interface AvailabilityStats {
 
 export default function Reports({ user: _user }: ReportsProps) {
   void _user;
+  const { t } = useTranslation();
   const [selectedReport, setSelectedReport] = useState<string>('calendar');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export default function Reports({ user: _user }: ReportsProps) {
       }
     } catch (error: any) {
       console.error('Erreur lors du chargement des statistiques:', error);
-      setError('Erreur lors du chargement des statistiques');
+      setError(t.reports.errorLoading);
     } finally {
       setLoading(false);
     }
@@ -236,28 +238,28 @@ export default function Reports({ user: _user }: ReportsProps) {
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-primary-700">Total des tâches</h3>
+                  <h3 className="text-lg font-medium text-primary-700">{t.reports.totalTasks}</h3>
                   <p className="text-4xl font-bold text-primary-600 mt-2">{taskStats.total}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-success-700">Tâches terminées</h3>
+                  <h3 className="text-lg font-medium text-success-700">{t.reports.completedTasks}</h3>
                   <p className="text-4xl font-bold text-success-600 mt-2">{taskStats.completed}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-warning-50 to-warning-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-warning-700">Tâches en cours</h3>
+                  <h3 className="text-lg font-medium text-warning-700">{t.reports.tasksInProgress}</h3>
                   <p className="text-4xl font-bold text-warning-600 mt-2">{taskStats.inProgress}</p>
                 </div>
               </div>
             </div>
             <div className="bg-surface p-6 rounded-xl shadow-sm">
-              <h3 className="text-lg font-medium mb-6 text-primary-700">Répartition par priorité</h3>
+              <h3 className="text-lg font-medium mb-6 text-primary-700">{t.reports.priorityDistribution}</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Haute</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.dashboard.high}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-error-500 to-error-600 transition-all duration-500 ease-in-out" 
@@ -267,7 +269,7 @@ export default function Reports({ user: _user }: ReportsProps) {
                   <div className="w-16 text-right text-sm font-medium text-primary-400">{taskStats.byPriority.high}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Moyenne</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.dashboard.medium}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-warning-500 to-warning-600 transition-all duration-500 ease-in-out" 
@@ -277,7 +279,7 @@ export default function Reports({ user: _user }: ReportsProps) {
                   <div className="w-16 text-right text-sm font-medium text-primary-400">{taskStats.byPriority.medium}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Basse</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.dashboard.low}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-success-500 to-success-600 transition-all duration-500 ease-in-out" 
@@ -297,22 +299,22 @@ export default function Reports({ user: _user }: ReportsProps) {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-accent-700">Total des utilisateurs</h3>
+                  <h3 className="text-lg font-medium text-accent-700">{t.reports.totalUsers}</h3>
                   <p className="text-4xl font-bold text-accent-600 mt-2">{userStats.total}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-success-700">Utilisateurs actifs</h3>
+                  <h3 className="text-lg font-medium text-success-700">{t.reports.activeUsers}</h3>
                   <p className="text-4xl font-bold text-success-600 mt-2">{userStats.active}</p>
                 </div>
               </div>
             </div>
             <div className="bg-surface p-6 rounded-xl shadow-sm">
-              <h3 className="text-lg font-medium mb-6 text-primary-700">Répartition par rôle</h3>
+              <h3 className="text-lg font-medium mb-6 text-primary-700">{t.reports.roleDistribution}</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Propriétaire</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.reports.owner}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-accent-500 to-accent-600 transition-all duration-500 ease-in-out" 
@@ -322,7 +324,7 @@ export default function Reports({ user: _user }: ReportsProps) {
                   <div className="w-16 text-right text-sm font-medium text-primary-400">{userStats.byRole.owner}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Admin</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.reports.admin}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500 ease-in-out" 
@@ -332,7 +334,7 @@ export default function Reports({ user: _user }: ReportsProps) {
                   <div className="w-16 text-right text-sm font-medium text-primary-400">{userStats.byRole.admin}</div>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-32 text-sm font-medium text-primary-400">Utilisateur</div>
+                  <div className="w-32 text-sm font-medium text-primary-400">{t.reports.user}</div>
                   <div className="flex-1 h-4 bg-surface rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-success-500 to-success-600 transition-all duration-500 ease-in-out" 
@@ -352,21 +354,21 @@ export default function Reports({ user: _user }: ReportsProps) {
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-accent-700">Total des groupes</h3>
+                  <h3 className="text-lg font-medium text-accent-700">{t.reports.totalGroups}</h3>
                   <p className="text-4xl font-bold text-accent-600 mt-2">{groupStats.total}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-primary-700">Moyenne des membres</h3>
+                  <h3 className="text-lg font-medium text-primary-700">{t.reports.averageMembers}</h3>
                   <p className="text-4xl font-bold text-primary-600 mt-2">{groupStats.averageMembers.toFixed(1)}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-success-700">Groupe le plus actif</h3>
+                  <h3 className="text-lg font-medium text-success-700">{t.reports.mostActiveGroup}</h3>
                   <p className="text-xl font-bold text-success-600 mt-2">{groupStats.mostActive.name}</p>
-                  <p className="text-sm text-success-500">{groupStats.mostActive.taskCount} tâches</p>
+                  <p className="text-sm text-success-500">{groupStats.mostActive.taskCount} {t.calendar.taskCount}s</p>
                 </div>
               </div>
             </div>
@@ -379,13 +381,13 @@ export default function Reports({ user: _user }: ReportsProps) {
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-primary-100 to-primary-200 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-primary-700">Total des disponibilités</h3>
+                  <h3 className="text-lg font-medium text-primary-700">{t.reports.totalAvailabilities}</h3>
                   <p className="text-4xl font-bold text-primary-600 mt-2">{availabilityStats.total}</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-success-50 to-success-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-success-700">Durée moyenne</h3>
+                  <h3 className="text-lg font-medium text-success-700">{t.reports.averageDuration}</h3>
                   <p className="text-4xl font-bold text-success-600 mt-2">
                     {Math.round(availabilityStats.averageDuration)} min
                   </p>
@@ -393,7 +395,7 @@ export default function Reports({ user: _user }: ReportsProps) {
               </div>
               <div className="bg-gradient-to-br from-accent-50 to-accent-100 p-6 rounded-xl shadow-sm">
                 <div>
-                  <h3 className="text-lg font-medium text-accent-700">Jour le plus disponible</h3>
+                  <h3 className="text-lg font-medium text-accent-700">{t.reports.mostAvailableDay}</h3>
                   <p className="text-xl font-bold text-accent-600 mt-2">{availabilityStats.mostAvailableDay}</p>
                 </div>
               </div>
@@ -410,8 +412,8 @@ export default function Reports({ user: _user }: ReportsProps) {
     <>
       <div className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-primary-700">Rapports et statistiques</h1>
-          <p className="mt-2 text-primary-400">Sélectionnez un rapport pour voir les statistiques détaillées</p>
+          <h1 className="text-2xl font-semibold text-primary-700">{t.reports.title}</h1>
+          <p className="mt-2 text-primary-400">{t.reports.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -420,8 +422,8 @@ export default function Reports({ user: _user }: ReportsProps) {
             {[
               {
                 id: 'calendar',
-                title: 'Calendrier Global',
-                description: 'Vue globale des tâches et assignations',
+                title: t.reports.globalCalendar,
+                description: t.reports.globalCalendarDesc,
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -430,8 +432,8 @@ export default function Reports({ user: _user }: ReportsProps) {
               },
               {
                 id: 'tasks',
-                title: 'Rapport des tâches',
-                description: 'Statistiques sur les tâches',
+                title: t.reports.taskReport,
+                description: t.reports.taskReportDesc,
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -440,8 +442,8 @@ export default function Reports({ user: _user }: ReportsProps) {
               },
               {
                 id: 'users',
-                title: 'Rapport des utilisateurs',
-                description: "Vue d'ensemble des utilisateurs",
+                title: t.reports.userReport,
+                description: t.reports.userReportDesc,
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -450,8 +452,8 @@ export default function Reports({ user: _user }: ReportsProps) {
               },
               {
                 id: 'groups',
-                title: 'Rapport des groupes',
-                description: 'Analyse des groupes',
+                title: t.reports.groupReport,
+                description: t.reports.groupReportDesc,
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -460,8 +462,8 @@ export default function Reports({ user: _user }: ReportsProps) {
               },
               {
                 id: 'availabilities',
-                title: 'Rapport des disponibilités',
-                description: 'Statistiques des disponibilités',
+                title: t.reports.availabilityReport,
+                description: t.reports.availabilityReportDesc,
                 icon: (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
