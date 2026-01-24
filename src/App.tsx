@@ -12,7 +12,6 @@ import SettingsPage from './pages/SettingsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
 import UserManagement from './components/UserManagement';
 import Availabilities from './components/Availabilities';
-import Profile from './components/Profile';
 import type { User } from '@supabase/gotrue-js';
 
 function App() {
@@ -105,7 +104,7 @@ function App() {
         <Route path="/messages" element={user ? <MessagesPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/settings" element={user ? <SettingsPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/availabilities" element={user ? <Availabilities user={user} /> : <Navigate to="/login" />} />
-        <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={<Navigate to="/settings" replace />} />
       </Routes>
     </BrowserRouter>
   );

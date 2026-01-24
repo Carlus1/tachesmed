@@ -14,6 +14,7 @@ interface ModernHeaderProps {
 
 export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark }: ModernHeaderProps) {
     const [role, setRole] = useState<string | null>(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     useEffect(() => {
         let mounted = true;
@@ -29,6 +30,20 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
         loadRole();
         return () => { mounted = false; };
     }, [user]);
+
+    // Fermer le menu si on clique ailleurs
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.user-menu-container')) {
+                setShowUserMenu(false);
+            }
+        };
+        if (showUserMenu) {
+            document.addEventListener('click', handleClickOutside);
+        }
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [showUserMenu]);
 
     return (
         <header className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-surface p-4">
@@ -55,8 +70,11 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                         )}
                     </button>
 
-                    <div className="relative group">
-                        <button className="flex items-center space-x-2">
+                    <div className="relative user-menu-container">
+                        <button 
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            className="flex items-center space-x-2"
+                        >
                             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                                 <span className="text-white text-sm font-medium">{user.email?.charAt(0).toUpperCase()}</span>
                             </div>
@@ -65,11 +83,12 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                                 <RoleBadge role={role} />
                             </div>
                         </button>
-                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Mon profil</Link>
-                                <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Paramètres</Link>
-                                <button onClick={() => onSignOut?.()} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Déconnexion</button>
+                        {showUserMenu && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10">
+                                <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface" onClick={() => setShowUserMenu(false)}>Paramètres</Link>
+                                <button onClick={() => { onSignOut?.(); setShowUserMenu(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Déconnexion</button>
                             </div>
+                        )}
                     </div>
                 </div>
             </div>

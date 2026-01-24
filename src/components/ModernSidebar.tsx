@@ -65,8 +65,9 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                 )}
 
                 <div className="mt-auto">
-                    <NavLink to="/profile" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Paramètres
+                    <NavLink to="/settings" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                        <Settings className="w-5 h-5" />
+                        <span>Paramètres</span>
                     </NavLink>
                     <button onClick={() => onClose?.()} className="mt-2 w-full text-left px-3 py-2 text-primary-700 dark:text-surface rounded-lg hover:bg-surface dark:hover:bg-surface transition-colors">
                         Fermer
