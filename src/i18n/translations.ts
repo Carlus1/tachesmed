@@ -159,6 +159,26 @@ export interface Translations {
     week: string;
     month: string;
     viewFullCalendar: string;
+    weekOf: string;
+    noTask: string;
+    taskCount: string;
+    thisWeek: string;
+    thisMonth: string;
+    tasksOf: string;
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+    mon: string;
+    tue: string;
+    wed: string;
+    thu: string;
+    fri: string;
+    sat: string;
+    sun: string;
   };
   
   // Unavailabilities
@@ -348,6 +368,26 @@ export const translations: Record<Language, Translations> = {
       week: 'Semaine',
       month: 'Mois',
       viewFullCalendar: 'Voir le calendrier complet',
+      weekOf: 'Semaine du',
+      noTask: 'Aucune tâche',
+      taskCount: 'tâche',
+      thisWeek: 'cette semaine',
+      thisMonth: 'ce mois',
+      tasksOf: 'Tâches du',
+      monday: 'Lundi',
+      tuesday: 'Mardi',
+      wednesday: 'Mercredi',
+      thursday: 'Jeudi',
+      friday: 'Vendredi',
+      saturday: 'Samedi',
+      sunday: 'Dimanche',
+      mon: 'Lun',
+      tue: 'Mar',
+      wed: 'Mer',
+      thu: 'Jeu',
+      fri: 'Ven',
+      sat: 'Sam',
+      sun: 'Dim',
     },
     unavailabilities: {
       title: 'Indisponibilités',
@@ -531,6 +571,26 @@ export const translations: Record<Language, Translations> = {
       week: 'Week',
       month: 'Month',
       viewFullCalendar: 'View Full Calendar',
+      weekOf: 'Week of',
+      noTask: 'No task',
+      taskCount: 'task',
+      thisWeek: 'this week',
+      thisMonth: 'this month',
+      tasksOf: 'Tasks of',
+      monday: 'Monday',
+      tuesday: 'Tuesday',
+      wednesday: 'Wednesday',
+      thursday: 'Thursday',
+      friday: 'Friday',
+      saturday: 'Saturday',
+      sunday: 'Sunday',
+      mon: 'Mon',
+      tue: 'Tue',
+      wed: 'Wed',
+      thu: 'Thu',
+      fri: 'Fri',
+      sat: 'Sat',
+      sun: 'Sun',
     },
     unavailabilities: {
       title: 'Unavailabilities',
@@ -714,6 +774,26 @@ export const translations: Record<Language, Translations> = {
       week: 'Week',
       month: 'Month',
       viewFullCalendar: 'View Full Calendar',
+      weekOf: 'Week of',
+      noTask: 'No task',
+      taskCount: 'task',
+      thisWeek: 'this week',
+      thisMonth: 'this month',
+      tasksOf: 'Tasks of',
+      monday: 'Monday',
+      tuesday: 'Tuesday',
+      wednesday: 'Wednesday',
+      thursday: 'Thursday',
+      friday: 'Friday',
+      saturday: 'Saturday',
+      sunday: 'Sunday',
+      mon: 'Mon',
+      tue: 'Tue',
+      wed: 'Wed',
+      thu: 'Thu',
+      fri: 'Fri',
+      sat: 'Sat',
+      sun: 'Sun',
     },
     unavailabilities: {
       title: 'Unavailabilities',
@@ -897,6 +977,26 @@ export const translations: Record<Language, Translations> = {
       week: 'Semana',
       month: 'Mes',
       viewFullCalendar: 'Ver calendario completo',
+      weekOf: 'Semana del',
+      noTask: 'Sin tarea',
+      taskCount: 'tarea',
+      thisWeek: 'esta semana',
+      thisMonth: 'este mes',
+      tasksOf: 'Tareas del',
+      monday: 'Lunes',
+      tuesday: 'Martes',
+      wednesday: 'Miércoles',
+      thursday: 'Jueves',
+      friday: 'Viernes',
+      saturday: 'Sábado',
+      sunday: 'Domingo',
+      mon: 'Lun',
+      tue: 'Mar',
+      wed: 'Mié',
+      thu: 'Jue',
+      fri: 'Vie',
+      sat: 'Sáb',
+      sun: 'Dom',
     },
     unavailabilities: {
       title: 'Indisponibilidades',

@@ -2,18 +2,20 @@ import { useState } from 'react';
 import ModernLayout from '../components/ModernLayout';
 import type { User } from '@supabase/gotrue-js';
 import CalendarView from '../components/CalendarView';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ModernCalendarPageProps {
   user: User;
 }
 
 export default function ModernCalendarPage({ user }: ModernCalendarPageProps) {
+  const { t } = useTranslation();
   const [view, setView] = useState<'week' | 'month'>('week');
 
   return (
   <ModernLayout user={user}>
       <div className="mb-6 flex justify-between items-center">
-  <h1 className="text-2xl font-bold text-primary-700">Calendrier</h1>
+  <h1 className="text-2xl font-bold text-primary-700">{t.calendar.title}</h1>
         <div className="flex items-center space-x-2">
             <div className="bg-surface rounded-lg shadow-sm border border-border p-1 flex">
             <button
@@ -24,7 +26,7 @@ export default function ModernCalendarPage({ user }: ModernCalendarPageProps) {
                   : 'text-primary-400 hover:bg-surface'
               }`}
             >
-              Semaine
+              {t.calendar.week}
             </button>
             <button
               onClick={() => setView('month')}
@@ -34,7 +36,7 @@ export default function ModernCalendarPage({ user }: ModernCalendarPageProps) {
                   : 'text-primary-400 hover:bg-surface'
               }`}
             >
-              Mois
+              {t.calendar.month}
             </button>
           </div>
           <button className="p-2 bg-accent-400 text-white rounded-lg hover:bg-accent-500 transition-colors">

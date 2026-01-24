@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { format, startOfWeek, endOfWeek, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface Task {
   id: string;
@@ -21,6 +22,7 @@ interface CalendarViewProps {
 }
 
 export default function CalendarView({ view = 'week' }: CalendarViewProps) {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -145,7 +147,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
     return (
       <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
+          <h2 className="text-lg font-semibold text-primary-700">{t.calendar.title}</h2>
         <div className="flex items-center space-x-2">
           <button 
             onClick={previousWeek}
@@ -156,7 +158,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
             </svg>
           </button>
           <span className="text-sm font-medium text-primary-700">
-            Semaine du {format(weekDays[0] || currentDate, 'dd/MM/yyyy', { locale: fr })}
+            {t.calendar.weekOf} {format(weekDays[0] || currentDate, 'dd/MM/yyyy', { locale: fr })}
           </span>
           <button 
             onClick={nextWeek}
@@ -219,7 +221,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
                 </div>
               ) : (
                 <div className="h-full flex items-center justify-center">
-                  <span className="text-xs text-primary-400">Aucune tâche</span>
+                  <span className="text-xs text-primary-400">{t.calendar.noTask}</span>
                 </div>
               )}
             </div>
@@ -229,7 +231,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
       
       <div className="p-4 border-t border-border bg-primary-100">
         <span className="text-sm text-primary-400">
-          {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} cette semaine
+          {tasks.length} {t.calendar.taskCount}{tasks.length !== 1 ? 's' : ''} {t.calendar.thisWeek}
         </span>
       </div>
     </div>
@@ -250,7 +252,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
     <>
     <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
       <div className="flex justify-between items-center p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-primary-700">Calendrier</h2>
+        <h2 className="text-lg font-semibold text-primary-700">{t.calendar.title}</h2>
         <div className="flex items-center space-x-2">
           <button 
             onClick={previousMonth}
@@ -276,7 +278,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
 
       {/* Days of week header */}
       <div className="grid grid-cols-7 border-b border-border bg-primary-50">
-        {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, index) => (
+        {[t.calendar.mon, t.calendar.tue, t.calendar.wed, t.calendar.thu, t.calendar.fri, t.calendar.sat, t.calendar.sun].map((day, index) => (
           <div key={index} className="p-2 text-center border-r border-border last:border-r-0">
             <p className="text-xs font-medium text-primary-400 uppercase">{day}</p>
           </div>
@@ -320,7 +322,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
                       onClick={() => setSelectedDayTasks({ date: day, tasks: dayTasks })}
                       className="text-xs text-primary-600 hover:text-primary-700 hover:underline font-medium w-full text-left"
                     >
-                      +{dayTasks.length - 2} tâche{dayTasks.length - 2 > 1 ? 's' : ''}
+                      +{dayTasks.length - 2} {t.calendar.taskCount}{dayTasks.length - 2 > 1 ? 's' : ''}
                     </button>
                   )}
                 </div>
@@ -332,7 +334,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
 
       <div className="p-4 border-t border-border bg-primary-100">
         <span className="text-sm text-primary-400">
-          {tasks.length} tâche{tasks.length !== 1 ? 's' : ''} ce mois
+          {tasks.length} {t.calendar.taskCount}{tasks.length !== 1 ? 's' : ''} {t.calendar.thisMonth}
         </span>
       </div>
     </div>
@@ -343,7 +345,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         <div className="bg-surface rounded-2xl shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
           <div className="p-4 border-b border-border flex justify-between items-center">
             <h3 className="text-lg font-semibold text-primary-700">
-              Tâches du {format(selectedDayTasks.date, 'd MMMM yyyy', { locale: fr })}
+              {t.calendar.tasksOf} {format(selectedDayTasks.date, 'd MMMM yyyy', { locale: fr })}
             </h3>
             <button 
               onClick={() => setSelectedDayTasks(null)}
