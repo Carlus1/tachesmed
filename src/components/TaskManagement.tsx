@@ -3,7 +3,6 @@ import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import Breadcrumb from './Breadcrumb';
 import TaskForm from './TaskForm';
 
 interface TaskManagementProps {
@@ -147,8 +146,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Breadcrumb />
+    <>
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-primary-700">Gestion des tâches</h1>
@@ -302,6 +300,6 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

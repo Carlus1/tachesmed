@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
-import Breadcrumb from './Breadcrumb';
 import GroupDetail from './GroupDetail';
 
 interface GroupManagementProps {
@@ -176,8 +175,6 @@ export default function GroupManagement({ user }: GroupManagementProps) {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
-      <Breadcrumb />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="bg-surface shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:p-6">
@@ -293,13 +290,14 @@ export default function GroupManagement({ user }: GroupManagementProps) {
           </div>
         </div>
       </div>
+        </div>
+      </div>
     )}
 
     {/* Composant de détail du groupe */}
     {selectedGroupId && (
       <GroupDetail groupId={selectedGroupId} onClose={() => setSelectedGroupId(null)} />
     )}
-
     </>
   );
 }

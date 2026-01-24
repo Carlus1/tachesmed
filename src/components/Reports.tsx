@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
-import Breadcrumb from './Breadcrumb';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import GlobalCalendar from './GlobalCalendar';
@@ -408,8 +407,7 @@ export default function Reports({ user: _user }: ReportsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Breadcrumb />
+    <>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-primary-700">Rapports et statistiques</h1>
@@ -513,6 +511,6 @@ export default function Reports({ user: _user }: ReportsProps) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
