@@ -6,7 +6,9 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useTranslation } from '../i18n/LanguageContext';
+import frLocale from '@fullcalendar/core/locales/fr';
+import esLocale from '@fullcalendar/core/locales/es';
+import { useTranslation, useLanguage } from '../i18n/LanguageContext';
 // date-fns imports removed (not used in this file)
 
 interface AvailabilitiesProps {
@@ -30,6 +32,7 @@ interface UserProfile {
 
 export default function Availabilities({ user }: AvailabilitiesProps) {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +44,15 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
   const [selectedUserId, setSelectedUserId] = useState<string>(user.id);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const calendarRef = useRef<any>(null);
+
+  // Map language to FullCalendar locale
+  const getCalendarLocale = () => {
+    switch (language) {
+      case 'fr': return frLocale;
+      case 'es': return esLocale;
+      default: return undefined; // English is default
+    }
+  };
 
   // Déterminer si l'utilisateur peut éditer
   const canEdit = userRole === 'owner' || (userRole === 'user' && selectedUserId === user.id);
@@ -347,7 +359,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                   center: 'title',
                   right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
-                locale="fr"
+                locale={getCalendarLocale()}
                 selectable={canEdit}
                 selectMirror={true}
                 dayMaxEvents={true}
