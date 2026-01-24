@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import GlobalCalendar from './GlobalCalendar';
+import CalendarProposal from './CalendarProposal';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface ReportsProps {
@@ -49,7 +50,7 @@ interface AvailabilityStats {
 export default function Reports({ user: _user }: ReportsProps) {
   void _user;
   const { t } = useTranslation();
-  const [selectedReport, setSelectedReport] = useState<string>('calendar');
+  const [selectedReport, setSelectedReport] = useState<string>('proposal');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [taskStats, setTaskStats] = useState<TaskStats | null>(null);
@@ -67,6 +68,10 @@ export default function Reports({ user: _user }: ReportsProps) {
       setError(null);
 
       switch (selectedReport) {
+        case 'proposal':
+          // No need to load anything, CalendarProposal handles its own data
+          setLoading(false);
+          break;
         case 'tasks':
           await loadTaskStats();
           break;
@@ -229,6 +234,9 @@ export default function Reports({ user: _user }: ReportsProps) {
     }
 
     switch (selectedReport) {
+      case 'proposal':
+        return <CalendarProposal />;
+
       case 'calendar':
         return <GlobalCalendar />;
 
@@ -420,6 +428,16 @@ export default function Reports({ user: _user }: ReportsProps) {
           {/* Liste des rapports */}
           <div className="lg:col-span-1 bg-surface rounded-xl shadow-sm p-4 space-y-2">
             {[
+              {
+                id: 'proposal',
+                title: t.reports.calendarProposal,
+                description: t.reports.calendarProposalDesc,
+                icon: (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                )
+              },
               {
                 id: 'calendar',
                 title: t.reports.globalCalendar,

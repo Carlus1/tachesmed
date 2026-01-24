@@ -235,6 +235,8 @@ export interface Translations {
     title: string;
     subtitle: string;
     errorLoading: string;
+    calendarProposal: string;
+    calendarProposalDesc: string;
     globalCalendar: string;
     globalCalendarDesc: string;
     taskReport: string;
@@ -524,6 +526,8 @@ export const translations: Record<Language, Translations> = {
       title: 'Rapports et statistiques',
       subtitle: 'Sélectionnez un rapport pour voir les statistiques détaillées',
       errorLoading: 'Erreur lors du chargement des statistiques',
+      calendarProposal: 'Proposition de calendrier',
+      calendarProposalDesc: 'Générer automatiquement un calendrier optimisé',
       globalCalendar: 'Calendrier Global',
       globalCalendarDesc: 'Vue globale des tâches et assignations',
       taskReport: 'Rapport des tâches',
@@ -807,6 +811,8 @@ export const translations: Record<Language, Translations> = {
       title: 'Reports and Statistics',
       subtitle: 'Select a report to view detailed statistics',
       errorLoading: 'Error loading statistics',
+      calendarProposal: 'Calendar Proposal',
+      calendarProposalDesc: 'Automatically generate an optimized calendar',
       globalCalendar: 'Global Calendar',
       globalCalendarDesc: 'Global view of tasks and assignments',
       taskReport: 'Task Report',
@@ -1090,6 +1096,8 @@ export const translations: Record<Language, Translations> = {
       title: 'Reports and Statistics',
       subtitle: 'Select a report to view detailed statistics',
       errorLoading: 'Error loading statistics',
+      calendarProposal: 'Calendar Proposal',
+      calendarProposalDesc: 'Automatically generate an optimized calendar',
       globalCalendar: 'Global Calendar',
       globalCalendarDesc: 'Global view of tasks and assignments',
       taskReport: 'Task Report',
@@ -1373,6 +1381,8 @@ export const translations: Record<Language, Translations> = {
       title: 'Informes y Estadísticas',
       subtitle: 'Seleccione un informe para ver estadísticas detalladas',
       errorLoading: 'Error al cargar las estadísticas',
+      calendarProposal: 'Propuesta de calendario',
+      calendarProposalDesc: 'Generar automáticamente un calendario optimizado',
       globalCalendar: 'Calendario Global',
       globalCalendarDesc: 'Vista global de tareas y asignaciones',
       taskReport: 'Informe de Tareas',
