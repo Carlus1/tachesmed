@@ -23,6 +23,8 @@ export default function GroupManagement({ user }: GroupManagementProps) {
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [newGroup, setNewGroup] = useState({ name: '', description: '' });
   const [deletingGroup, setDeletingGroup] = useState<Group | null>(null);
@@ -119,7 +121,31 @@ export default function GroupManagement({ user }: GroupManagementProps) {
       setError('Erreur lors de la création du groupe');
     }
   };
+  const handleUpdateGroup = async () => {
+    if (!editingGroup || !editingGroup.name.trim()) return;
 
+    try {
+      setError(null);
+
+      const { error: updateError } = await supabase
+        .from('groups')
+        .update({
+          name: editingGroup.name.trim(),
+          description: editingGroup.description.trim(),
+        })
+        .eq('id', editingGroup.id);
+
+      if (updateError) throw updateError;
+
+      setSuccess('Groupe modifié avec succès');
+      setShowEditModal(false);
+      setEditingGroup(null);
+      loadGroups();
+    } catch (err: any) {
+      console.error('Erreur lors de la modification du groupe:', err);
+      setError('Erreur lors de la modification du groupe');
+    }
+  };
   const handleDeleteGroup = async (group: Group) => {
     try {
       setError(null);
@@ -232,6 +258,15 @@ export default function GroupManagement({ user }: GroupManagementProps) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button onClick={() => setSelectedGroupId(group.id)} className="text-primary-600 hover:text-primary-800 mr-2 transition-colors">Gérer les membres</button>
+                          <button 
+                            onClick={() => {
+                              setEditingGroup(group);
+                              setShowEditModal(true);
+                            }} 
+                            className="text-blue-600 hover:text-blue-800 mr-2 transition-colors"
+                          >
+                            Modifier
+                          </button>
                           <button onClick={() => setShowDeleteConfirm(group.id)} className="text-error-600 hover:text-error-800 transition-colors" disabled={deletingGroup?.id === group.id}>{deletingGroup?.id === group.id ? 'Suppression...' : 'Supprimer'}</button>
                         </td>
                       </tr>
@@ -269,6 +304,48 @@ export default function GroupManagement({ user }: GroupManagementProps) {
             <div className="mt-6 flex justify-end space-x-3">
             <button onClick={() => { setShowCreateModal(false); setNewGroup({ name: '', description: '' }); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">Annuler</button>
             <button onClick={handleCreateGroup} disabled={!newGroup.name.trim()} className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors">Créer</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Modal d'édition de groupe */}
+    {showEditModal && editingGroup && (
+      <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
+        <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-primary-700">Modifier le groupe</h3>
+            <button onClick={() => { setShowEditModal(false); setEditingGroup(null); }} className="text-primary-400 hover:text-primary-700 transition-colors">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-primary-700">Nom du groupe</label>
+              <input 
+                type="text" 
+                value={editingGroup.name} 
+                onChange={(e) => setEditingGroup({ ...editingGroup, name: e.target.value })} 
+                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" 
+                placeholder="Entrez le nom du groupe" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-primary-700">Description</label>
+              <textarea 
+                value={editingGroup.description} 
+                onChange={(e) => setEditingGroup({ ...editingGroup, description: e.target.value })} 
+                rows={3} 
+                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" 
+                placeholder="Décrivez le but de ce groupe" 
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end space-x-3">
+            <button onClick={() => { setShowEditModal(false); setEditingGroup(null); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">Annuler</button>
+            <button onClick={handleUpdateGroup} disabled={!editingGroup.name.trim()} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">Enregistrer</button>
           </div>
         </div>
       </div>
