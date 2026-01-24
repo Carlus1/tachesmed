@@ -35,9 +35,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [userRole, setUserRole] = useState<string>('user');
   const [selectedUserId, setSelectedUserId] = useState<string>(user.id);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const calendarRef = useRef<any>(null);
+
+  // Déterminer si l'utilisateur peut éditer
+  const canEdit = userRole === 'owner' || (userRole === 'user' && selectedUserId === user.id);
+  const isAdmin = userRole === 'admin';
 
   useEffect(() => {
     checkOwnerRole();
@@ -58,8 +63,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
-      setIsOwner(data.role === 'owner');
+      if (error) throw error;      setUserRole(data.role);      setIsOwner(data.role === 'owner');
     } catch (error) {
       console.error('Erreur lors de la v�rification du r�le:', error);
     }
@@ -235,9 +239,9 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
     // Use CSS variable-based rgb so colors follow the theme tokens at runtime
     backgroundColor: `rgb(var(--color-error-500) / 1)`,
     borderColor: `rgb(var(--color-error-600) / 1)`,
-    editable: true,
-    durationEditable: true,
-    startEditable: true,
+    editable: canEdit,
+    durationEditable: canEdit,
+    startEditable: canEdit,
     classNames: [
       selectedEvent === availability.id ? 'selected-event' : ''
     ]
@@ -267,6 +271,17 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 {isOwner ? 'Gérer les indisponibilités' : 'Mes indisponibilités'}
               </h1>
             </div>
+
+            {isAdmin && (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-700">
+                  <svg className="inline h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  Mode consultation uniquement - Vous ne pouvez pas modifier les indisponibilités
+                </p>
+              </div>
+            )}
 
             {isOwner && (
               <div className="mb-4">
@@ -299,7 +314,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
               </div>
             )}
 
-            {selectedEvent && (
+            {selectedEvent && canEdit && (
                 <div className="mb-4 flex justify-between items-center bg-red-50 border border-red-200 rounded-md p-3">
                   <span className="text-sm text-red-700">
                     Indisponibilité sélectionnée
@@ -335,7 +350,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                   right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
                 locale="fr"
-                selectable={true}
+                selectable={canEdit}
                 selectMirror={true}
                 dayMaxEvents={true}
                 weekends={true}
@@ -345,7 +360,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 eventClick={handleEventClick}
                 eventDrop={handleEventDrop}
                 eventResize={handleEventResize}
-                editable={true}
+                editable={canEdit}
                 height="700px"
                 allDaySlot={false}
                 slotMinTime="00:00:00"
