@@ -159,6 +159,24 @@ export interface Translations {
     updateUnavailabilities: string;
     nextUpdateIn: string;
     manageUnavailabilities: string;
+    myUnavailabilities: string;
+    manageAllUnavailabilities: string;
+    selectUser: string;
+    unavailable: string;
+    selected: string;
+    close: string;
+    confirmDelete: string;
+    confirmDeleteMessage: string;
+    added: string;
+    updated: string;
+    deleted: string;
+    errorAdding: string;
+    errorUpdating: string;
+    errorDeleting: string;
+    errorLoading: string;
+    readOnlyMode: string;
+    readOnlyMessage: string;
+    day: string;
   };
   
   // Notifications
@@ -313,6 +331,24 @@ export const translations: Record<Language, Translations> = {
       updateUnavailabilities: 'Mettez à jour vos indisponibilités',
       nextUpdateIn: 'Prochaine mise à jour dans',
       manageUnavailabilities: 'Gérer mes indisponibilités',
+      myUnavailabilities: 'Mes indisponibilités',
+      manageAllUnavailabilities: 'Gérer les indisponibilités',
+      selectUser: 'Sélectionner un utilisateur',
+      unavailable: 'Indisponible',
+      selected: 'Indisponibilité sélectionnée',
+      close: 'Fermer',
+      confirmDelete: 'Confirmer la suppression',
+      confirmDeleteMessage: 'Êtes-vous sûr de vouloir supprimer cette indisponibilité ?',
+      added: 'Indisponibilité ajoutée avec succès',
+      updated: 'Indisponibilité mise à jour avec succès',
+      deleted: 'Indisponibilité supprimée avec succès',
+      errorAdding: 'Erreur lors de l\'ajout de l\'indisponibilité',
+      errorUpdating: 'Erreur lors de la mise à jour de l\'indisponibilité',
+      errorDeleting: 'Erreur lors de la suppression de l\'indisponibilité',
+      errorLoading: 'Erreur lors du chargement des indisponibilités',
+      readOnlyMode: 'Mode consultation uniquement',
+      readOnlyMessage: 'Vous ne pouvez pas modifier les indisponibilités',
+      day: 'Jour',
     },
     notifications: {
       unavailabilitiesNotEntered: 'Pensez à saisir vos indisponibilités pour faciliter la planification.',
@@ -463,6 +499,24 @@ export const translations: Record<Language, Translations> = {
       updateUnavailabilities: 'Update your unavailabilities',
       nextUpdateIn: 'Next update in',
       manageUnavailabilities: 'Manage my unavailabilities',
+      myUnavailabilities: 'My Unavailabilities',
+      manageAllUnavailabilities: 'Manage Unavailabilities',
+      selectUser: 'Select a user',
+      unavailable: 'Unavailable',
+      selected: 'Selected unavailability',
+      close: 'Close',
+      confirmDelete: 'Confirm Deletion',
+      confirmDeleteMessage: 'Are you sure you want to delete this unavailability?',
+      added: 'Unavailability added successfully',
+      updated: 'Unavailability updated successfully',
+      deleted: 'Unavailability deleted successfully',
+      errorAdding: 'Error adding unavailability',
+      errorUpdating: 'Error updating unavailability',
+      errorDeleting: 'Error deleting unavailability',
+      errorLoading: 'Error loading unavailabilities',
+      readOnlyMode: 'Read-only mode',
+      readOnlyMessage: 'You cannot modify unavailabilities',
+      day: 'Day',
     },
     notifications: {
       unavailabilitiesNotEntered: 'Remember to enter your unavailabilities to facilitate planning.',
@@ -613,6 +667,24 @@ export const translations: Record<Language, Translations> = {
       updateUnavailabilities: 'Update your unavailabilities',
       nextUpdateIn: 'Next update in',
       manageUnavailabilities: 'Manage my unavailabilities',
+      myUnavailabilities: 'My Unavailabilities',
+      manageAllUnavailabilities: 'Manage Unavailabilities',
+      selectUser: 'Select a user',
+      unavailable: 'Unavailable',
+      selected: 'Selected unavailability',
+      close: 'Close',
+      confirmDelete: 'Confirm Deletion',
+      confirmDeleteMessage: 'Are you sure you want to delete this unavailability?',
+      added: 'Unavailability added successfully',
+      updated: 'Unavailability updated successfully',
+      deleted: 'Unavailability deleted successfully',
+      errorAdding: 'Error adding unavailability',
+      errorUpdating: 'Error updating unavailability',
+      errorDeleting: 'Error deleting unavailability',
+      errorLoading: 'Error loading unavailabilities',
+      readOnlyMode: 'Read-only mode',
+      readOnlyMessage: 'You cannot modify unavailabilities',
+      day: 'Day',
     },
     notifications: {
       unavailabilitiesNotEntered: 'Remember to enter your unavailabilities to facilitate planning.',
@@ -763,6 +835,24 @@ export const translations: Record<Language, Translations> = {
       updateUnavailabilities: 'Actualiza tus indisponibilidades',
       nextUpdateIn: 'Próxima actualización en',
       manageUnavailabilities: 'Gestionar mis indisponibilidades',
+      myUnavailabilities: 'Mis Indisponibilidades',
+      manageAllUnavailabilities: 'Gestionar Indisponibilidades',
+      selectUser: 'Seleccionar un usuario',
+      unavailable: 'No disponible',
+      selected: 'Indisponibilidad seleccionada',
+      close: 'Cerrar',
+      confirmDelete: 'Confirmar Eliminación',
+      confirmDeleteMessage: '¿Está seguro de que desea eliminar esta indisponibilidad?',
+      added: 'Indisponibilidad agregada correctamente',
+      updated: 'Indisponibilidad actualizada correctamente',
+      deleted: 'Indisponibilidad eliminada correctamente',
+      errorAdding: 'Error al agregar indisponibilidad',
+      errorUpdating: 'Error al actualizar indisponibilidad',
+      errorDeleting: 'Error al eliminar indisponibilidad',
+      errorLoading: 'Error al cargar indisponibilidades',
+      readOnlyMode: 'Modo de solo lectura',
+      readOnlyMessage: 'No puede modificar las indisponibilidades',
+      day: 'Día',
     },
     notifications: {
       unavailabilitiesNotEntered: 'Recuerda ingresar tus indisponibilidades para facilitar la planificación.',

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
-import Breadcrumb from './Breadcrumb';
+import ModernLayout from './ModernLayout';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { useTranslation } from '../i18n/LanguageContext';
 // date-fns imports removed (not used in this file)
 
 interface AvailabilitiesProps {
@@ -28,6 +29,7 @@ interface UserProfile {
 }
 
 export default function Availabilities({ user }: AvailabilitiesProps) {
+  const { t } = useTranslation();
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +110,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
       }
     } catch (error: any) {
       console.error('Erreur lors du chargement des indisponibilités:', error);
-      setError('Erreur lors du chargement des indisponibilités');
+      setError(t.unavailabilities.errorLoading);
     } finally {
       setLoading(false);
     }
@@ -134,12 +136,12 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
         setAvailabilities(prev => [...prev, data[0]]);
       }
 
-      setSuccess('Indisponibilité ajoutée avec succès');
+      setSuccess(t.unavailabilities.added);
     } catch (error: any) {
       console.error('Erreur lors de l\'ajout de l\'indisponibilité:', error);
-      setError('Erreur lors de l\'ajout de l\'indisponibilité');
+      setError(t.unavailabilities.errorAdding);
     }
-  }, [selectedUserId]);
+  }, [selectedUserId, t]);
 
   const handleEventClick = useCallback((clickInfo: any) => {
     setSelectedEvent(clickInfo.event.id);
@@ -167,13 +169,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
           : av
       ));
 
-      setSuccess('Indisponibilité mise à jour avec succès');
+      setSuccess(t.unavailabilities.updated);
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
-      setError('Erreur lors de la mise à jour de l\'indisponibilité');
+      setError(t.unavailabilities.errorUpdating);
       dropInfo.revert();
     }
-  }, [selectedUserId]);
+  }, [selectedUserId, t]);
 
   const handleEventResize = useCallback(async (resizeInfo: any) => {
     try {
@@ -197,13 +199,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
           : av
       ));
 
-      setSuccess('Indisponibilité mise à jour avec succès');
+      setSuccess(t.unavailabilities.updated);
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
-      setError('Erreur lors de la mise à jour de l\'indisponibilité');
+      setError(t.unavailabilities.errorUpdating);
       resizeInfo.revert();
     }
-  }, [selectedUserId]);
+  }, [selectedUserId, t]);
 
   const handleDeleteAvailability = async () => {
     if (!selectedEvent) return;
@@ -222,18 +224,18 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
       // Mise à jour optimiste du state
       setAvailabilities(prev => prev.filter(av => av.id !== selectedEvent));
 
-      setSuccess('Indisponibilité supprimée avec succès');
+      setSuccess(t.unavailabilities.deleted);
       setSelectedEvent(null);
       setShowDeleteConfirm(false);
     } catch (error: any) {
       console.error('Erreur lors de la suppression de l\'indisponibilité:', error);
-      setError('Erreur lors de la suppression de l\'indisponibilité');
+      setError(t.unavailabilities.errorDeleting);
     }
   };
 
   const events = availabilities.map(availability => ({
     id: availability.id,
-    title: 'Indisponible',
+    title: t.unavailabilities.unavailable,
     start: availability.start_time,
     end: availability.end_time,
     // Use CSS variable-based rgb so colors follow the theme tokens at runtime
@@ -249,26 +251,22 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Breadcrumb />
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-          </div>
+      <ModernLayout user={user}>
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
         </div>
-      </div>
+      </ModernLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Breadcrumb />
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <ModernLayout user={user}>
+      <div className="max-w-7xl mx-auto">
         <div className="bg-surface shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:p-6">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-semibold text-primary-700">
-                {isOwner ? 'Gérer les indisponibilités' : 'Mes indisponibilités'}
+                {isOwner ? t.unavailabilities.manageAllUnavailabilities : t.unavailabilities.myUnavailabilities}
               </h1>
             </div>
 
@@ -278,7 +276,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                   <svg className="inline h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
-                  Mode consultation uniquement - Vous ne pouvez pas modifier les indisponibilités
+                  {t.unavailabilities.readOnlyMode} - {t.unavailabilities.readOnlyMessage}
                 </p>
               </div>
             )}
@@ -286,7 +284,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             {isOwner && (
               <div className="mb-4">
                 <label className="block text-sm font-medium text-primary-700 mb-2">
-                  Sélectionner un utilisateur
+                  {t.unavailabilities.selectUser}
                 </label>
                 <select
                   value={selectedUserId}
@@ -317,7 +315,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             {selectedEvent && canEdit && (
                 <div className="mb-4 flex justify-between items-center bg-red-50 border border-red-200 rounded-md p-3">
                   <span className="text-sm text-red-700">
-                    Indisponibilité sélectionnée
+                    {t.unavailabilities.selected}
                   </span>
                   <div className="flex space-x-2">
                     <button
@@ -327,13 +325,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                       <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
-                      Supprimer
+                      {t.common.delete}
                     </button>
                     <button
                       onClick={() => setSelectedEvent(null)}
                       className="px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
                     >
-                      Fermer
+                      {t.unavailabilities.close}
                     </button>
                   </div>
                 </div>
@@ -368,10 +366,10 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 scrollTime="06:00:00"
                 scrollTimeReset={false}
                 buttonText={{
-                  today: "Aujourd'hui",
-                  month: 'Mois',
-                  week: 'Semaine',
-                  day: 'Jour'
+                  today: t.calendar.today,
+                  month: t.calendar.month,
+                  week: t.calendar.week,
+                  day: t.unavailabilities.day
                 }}
               />
             </div>
@@ -381,10 +379,10 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Confirmer la suppression
+                    {t.unavailabilities.confirmDelete}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Êtes-vous sûr de vouloir supprimer cette indisponibilité ?
+                    {t.unavailabilities.confirmDeleteMessage}
                   </p>
                   <div className="flex justify-end space-x-3">
                     <button
@@ -393,13 +391,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                       }}
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                     >
-                      Annuler
+                      {t.common.cancel}
                     </button>
                     <button
                       onClick={handleDeleteAvailability}
                       className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                     >
-                      Supprimer
+                      {t.common.delete}
                     </button>
                   </div>
                 </div>
@@ -444,6 +442,6 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
           animation: fade-in 0.3s ease-out;
         }
       `}</style>
-    </div>
+    </ModernLayout>
   );
 }
