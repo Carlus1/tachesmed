@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import type { User } from '@supabase/gotrue-js';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -8,9 +8,10 @@ interface GroupModalProps {
   onClose: () => void;
   onGroupCreated: () => void;
   user: User;
+  groupId?: string | null;
 }
 
-export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: GroupModalProps) {
+export default function GroupModal({ isOpen, onClose, onGroupCreated, user, groupId }: GroupModalProps) {
   const { t } = useTranslation();
   const [newGroup, setNewGroup] = useState({
     name: '',
@@ -19,6 +20,39 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load group data when editing
+  useEffect(() => {
+    if (isOpen && groupId) {
+      loadGroup();
+    } else if (isOpen && !groupId) {
+      // Reset form for new group
+      setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 });
+    }
+  }, [isOpen, groupId]);
+
+  const loadGroup = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('groups')
+        .select('*')
+        .eq('id', groupId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setNewGroup({
+          name: data.name,
+          description: data.description,
+          unavailability_period_weeks: data.unavailability_period_weeks
+        });
+      }
+    } catch (err: any) {
+      console.error('Erreur lors du chargement du groupe:', err);
+      setError('Erreur lors du chargement du groupe');
+    }
+  };
 
   const handleCreateGroup = async () => {
     try {
@@ -30,27 +64,40 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
         return;
       }
 
-      const { error: insertError } = await supabase
-        .from('groups')
-        .insert([
-          {
-            name: newGroup.name.trim(),
-            description: newGroup.description.trim(),
-            admin_id: user.id,
-            unavailability_period_weeks: newGroup.unavailability_period_weeks,
-          },
-        ]);
+      const groupData = {
+        name: newGroup.name.trim(),
+        description: newGroup.description.trim(),
+        unavailability_period_weeks: newGroup.unavailability_period_weeks,
+      };
 
-      if (insertError) throw insertError;
+      if (groupId) {
+        // Update existing group
+        const { error: updateError } = await supabase
+          .from('groups')
+          .update(groupData)
+          .eq('id', groupId);
+
+        if (updateError) throw updateError;
+      } else {
+        // Create new group
+        const { error: insertError } = await supabase
+          .from('groups')
+          .insert([{
+            ...groupData,
+            admin_id: user.id,
+          }]);
+
+        if (insertError) throw insertError;
+      }
 
       setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 });
       onClose();
       onGroupCreated();
     } catch (err: any) {
-      console.error('Erreur lors de la création du groupe:', err);
+      console.error('Erreur lors de la sauvegarde du groupe:', err);
       const msg = err?.message || String(err);
       setError(msg);
-      try { alert('Erreur lors de la création du groupe : ' + msg); } catch (_e) { /* ignore */ }
+      try { alert('Erreur lors de la sauvegarde du groupe : ' + msg); } catch (_e) { /* ignore */ }
     } finally {
       setLoading(false);
     }
@@ -62,7 +109,7 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
     isOpen ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-900/60 backdrop-blur-sm">
         <div className="bg-surface rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-border animate-fade-in">
-          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">{t.groups.createGroup}</h2>
+          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">{groupId ? t.groups.editGroup : t.groups.createGroup}</h2>
           <div className="space-y-5">
             <input
               className={baseInputClass}
@@ -136,7 +183,7 @@ export default function GroupModal({ isOpen, onClose, onGroupCreated, user }: Gr
               onClick={handleCreateGroup}
               disabled={loading || !newGroup.name.trim()}
             >
-              {loading ? t.groups.creating : t.groups.create}
+              {loading ? t.groups.creating : (groupId ? t.common.save : t.groups.create)}
             </button>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
 import GroupDetail from './GroupDetail';
+import GroupModal from './GroupModal';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface GroupManagementProps {
@@ -25,11 +26,9 @@ export default function GroupManagement({ user }: GroupManagementProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+  const [showGroupModal, setShowGroupModal] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [newGroup, setNewGroup] = useState({ name: '', description: '', unavailability_period_weeks: 2 });
   const [deletingGroup, setDeletingGroup] = useState<Group | null>(null);
 
   useEffect(() => {
@@ -94,63 +93,13 @@ export default function GroupManagement({ user }: GroupManagementProps) {
     }
   };
 
-  const handleCreateGroup = async () => {
-    try {
-      setError(null);
-
-      if (!newGroup.name.trim()) {
-        setError('Le nom du groupe est requis');
-        return;
-      }
-
-      const { error: insertError } = await supabase
-        .from('groups')
-        .insert([
-          {
-            name: newGroup.name.trim(),
-            description: newGroup.description.trim(),
-            admin_id: user.id,
-            unavailability_period_weeks: newGroup.unavailability_period_weeks,
-          },
-        ]);
-
-      if (insertError) throw insertError;
-
-      setSuccess('Groupe créé avec succès');
-      setShowCreateModal(false);
-      setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 });
-      loadGroups();
-    } catch (err: any) {
-      console.error('Erreur lors de la création du groupe:', err);
-      setError('Erreur lors de la création du groupe');
-    }
+  const handleGroupSaved = () => {
+    setShowGroupModal(false);
+    setEditingGroupId(null);
+    setSuccess(editingGroupId ? 'Groupe modifié avec succès' : 'Groupe créé avec succès');
+    loadGroups();
   };
-  const handleUpdateGroup = async () => {
-    if (!editingGroup || !editingGroup.name.trim()) return;
 
-    try {
-      setError(null);
-
-      const { error: updateError } = await supabase
-        .from('groups')
-        .update({
-          name: editingGroup.name.trim(),
-          description: editingGroup.description.trim(),
-          unavailability_period_weeks: editingGroup.unavailability_period_weeks,
-        })
-        .eq('id', editingGroup.id);
-
-      if (updateError) throw updateError;
-
-      setSuccess('Groupe modifié avec succès');
-      setShowEditModal(false);
-      setEditingGroup(null);
-      loadGroups();
-    } catch (err: any) {
-      console.error('Erreur lors de la modification du groupe:', err);
-      setError('Erreur lors de la modification du groupe');
-    }
-  };
   const handleDeleteGroup = async (group: Group) => {
     try {
       setError(null);
@@ -209,7 +158,7 @@ export default function GroupManagement({ user }: GroupManagementProps) {
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-semibold text-primary-700">{t.groups.title}</h1>
               <button
-                onClick={() => setShowCreateModal(true)}
+                onClick={() => setShowGroupModal(true)}
                 className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,8 +214,8 @@ export default function GroupManagement({ user }: GroupManagementProps) {
                           <button onClick={() => setSelectedGroupId(group.id)} className="text-primary-600 hover:text-primary-800 mr-2 transition-colors">{t.groups.manageMembers}</button>
                           <button 
                             onClick={() => {
-                              setEditingGroup(group);
-                              setShowEditModal(true);
+                              setEditingGroupId(group.id);
+                              setShowGroupModal(true);
                             }} 
                             className="text-blue-600 hover:text-blue-800 mr-2 transition-colors"
                           >
@@ -284,110 +233,18 @@ export default function GroupManagement({ user }: GroupManagementProps) {
         </div>
       </div>
 
-    {/* Modal de création de groupe */}
-    {showCreateModal && (
-      <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
-        <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-primary-700">{t.groups.newGroup}</h3>
-            <button onClick={() => { setShowCreateModal(false); setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 }); }} className="text-primary-400 hover:text-primary-700 transition-colors">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.groups.groupName}</label>
-              <input type="text" value={newGroup.name} onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })} className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" placeholder="Entrez le nom du groupe" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.common.description}</label>
-              <textarea value={newGroup.description} onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })} rows={3} className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" placeholder="Décrivez le but de ce groupe" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.groups.unavailabilityFrequency}</label>
-              <select 
-                value={newGroup.unavailability_period_weeks} 
-                onChange={(e) => setNewGroup({ ...newGroup, unavailability_period_weeks: parseInt(e.target.value) })} 
-                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500"
-              >
-                <option value={1}>{t.groups.everyWeek}</option>
-                <option value={2}>{t.groups.every2Weeks}</option>
-                <option value={4}>{t.groups.everyMonth}</option>
-                <option value={8}>{t.groups.every2Months}</option>
-                <option value={12}>{t.groups.every3Months}</option>
-                <option value={24}>{t.groups.every6Months}</option>
-                <option value={52}>{t.groups.everyYear}</option>
-              </select>
-              <p className="text-xs text-primary-400 mt-1">{t.groups.frequencyDescription}</p>
-            </div>
-          </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-            <button onClick={() => { setShowCreateModal(false); setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 }); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">{t.common.cancel}</button>
-            <button onClick={handleCreateGroup} disabled={!newGroup.name.trim()} className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors">{t.common.create}</button>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* Modal d'édition de groupe */}
-    {showEditModal && editingGroup && (
-      <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
-        <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-primary-700">{t.groups.editGroup}</h3>
-            <button onClick={() => { setShowEditModal(false); setEditingGroup(null); }} className="text-primary-400 hover:text-primary-700 transition-colors">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.groups.groupName}</label>
-              <input 
-                type="text" 
-                value={editingGroup.name} 
-                onChange={(e) => setEditingGroup({ ...editingGroup, name: e.target.value })} 
-                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" 
-                placeholder="Entrez le nom du groupe" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.common.description}</label>
-              <textarea 
-                value={editingGroup.description} 
-                onChange={(e) => setEditingGroup({ ...editingGroup, description: e.target.value })} 
-                rows={3} 
-                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" 
-                placeholder="Décrivez le but de ce groupe" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-primary-700">{t.groups.unavailabilityFrequency}</label>
-              <select 
-                value={editingGroup.unavailability_period_weeks} 
-                onChange={(e) => setEditingGroup({ ...editingGroup, unavailability_period_weeks: parseInt(e.target.value) })} 
-                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500"
-              >
-                <option value={1}>{t.groups.everyWeek}</option>
-                <option value={2}>{t.groups.every2Weeks}</option>
-                <option value={4}>{t.groups.everyMonth}</option>
-                <option value={8}>{t.groups.every2Months}</option>
-                <option value={12}>{t.groups.every3Months}</option>
-                <option value={24}>{t.groups.every6Months}</option>
-                <option value={52}>{t.groups.everyYear}</option>
-              </select>
-              <p className="text-xs text-primary-400 mt-1">{t.groups.frequencyDescription}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end space-x-3">
-            <button onClick={() => { setShowEditModal(false); setEditingGroup(null); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">{t.common.cancel}</button>
-            <button onClick={handleUpdateGroup} disabled={!editingGroup.name.trim()} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">{t.common.save}</button>
-          </div>
-        </div>
-      </div>
+    {/* Modal GroupModal unifié pour création et édition */}
+    {showGroupModal && (
+      <GroupModal
+        isOpen={showGroupModal}
+        onClose={() => {
+          setShowGroupModal(false);
+          setEditingGroupId(null);
+        }}
+        onGroupCreated={handleGroupSaved}
+        user={user}
+        groupId={editingGroupId}
+      />
     )}
 
     {/* Modal de confirmation de suppression */}
