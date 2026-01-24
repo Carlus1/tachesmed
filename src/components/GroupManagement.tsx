@@ -246,7 +246,6 @@ export default function GroupManagement({ user }: GroupManagementProps) {
           </div>
         </div>
       </div>
-    </div>
 
     {/* Modal de création de groupe */}
     {showCreateModal && (
