@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { useTranslation } from '../i18n/LanguageContext';
 
 export default function Login() {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -157,9 +159,9 @@ export default function Login() {
                             🏥 TachesMed
                         </h1>
                         <p className="text-primary-400">
-                            {isResetMode ? 'Réinitialiser le mot de passe' :
-                                isSignUpMode ? 'Créer un compte' :
-                                    'Connexion à votre compte'}
+                            {isResetMode ? t.auth.resetPasswordTitle :
+                                isSignUpMode ? t.auth.createAccountTitle :
+                                    t.auth.loginTitle}
                         </p>
                     </div>
 
@@ -181,7 +183,7 @@ export default function Login() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm font-medium text-primary-700 mb-2">
-                                Email
+                                {t.auth.email}
                             </label>
                             <input
                                 type="email"
@@ -198,7 +200,7 @@ export default function Login() {
                         {!isResetMode && (
                             <div>
                                 <label className="block text-sm font-medium text-primary-700 mb-2">
-                                    Mot de passe
+                                    {t.auth.password}
                                 </label>
                                 <input
                                     type="password"
@@ -217,7 +219,7 @@ export default function Login() {
                                         onClick={() => setIsResetMode(true)}
                                         className="text-sm text-primary-600 hover:text-primary-800 mt-2 transition-colors"
                                     >
-                                        Mot de passe oublié ?
+                                        {t.auth.forgotPassword}
                                     </button>
                                 )}
                             </div>
@@ -243,12 +245,12 @@ export default function Login() {
                             {loading ? (
                                 <div className="flex items-center justify-center">
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                                    Chargement...
+                                    {t.common.loading}
                                 </div>
                             ) : (
-                                isResetMode ? 'Envoyer le lien' :
-                                    isSignUpMode ? 'Créer le compte' :
-                                        'Se connecter'
+                                isResetMode ? t.auth.sendResetLink :
+                                    isSignUpMode ? t.auth.createAccount :
+                                        t.auth.signIn
                             )}
                         </button>
 
@@ -262,7 +264,7 @@ export default function Login() {
                                 }}
                                 className="w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
                             >
-                                {isSignUpMode ? 'Retour à la connexion' : 'Créer un compte'}
+                                {isSignUpMode ? t.auth.backToLogin : t.auth.createAccount}
                             </button>
                         )}
 
@@ -276,7 +278,7 @@ export default function Login() {
                                 }}
                                 className="w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-medium py-3 px-4 rounded-lg transition-all"
                             >
-                                Retour à la connexion
+                                {t.auth.backToLogin}
                             </button>
                         )}
                     </form>

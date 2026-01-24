@@ -36,6 +36,18 @@ export interface Translations {
     password: string;
     signIn: string;
     signOut: string;
+    createAccount: string;
+    backToLogin: string;
+    forgotPassword: string;
+    resetPassword: string;
+    sendResetLink: string;
+    createAccountTitle: string;
+    resetPasswordTitle: string;
+    loginTitle: string;
+    loading: string;
+    passwordResetSent: string;
+    accountCreated: string;
+    accountCreatedConfirm: string;
   };
   
   // Settings
@@ -70,6 +82,7 @@ export interface Translations {
     groupName: string;
     members: string;
     tasks: string;
+    taskCount: string;
     createdAt: string;
     unavailabilityFrequency: string;
     frequencyDescription: string;
@@ -82,6 +95,12 @@ export interface Translations {
     every3Months: string;
     every6Months: string;
     everyYear: string;
+    manageMembers: string;
+    newGroup: string;
+    noGroups: string;
+    noGroupsMessage: string;
+    description: string;
+    deleting: string;
   };
   
   // Tasks
@@ -165,6 +184,18 @@ export const translations: Record<Language, Translations> = {
       password: 'Mot de passe',
       signIn: 'Se connecter',
       signOut: 'Déconnexion',
+      createAccount: 'Créer un compte',
+      backToLogin: 'Retour à la connexion',
+      forgotPassword: 'Mot de passe oublié ?',
+      resetPassword: 'Réinitialiser le mot de passe',
+      sendResetLink: 'Envoyer le lien',
+      createAccountTitle: 'Créer un compte',
+      resetPasswordTitle: 'Réinitialiser le mot de passe',
+      loginTitle: 'Connexion à votre compte',
+      loading: 'Chargement...',
+      passwordResetSent: 'Email de réinitialisation envoyé',
+      accountCreated: 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.',
+      accountCreatedConfirm: 'Compte créé ! Vérifiez votre email pour confirmer votre compte.',
     },
     settings: {
       title: 'Paramètres',
@@ -188,18 +219,19 @@ export const translations: Record<Language, Translations> = {
       preferencesSaved: 'Préférences enregistrées',
     },
     groups: {
-      title: 'Groupes',
-      createGroup: 'Créer un groupe',
+      title: 'Mes groupes',
+      createGroup: 'Nouveau groupe',
       editGroup: 'Modifier le groupe',
-      deleteGroup: 'Supprimer le groupe',
+      deleteGroup: 'Supprimer',
       groupName: 'Nom du groupe',
       members: 'Membres',
       tasks: 'Tâches',
+      taskCount: 'tâche',
       createdAt: 'Créé le',
       unavailabilityFrequency: 'Fréquence de mise à jour des indisponibilités',
       frequencyDescription: 'Les membres devront mettre à jour leurs indisponibilités selon cette fréquence',
       confirmDelete: 'Confirmer la suppression',
-      deleteWarning: 'Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.',
+      deleteWarning: 'Êtes-vous sûr de vouloir supprimer ce groupe',
       everyWeek: 'Chaque semaine',
       every2Weeks: 'Toutes les 2 semaines',
       everyMonth: 'Chaque mois (4 semaines)',
@@ -207,6 +239,12 @@ export const translations: Record<Language, Translations> = {
       every3Months: 'Tous les 3 mois (12 semaines)',
       every6Months: 'Tous les 6 mois (24 semaines)',
       everyYear: 'Chaque année (52 semaines)',
+      manageMembers: 'Gérer les membres',
+      newGroup: 'Nouveau groupe',
+      noGroups: 'Aucun groupe',
+      noGroupsMessage: 'Commencez par créer votre premier groupe',
+      description: 'Description',
+      deleting: 'Suppression...',
     },
     tasks: {
       title: 'Tâches',
@@ -280,6 +318,18 @@ export const translations: Record<Language, Translations> = {
       password: 'Password',
       signIn: 'Sign In',
       signOut: 'Sign Out',
+      createAccount: 'Create Account',
+      backToLogin: 'Back to Login',
+      forgotPassword: 'Forgot password?',
+      resetPassword: 'Reset Password',
+      sendResetLink: 'Send Reset Link',
+      createAccountTitle: 'Create Account',
+      resetPasswordTitle: 'Reset Password',
+      loginTitle: 'Login to your account',
+      loading: 'Loading...',
+      passwordResetSent: 'Password reset email sent',
+      accountCreated: 'Account created successfully! You can now log in.',
+      accountCreatedConfirm: 'Account created! Check your email to confirm your account.',
     },
     settings: {
       title: 'Settings',
@@ -303,18 +353,19 @@ export const translations: Record<Language, Translations> = {
       preferencesSaved: 'Preferences saved',
     },
     groups: {
-      title: 'Groups',
-      createGroup: 'Create Group',
+      title: 'My Groups',
+      createGroup: 'New Group',
       editGroup: 'Edit Group',
-      deleteGroup: 'Delete Group',
+      deleteGroup: 'Delete',
       groupName: 'Group Name',
       members: 'Members',
       tasks: 'Tasks',
+      taskCount: 'task',
       createdAt: 'Created on',
       unavailabilityFrequency: 'Unavailability Update Frequency',
       frequencyDescription: 'Members will need to update their unavailabilities according to this frequency',
       confirmDelete: 'Confirm Deletion',
-      deleteWarning: 'Are you sure you want to delete this group? This action is irreversible.',
+      deleteWarning: 'Are you sure you want to delete this group',
       everyWeek: 'Every week',
       every2Weeks: 'Every 2 weeks',
       everyMonth: 'Every month (4 weeks)',
@@ -322,6 +373,12 @@ export const translations: Record<Language, Translations> = {
       every3Months: 'Every 3 months (12 weeks)',
       every6Months: 'Every 6 months (24 weeks)',
       everyYear: 'Every year (52 weeks)',
+      manageMembers: 'Manage Members',
+      newGroup: 'New Group',
+      noGroups: 'No groups',
+      noGroupsMessage: 'Start by creating your first group',
+      description: 'Description',
+      deleting: 'Deleting...',
     },
     tasks: {
       title: 'Tasks',
@@ -395,6 +452,18 @@ export const translations: Record<Language, Translations> = {
       password: 'Password',
       signIn: 'Sign In',
       signOut: 'Sign Out',
+      createAccount: 'Create Account',
+      backToLogin: 'Back to Login',
+      forgotPassword: 'Forgot password?',
+      resetPassword: 'Reset Password',
+      sendResetLink: 'Send Reset Link',
+      createAccountTitle: 'Create Account',
+      resetPasswordTitle: 'Reset Password',
+      loginTitle: 'Login to your account',
+      loading: 'Loading...',
+      passwordResetSent: 'Password reset email sent',
+      accountCreated: 'Account created successfully! You can now log in.',
+      accountCreatedConfirm: 'Account created! Check your email to confirm your account.',
     },
     settings: {
       title: 'Settings',
@@ -418,18 +487,19 @@ export const translations: Record<Language, Translations> = {
       preferencesSaved: 'Preferences saved',
     },
     groups: {
-      title: 'Groups',
-      createGroup: 'Create Group',
+      title: 'My Groups',
+      createGroup: 'New Group',
       editGroup: 'Edit Group',
-      deleteGroup: 'Delete Group',
+      deleteGroup: 'Delete',
       groupName: 'Group Name',
       members: 'Members',
       tasks: 'Tasks',
+      taskCount: 'task',
       createdAt: 'Created on',
       unavailabilityFrequency: 'Unavailability Update Frequency',
       frequencyDescription: 'Members will need to update their unavailabilities according to this frequency',
       confirmDelete: 'Confirm Deletion',
-      deleteWarning: 'Are you sure you want to delete this group? This action is irreversible.',
+      deleteWarning: 'Are you sure you want to delete this group',
       everyWeek: 'Every week',
       every2Weeks: 'Every 2 weeks',
       everyMonth: 'Every month (4 weeks)',
@@ -437,6 +507,12 @@ export const translations: Record<Language, Translations> = {
       every3Months: 'Every 3 months (12 weeks)',
       every6Months: 'Every 6 months (24 weeks)',
       everyYear: 'Every year (52 weeks)',
+      manageMembers: 'Manage Members',
+      newGroup: 'New Group',
+      noGroups: 'No groups',
+      noGroupsMessage: 'Start by creating your first group',
+      description: 'Description',
+      deleting: 'Deleting...',
     },
     tasks: {
       title: 'Tasks',
@@ -510,6 +586,18 @@ export const translations: Record<Language, Translations> = {
       password: 'Contraseña',
       signIn: 'Iniciar sesión',
       signOut: 'Cerrar sesión',
+      createAccount: 'Crear cuenta',
+      backToLogin: 'Volver al inicio de sesión',
+      forgotPassword: '¿Olvidaste tu contraseña?',
+      resetPassword: 'Restablecer contraseña',
+      sendResetLink: 'Enviar enlace',
+      createAccountTitle: 'Crear cuenta',
+      resetPasswordTitle: 'Restablecer contraseña',
+      loginTitle: 'Iniciar sesión en tu cuenta',
+      loading: 'Cargando...',
+      passwordResetSent: 'Correo de restablecimiento enviado',
+      accountCreated: '¡Cuenta creada exitosamente! Ya puedes iniciar sesión.',
+      accountCreatedConfirm: '¡Cuenta creada! Verifica tu correo para confirmar tu cuenta.',
     },
     settings: {
       title: 'Configuración',
@@ -533,18 +621,19 @@ export const translations: Record<Language, Translations> = {
       preferencesSaved: 'Preferencias guardadas',
     },
     groups: {
-      title: 'Grupos',
-      createGroup: 'Crear grupo',
-      editGroup: 'Editar grupo',
-      deleteGroup: 'Eliminar grupo',
-      groupName: 'Nombre del grupo',
+      title: 'Mis Grupos',
+      createGroup: 'Nuevo Grupo',
+      editGroup: 'Editar Grupo',
+      deleteGroup: 'Eliminar',
+      groupName: 'Nombre del Grupo',
       members: 'Miembros',
       tasks: 'Tareas',
+      taskCount: 'tarea',
       createdAt: 'Creado el',
-      unavailabilityFrequency: 'Frecuencia de actualización de indisponibilidades',
+      unavailabilityFrequency: 'Frecuencia de Actualización de Indisponibilidades',
       frequencyDescription: 'Los miembros deberán actualizar sus indisponibilidades según esta frecuencia',
-      confirmDelete: 'Confirmar eliminación',
-      deleteWarning: '¿Estás seguro de que deseas eliminar este grupo? Esta acción es irreversible.',
+      confirmDelete: 'Confirmar Eliminación',
+      deleteWarning: '¿Está seguro de que desea eliminar este grupo',
       everyWeek: 'Cada semana',
       every2Weeks: 'Cada 2 semanas',
       everyMonth: 'Cada mes (4 semanas)',
@@ -552,6 +641,12 @@ export const translations: Record<Language, Translations> = {
       every3Months: 'Cada 3 meses (12 semanas)',
       every6Months: 'Cada 6 meses (24 semanas)',
       everyYear: 'Cada año (52 semanas)',
+      manageMembers: 'Gestionar Miembros',
+      newGroup: 'Nuevo Grupo',
+      noGroups: 'Sin grupos',
+      noGroupsMessage: 'Comienza creando tu primer grupo',
+      description: 'Descripción',
+      deleting: 'Eliminando...',
     },
     tasks: {
       title: 'Tareas',
