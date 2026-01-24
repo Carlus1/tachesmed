@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
 import Breadcrumb from './Breadcrumb';
@@ -37,6 +37,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
   const [isOwner, setIsOwner] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>(user.id);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const calendarRef = useRef<any>(null);
 
   useEffect(() => {
     checkOwnerRole();
@@ -80,6 +81,9 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
   const loadAvailabilities = async () => {
     try {
+      // Sauvegarder la date actuelle du calendrier avant le rechargement
+      const currentDate = calendarRef.current?.getApi()?.getDate();
+      
       setLoading(true);
       setError(null);
 
@@ -91,6 +95,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
       setAvailabilities(data || []);
+      
+      // Restaurer la date après le rechargement
+      if (currentDate && calendarRef.current) {
+        setTimeout(() => {
+          calendarRef.current.getApi().gotoDate(currentDate);
+        }, 0);
+      }
     } catch (error: any) {
       console.error('Erreur lors du chargement des indisponibilités:', error);
       setError('Erreur lors du chargement des indisponibilités');
@@ -271,6 +282,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
             <div className="calendar-container">
               <FullCalendar
+                ref={calendarRef}
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="timeGridWeek"
                 headerToolbar={{
