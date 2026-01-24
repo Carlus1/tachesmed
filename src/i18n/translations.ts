@@ -123,6 +123,7 @@ export interface Translations {
     calendarProposal: string;
     noTasks: string;
     viewAllTasks: string;
+    viewAllGroups: string;
     weekOf: string;
     accept: string;
     regenerate: string;
@@ -364,6 +365,7 @@ export const translations: Record<Language, Translations> = {
       calendarProposal: 'Proposition de calendrier',
       noTasks: 'Aucune tâche à venir',
       viewAllTasks: 'Voir toutes les tâches',
+      viewAllGroups: 'Voir tous les groupes',
       weekOf: 'Semaine du',
       accept: 'Accepter',
       regenerate: 'Régénérer',
@@ -629,6 +631,7 @@ export const translations: Record<Language, Translations> = {
       calendarProposal: 'Calendar Proposal',
       noTasks: 'No upcoming tasks',
       viewAllTasks: 'View all tasks',
+      viewAllGroups: 'View all groups',
       weekOf: 'Week of',
       accept: 'Accept',
       regenerate: 'Regenerate',
@@ -894,6 +897,7 @@ export const translations: Record<Language, Translations> = {
       calendarProposal: 'Calendar Proposal',
       noTasks: 'No upcoming tasks',
       viewAllTasks: 'View all tasks',
+      viewAllGroups: 'View all groups',
       weekOf: 'Week of',
       accept: 'Accept',
       regenerate: 'Regenerate',
@@ -1159,6 +1163,7 @@ export const translations: Record<Language, Translations> = {
       calendarProposal: 'Propuesta de Calendario',
       noTasks: 'Sin tareas próximas',
       viewAllTasks: 'Ver todas las tareas',
+      viewAllGroups: 'Ver todos los grupos',
       weekOf: 'Semana del',
       accept: 'Aceptar',
       regenerate: 'Regenerar',

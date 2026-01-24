@@ -109,17 +109,12 @@ export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSection
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-primary-700">{t.dashboard.myGroups}</h2>
-                <div className="flex items-center space-x-2">
-                    <button
-                        onClick={onCreateGroup}
-                        className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
-                    >
-                        {t.dashboard.createGroup}
-                    </button>
-                    <Link to="/groups" className="text-sm text-primary-600 hover:text-primary-700 hover:underline">
-                        {t.dashboard.seeAll} →
-                    </Link>
-                </div>
+                <button
+                    onClick={onCreateGroup}
+                    className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                >
+                    {t.dashboard.createGroup}
+                </button>
             </div>
             {groups.length > 0 ? (
                 <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -146,6 +141,11 @@ export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSection
                     </Link>
                 </div>
             )}
+            <div className="p-4 border-t border-border bg-background">
+                <Link to="/groups" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                    {t.dashboard.viewAllGroups} →
+                </Link>
+            </div>
         </div>
     );
 }
