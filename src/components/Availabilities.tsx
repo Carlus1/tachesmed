@@ -336,27 +336,8 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             </div>
 
             {selectedEvent && (
-                <div className="mt-4 flex justify-end">
-                {showDeleteConfirm ? (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-primary-400">Confirmer la suppression ?</span>
-                    <button
-                      onClick={handleDeleteAvailability}
-                      className="px-3 py-1 bg-error-600 text-white text-sm rounded hover:bg-error-700"
-                    >
-                      Oui
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowDeleteConfirm(false);
-                        setSelectedEvent(null);
-                      }}
-                      className="px-3 py-1 bg-primary-100 text-primary-700 text-sm rounded hover:bg-primary-200"
-                    >
-                      Non
-                    </button>
-                  </div>
-                ) : (
+                <div 
+                  claclassName="mt-4 flex justify-end">
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-error-600 hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error-600"
@@ -366,8 +347,36 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                     </svg>
                     Supprimer
                   </button>
-                )}
               </div>
+            )}
+
+            {/* Modale de confirmation de suppression */}
+            {showDeleteConfirm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                  <h3 className="text-lg font-semibold text-primary-700 mb-4">
+                    Confirmer la suppression
+                  </h3>
+                  <p className="text-primary-600 mb-6">
+                    Êtes-vous sûr de vouloir supprimer cette indisponibilité ?
+                  </p>
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                      }}
+                      className="px-4 py-2 bg-primary-100 text-primary-700 rounded-md hover:bg-primary-200 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleDeleteAvailability}
+                      className="px-4 py-2 bg-error-600 text-white rounded-md hover:bg-error-700 transition-colors"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                </div>v>
             )}
           </div>
         </div>
