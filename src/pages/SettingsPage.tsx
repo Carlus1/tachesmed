@@ -274,7 +274,9 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             <div>
               <h3 className="text-md font-medium text-primary-700">{t.settings.language}</h3>
               <p className="text-sm text-primary-400">
-                {language === 'fr' ? 'Choisissez la langue de l\'interface.' : 'Choose the interface language.'}
+                {language === 'fr' ? 'Choisissez la langue de l\'interface.' : 
+                 language === 'es' ? 'Elige el idioma de la interfaz.' : 
+                 'Choose the interface language.'}
               </p>
               <div className="mt-3">
                 <select
@@ -283,7 +285,9 @@ export default function SettingsPage({ user }: SettingsPageProps) {
                   className="border border-border rounded-md px-3 py-2 bg-surface"
                 >
                   <option value="fr">Français</option>
-                  <option value="en">English</option>
+                  <option value="en">English (UK)</option>
+                  <option value="en-US">English (US)</option>
+                  <option value="es">Español</option>
                 </select>
               </div>
             </div>
@@ -291,7 +295,9 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             <div>
               <h3 className="text-md font-medium text-primary-700">{t.settings.notifications}</h3>
               <p className="text-sm text-primary-400">
-                {language === 'fr' ? 'Gérer les notifications par email et in-app.' : 'Manage email and in-app notifications.'}
+                {language === 'fr' ? 'Gérer les notifications par email et in-app.' : 
+                 language === 'es' ? 'Gestionar notificaciones por correo electrónico y en la aplicación.' :
+                 'Manage email and in-app notifications.'}
               </p>
               <div className="mt-3">
                 <label className="inline-flex items-center">

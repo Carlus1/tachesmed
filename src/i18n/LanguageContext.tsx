@@ -17,12 +17,27 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 function detectBrowserLanguage(): Language {
   const browserLang = navigator.language.toLowerCase();
   
-  // Si la langue du navigateur commence par 'fr', on retourne 'fr'
+  // Français
   if (browserLang.startsWith('fr')) {
     return 'fr';
   }
   
-  // Par défaut, on retourne l'anglais
+  // Espagnol
+  if (browserLang.startsWith('es')) {
+    return 'es';
+  }
+  
+  // Anglais américain
+  if (browserLang === 'en-us' || browserLang.startsWith('en-us')) {
+    return 'en-US';
+  }
+  
+  // Anglais international (défaut)
+  if (browserLang.startsWith('en')) {
+    return 'en';
+  }
+  
+  // Par défaut, on retourne l'anglais international
   return 'en';
 }
 
@@ -32,7 +47,7 @@ function detectBrowserLanguage(): Language {
 function getInitialLanguage(): Language {
   try {
     const saved = localStorage.getItem('app_language');
-    if (saved === 'fr' || saved === 'en') {
+    if (saved === 'fr' || saved === 'en' || saved === 'en-US' || saved === 'es') {
       return saved;
     }
   } catch {
