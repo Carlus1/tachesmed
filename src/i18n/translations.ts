@@ -105,6 +105,16 @@ export interface Translations {
     noGroupsMessage: string;
     description: string;
     deleting: string;
+    // GroupModal keys
+    groupNamePlaceholder: string;
+    descriptionOptional: string;
+    frequencyLabel: string;
+    frequencyHelp: string;
+    customWeeks: string;
+    customWeeksHelp: string;
+    creating: string;
+    create: string;
+    groupNameRequired: string;
   };
   
   // Dashboard
@@ -158,6 +168,19 @@ export interface Translations {
     confirmDeleteMessage: string;
     deleteSuccess: string;
     deleteError: string;
+    // TaskModal keys
+    associatedGroups: string;
+    noGroupAvailable: string;
+    atLeastOneGroup: string;
+    titlePlaceholder: string;
+    descriptionPlaceholder: string;
+    highPriority: string;
+    mediumPriority: string;
+    lowPriority: string;
+    creating: string;
+    create: string;
+    noGroupSelected: string;
+    endDate: string;
   };
   
   // Calendar
@@ -383,6 +406,15 @@ export const translations: Record<Language, Translations> = {
       noGroupsMessage: 'Commencez par créer votre premier groupe',
       description: 'Description',
       deleting: 'Suppression...',
+      groupNamePlaceholder: 'Nom du groupe',
+      descriptionOptional: 'Description (optionnel)',
+      frequencyLabel: 'Fréquence de mise à jour des indisponibilités',
+      frequencyHelp: 'Les membres devront mettre à jour leurs indisponibilités selon cette fréquence',
+      customWeeks: 'Nombre de semaines',
+      customWeeksHelp: 'Entrez le nombre de semaines (1 à 104)',
+      creating: 'Création...',
+      create: 'Créer',
+      groupNameRequired: 'Le nom du groupe est requis',
     },
     tasks: {
       title: 'Tâches',
@@ -412,6 +444,18 @@ export const translations: Record<Language, Translations> = {
       confirmDeleteMessage: 'Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.',
       deleteSuccess: 'Tâche supprimée avec succès',
       deleteError: 'Erreur lors de la suppression de la tâche',
+      associatedGroups: 'Groupes associés',
+      noGroupAvailable: 'Aucun groupe disponible',
+      atLeastOneGroup: 'Au moins un groupe doit être sélectionné',
+      titlePlaceholder: 'Titre',
+      descriptionPlaceholder: 'Description',
+      highPriority: 'Haute priorité',
+      mediumPriority: 'Priorité moyenne',
+      lowPriority: 'Basse priorité',
+      creating: 'Création...',
+      create: 'Créer',
+      noGroupSelected: 'Aucun groupe sélectionné — sélectionnez au moins un groupe avant de créer une tâche.',
+      endDate: 'Date de fin',
     },
     calendar: {
       title: 'Calendrier',
@@ -627,6 +671,15 @@ export const translations: Record<Language, Translations> = {
       noGroupsMessage: 'Start by creating your first group',
       description: 'Description',
       deleting: 'Deleting...',
+      groupNamePlaceholder: 'Group Name',
+      descriptionOptional: 'Description (optional)',
+      frequencyLabel: 'Unavailability Update Frequency',
+      frequencyHelp: 'Members will need to update their unavailabilities according to this frequency',
+      customWeeks: 'Number of weeks',
+      customWeeksHelp: 'Enter the number of weeks (1 to 104)',
+      creating: 'Creating...',
+      create: 'Create',
+      groupNameRequired: 'Group name is required',
     },
     tasks: {
       title: 'Tasks',
@@ -656,6 +709,18 @@ export const translations: Record<Language, Translations> = {
       confirmDeleteMessage: 'Are you sure you want to delete this task? This action is irreversible.',
       deleteSuccess: 'Task deleted successfully',
       deleteError: 'Error deleting task',
+      associatedGroups: 'Associated Groups',
+      noGroupAvailable: 'No group available',
+      atLeastOneGroup: 'At least one group must be selected',
+      titlePlaceholder: 'Title',
+      descriptionPlaceholder: 'Description',
+      highPriority: 'High priority',
+      mediumPriority: 'Medium priority',
+      lowPriority: 'Low priority',
+      creating: 'Creating...',
+      create: 'Create',
+      noGroupSelected: 'No group selected — select at least one group before creating a task.',
+      endDate: 'End Date',
     },
     calendar: {
       title: 'Calendar',
@@ -871,6 +936,15 @@ export const translations: Record<Language, Translations> = {
       noGroupsMessage: 'Start by creating your first group',
       description: 'Description',
       deleting: 'Deleting...',
+      groupNamePlaceholder: 'Group Name',
+      descriptionOptional: 'Description (optional)',
+      frequencyLabel: 'Unavailability Update Frequency',
+      frequencyHelp: 'Members will need to update their unavailabilities according to this frequency',
+      customWeeks: 'Number of weeks',
+      customWeeksHelp: 'Enter the number of weeks (1 to 104)',
+      creating: 'Creating...',
+      create: 'Create',
+      groupNameRequired: 'Group name is required',
     },
     tasks: {
       title: 'Tasks',
@@ -900,6 +974,18 @@ export const translations: Record<Language, Translations> = {
       confirmDeleteMessage: 'Are you sure you want to delete this task? This action is irreversible.',
       deleteSuccess: 'Task deleted successfully',
       deleteError: 'Error deleting task',
+      associatedGroups: 'Associated Groups',
+      noGroupAvailable: 'No group available',
+      atLeastOneGroup: 'At least one group must be selected',
+      titlePlaceholder: 'Title',
+      descriptionPlaceholder: 'Description',
+      highPriority: 'High priority',
+      mediumPriority: 'Medium priority',
+      lowPriority: 'Low priority',
+      creating: 'Creating...',
+      create: 'Create',
+      noGroupSelected: 'No group selected — select at least one group before creating a task.',
+      endDate: 'End Date',
     },
     calendar: {
       title: 'Calendar',
@@ -1115,6 +1201,15 @@ export const translations: Record<Language, Translations> = {
       noGroupsMessage: 'Comienza creando tu primer grupo',
       description: 'Descripción',
       deleting: 'Eliminando...',
+      groupNamePlaceholder: 'Nombre del Grupo',
+      descriptionOptional: 'Descripción (opcional)',
+      frequencyLabel: 'Frecuencia de Actualización de Indisponibilidades',
+      frequencyHelp: 'Los miembros deberán actualizar sus indisponibilidades según esta frecuencia',
+      customWeeks: 'Número de semanas',
+      customWeeksHelp: 'Ingrese el número de semanas (1 a 104)',
+      creating: 'Creando...',
+      create: 'Crear',
+      groupNameRequired: 'El nombre del grupo es obligatorio',
     },
     tasks: {
       title: 'Tareas',
@@ -1144,6 +1239,18 @@ export const translations: Record<Language, Translations> = {
       confirmDeleteMessage: '¿Está seguro de que desea eliminar esta tarea? Esta acción es irreversible.',
       deleteSuccess: 'Tarea eliminada correctamente',
       deleteError: 'Error al eliminar tarea',
+      associatedGroups: 'Grupos Asociados',
+      noGroupAvailable: 'Ningún grupo disponible',
+      atLeastOneGroup: 'Debe seleccionarse al menos un grupo',
+      titlePlaceholder: 'Título',
+      descriptionPlaceholder: 'Descripción',
+      highPriority: 'Prioridad alta',
+      mediumPriority: 'Prioridad media',
+      lowPriority: 'Prioridad baja',
+      creating: 'Creando...',
+      create: 'Crear',
+      noGroupSelected: 'Ningún grupo seleccionado — seleccione al menos un grupo antes de crear una tarea.',
+      endDate: 'Fecha de Fin',
     },
     calendar: {
       title: 'Calendario',

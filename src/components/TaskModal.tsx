@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { useTranslation } from '../i18n/LanguageContext';
 
 // Normalized file to ensure no accidental line-wrapping within JSX attributes
 
@@ -11,6 +12,7 @@ interface TaskModalProps {
 }
 
 export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: TaskModalProps) {
+  const { t } = useTranslation();
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -45,7 +47,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       const endDateTime = new Date(`${newTask.endDate}T${newTask.endTime}`);
 
       if (selectedGroupIds.length === 0) {
-        const msg = 'Aucun groupe sélectionné — sélectionnez au moins un groupe avant de créer une tâche.';
+        const msg = t.tasks.noGroupSelected;
         setError(msg);
         try { alert(msg); } catch (_e) {}
         return;
@@ -105,13 +107,13 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
     isOpen ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-900/60 backdrop-blur-sm">
         <div className="bg-surface rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-border animate-fade-in">
-          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">Créer une tâche</h2>
+          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">{t.tasks.createTask}</h2>
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-2">Groupes associés</label>
+              <label className="block text-sm font-medium text-primary-700 mb-2">{t.tasks.associatedGroups}</label>
               <div className="border border-border rounded-xl p-3 max-h-40 overflow-y-auto bg-background space-y-2">
                 {groups.length === 0 ? (
-                  <p className="text-primary-400 text-sm">Aucun groupe disponible</p>
+                  <p className="text-primary-400 text-sm">{t.tasks.noGroupAvailable}</p>
                 ) : (
                   groups.map(g => (
                     <label key={g.id} className="flex items-center cursor-pointer hover:bg-primary-50 p-1 rounded">
@@ -133,18 +135,18 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
                 )}
               </div>
               {selectedGroupIds.length === 0 && (
-                <p className="text-error-600 text-xs mt-1">Au moins un groupe doit être sélectionné</p>
+                <p className="text-error-600 text-xs mt-1">{t.tasks.atLeastOneGroup}</p>
               )}
             </div>
             <input
               className={baseInputClass}
-              placeholder="Titre"
+              placeholder={t.tasks.titlePlaceholder}
               value={newTask.title}
               onChange={e => setNewTask({ ...newTask, title: e.target.value })}
             />
             <textarea
               className={baseInputClass}
-              placeholder="Description"
+              placeholder={t.tasks.descriptionPlaceholder}
               value={newTask.description}
               onChange={e => setNewTask({ ...newTask, description: e.target.value })}
             />
@@ -181,9 +183,9 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
               value={newTask.priority}
               onChange={e => setNewTask({ ...newTask, priority: e.target.value })}
             >
-              <option value="high">Haute priorité</option>
-              <option value="medium">Priorité moyenne</option>
-              <option value="low">Basse priorité</option>
+              <option value="high">{t.tasks.highPriority}</option>
+              <option value="medium">{t.tasks.mediumPriority}</option>
+              <option value="low">{t.tasks.lowPriority}</option>
             </select>
           </div>
           {error && (
@@ -194,13 +196,13 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
               className="px-5 py-2 bg-muted text-primary-400 rounded-xl hover:bg-primary-100 font-semibold transition-all"
               onClick={onClose}
             >
-              Annuler
+              {t.common.cancel}
             </button>
             <button
               className="px-5 py-2 bg-accent-400 text-white rounded-xl hover:bg-accent-500 font-semibold shadow-md transition-all"
               onClick={handleCreateTask}
             >
-              Créer
+              {t.tasks.create}
             </button>
           </div>
         </div>
