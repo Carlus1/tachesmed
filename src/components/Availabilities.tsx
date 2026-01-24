@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
 import esLocale from '@fullcalendar/core/locales/es';
-import { useTranslation, useLanguage } from '../i18n/LanguageContext';
+import { useTranslation } from '../i18n/LanguageContext';
 // date-fns imports removed (not used in this file)
 
 interface AvailabilitiesProps {
@@ -31,8 +31,7 @@ interface UserProfile {
 }
 
 export default function Availabilities({ user }: AvailabilitiesProps) {
-  const { t } = useTranslation();
-  const { language } = useLanguage();
+  const { t, language } = useTranslation();
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
