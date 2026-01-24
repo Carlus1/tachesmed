@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import TaskForm from './TaskForm';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface TaskManagementProps {
   user: User;
@@ -29,6 +30,7 @@ interface Task {
 
 export default function TaskManagement({ user: _user }: TaskManagementProps) {
   void _user;
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,12 +111,12 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
 
       if (error) throw error;
       
-      setSuccess('Tâche supprimée avec succès');
+      setSuccess(t.tasks.deleteSuccess);
       setShowDeleteConfirm(null);
       loadTasks();
     } catch (error: any) {
       console.error('Erreur lors de la suppression de la tâche:', error);
-      setError('Erreur lors de la suppression de la tâche: ' + error.message);
+      setError(t.tasks.deleteError + ': ' + error.message);
     } finally {
       setDeletingTask(null);
     }
@@ -149,7 +151,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
     <>
       <div className="py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-primary-700">Gestion des tâches</h1>
+          <h1 className="text-2xl font-semibold text-primary-700">{t.tasks.management}</h1>
           <button
             onClick={() => {
               setEditingTaskId(null);
@@ -160,7 +162,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Nouvelle tâche
+            {t.tasks.newTask}
           </button>
         </div>
 
@@ -183,29 +185,29 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                 <svg className="mx-auto h-12 w-12 text-primary-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <p>Aucune tâche n'a été créée pour le moment.</p>
+                <p>{t.tasks.noTasksMessage}</p>
               </div>
             ) : (
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-primary-100 sticky top-0">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Titre
+                      {t.common.name}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Groupe
+                      {t.tasks.group}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Priorité
+                      {t.tasks.priority}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Date de début
+                      {t.tasks.startDate}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Durée
+                      {t.tasks.duration}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-primary-300 uppercase tracking-wider">
-                      Actions
+                      {t.common.actions}
                     </th>
                   </tr>
                 </thead>
@@ -225,34 +227,34 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                               </span>
                             ))
                           ) : (
-                            <div className="text-sm text-primary-700">{task.group?.name || 'Groupe inconnu'}</div>
+                            <div className="text-sm text-primary-700">{task.group?.name || t.tasks.unknownGroup}</div>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getPriorityColor(task.priority)}`}>
-                          {task.priority === 'high' ? 'Haute' : task.priority === 'medium' ? 'Moyenne' : 'Basse'}
+                          {task.priority === 'high' ? t.dashboard.high : task.priority === 'medium' ? t.dashboard.medium : t.dashboard.low}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
                         {formatDate(task.start_date)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-300">
-                        {task.duration} minutes
+                        {task.duration} {t.tasks.minutes}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleEditTask(task.id)}
                           className="text-primary-600 hover:text-primary-700 mr-4 transition-colors"
                         >
-                          Modifier
+                          {t.tasks.modify}
                         </button>
                         <button
                           onClick={() => setShowDeleteConfirm(task.id)}
                           className="text-error-600 hover:text-error-800 transition-colors"
                           disabled={deletingTask === task.id}
                         >
-                          {deletingTask === task.id ? 'Suppression...' : 'Supprimer'}
+                          {deletingTask === task.id ? t.tasks.deleting : t.common.delete}
                         </button>
                       </td>
                     </tr>
@@ -274,9 +276,9 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
         {showDeleteConfirm && (
           <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
             <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
-              <h3 className="text-lg font-medium mb-4 text-primary-700">Confirmer la suppression</h3>
+              <h3 className="text-lg font-medium mb-4 text-primary-700">{t.tasks.confirmDelete}</h3>
               <p className="text-primary-400 mb-4">
-                Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
+                {t.tasks.confirmDeleteMessage}
               </p>
               <div className="flex justify-end space-x-3">
                 <button
@@ -284,7 +286,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                   className="px-4 py-2 border rounded-md text-primary-700 hover:bg-surface transition-colors"
                   disabled={deletingTask !== null}
                 >
-                  Annuler
+                  {t.common.cancel}
                 </button>
                 <button
                   onClick={() => {
@@ -293,7 +295,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
                   disabled={deletingTask !== null}
                   className="px-4 py-2 bg-error-600 text-white rounded-md hover:bg-error-700 disabled:opacity-50 transition-colors"
                 >
-                  {deletingTask ? 'Suppression...' : 'Supprimer'}
+                  {deletingTask ? t.tasks.deleting : t.common.delete}
                 </button>
               </div>
             </div>

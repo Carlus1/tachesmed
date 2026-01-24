@@ -135,6 +135,21 @@ export interface Translations {
     pending: string;
     inProgress: string;
     completed: string;
+    management: string;
+    newTask: string;
+    noTasks: string;
+    noTasksMessage: string;
+    group: string;
+    unknownGroup: string;
+    startDate: string;
+    duration: string;
+    minutes: string;
+    modify: string;
+    deleting: string;
+    confirmDelete: string;
+    confirmDeleteMessage: string;
+    deleteSuccess: string;
+    deleteError: string;
   };
   
   // Calendar
@@ -311,6 +326,21 @@ export const translations: Record<Language, Translations> = {
       pending: 'En attente',
       inProgress: 'En cours',
       completed: 'Terminé',
+      management: 'Gestion des tâches',
+      newTask: 'Nouvelle tâche',
+      noTasks: 'Aucune tâche',
+      noTasksMessage: 'Aucune tâche n\'a été créée pour le moment.',
+      group: 'Groupe',
+      unknownGroup: 'Groupe inconnu',
+      startDate: 'Date de début',
+      duration: 'Durée',
+      minutes: 'minutes',
+      modify: 'Modifier',
+      deleting: 'Suppression...',
+      confirmDelete: 'Confirmer la suppression',
+      confirmDeleteMessage: 'Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.',
+      deleteSuccess: 'Tâche supprimée avec succès',
+      deleteError: 'Erreur lors de la suppression de la tâche',
     },
     calendar: {
       title: 'Calendrier',
@@ -479,6 +509,21 @@ export const translations: Record<Language, Translations> = {
       pending: 'Pending',
       inProgress: 'In Progress',
       completed: 'Completed',
+      management: 'Task Management',
+      newTask: 'New Task',
+      noTasks: 'No tasks',
+      noTasksMessage: 'No tasks have been created yet.',
+      group: 'Group',
+      unknownGroup: 'Unknown group',
+      startDate: 'Start Date',
+      duration: 'Duration',
+      minutes: 'minutes',
+      modify: 'Modify',
+      deleting: 'Deleting...',
+      confirmDelete: 'Confirm Deletion',
+      confirmDeleteMessage: 'Are you sure you want to delete this task? This action is irreversible.',
+      deleteSuccess: 'Task deleted successfully',
+      deleteError: 'Error deleting task',
     },
     calendar: {
       title: 'Calendar',
@@ -647,6 +692,21 @@ export const translations: Record<Language, Translations> = {
       pending: 'Pending',
       inProgress: 'In Progress',
       completed: 'Completed',
+      management: 'Task Management',
+      newTask: 'New Task',
+      noTasks: 'No tasks',
+      noTasksMessage: 'No tasks have been created yet.',
+      group: 'Group',
+      unknownGroup: 'Unknown group',
+      startDate: 'Start Date',
+      duration: 'Duration',
+      minutes: 'minutes',
+      modify: 'Modify',
+      deleting: 'Deleting...',
+      confirmDelete: 'Confirm Deletion',
+      confirmDeleteMessage: 'Are you sure you want to delete this task? This action is irreversible.',
+      deleteSuccess: 'Task deleted successfully',
+      deleteError: 'Error deleting task',
     },
     calendar: {
       title: 'Calendar',
@@ -815,6 +875,21 @@ export const translations: Record<Language, Translations> = {
       pending: 'Pendiente',
       inProgress: 'En curso',
       completed: 'Completado',
+      management: 'Gestión de tareas',
+      newTask: 'Nueva tarea',
+      noTasks: 'Sin tareas',
+      noTasksMessage: 'No se ha creado ninguna tarea por el momento.',
+      group: 'Grupo',
+      unknownGroup: 'Grupo desconocido',
+      startDate: 'Fecha de inicio',
+      duration: 'Duración',
+      minutes: 'minutos',
+      modify: 'Modificar',
+      deleting: 'Eliminando...',
+      confirmDelete: 'Confirmar Eliminación',
+      confirmDeleteMessage: '¿Está seguro de que desea eliminar esta tarea? Esta acción es irreversible.',
+      deleteSuccess: 'Tarea eliminada correctamente',
+      deleteError: 'Error al eliminar tarea',
     },
     calendar: {
       title: 'Calendario',
