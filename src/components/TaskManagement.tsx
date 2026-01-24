@@ -3,7 +3,7 @@ import type { User } from '@supabase/gotrue-js';
 import { supabase } from '../supabase';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import TaskForm from './TaskForm';
+import TaskModal from './TaskModal';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface TaskManagementProps {
@@ -32,6 +32,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
   void _user;
   const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [groups, setGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -42,6 +43,7 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
 
   useEffect(() => {
     loadTasks();
+    loadGroups();
   }, []);
 
   useEffect(() => {
@@ -85,6 +87,48 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadGroups = async () => {
+    try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      // Charger les groupes où l'utilisateur est admin
+      const { data: adminGroups, error: adminError } = await supabase
+        .from('groups')
+        .select('id, name')
+        .eq('admin_id', userData.user.id);
+
+      if (adminError) throw adminError;
+
+      // Charger les groupes où l'utilisateur est membre
+      const { data: memberGroups, error: memberError } = await supabase
+        .from('group_members')
+        .select(`
+          group_id,
+          groups (
+            id,
+            name
+          )
+        `)
+        .eq('user_id', userData.user.id);
+
+      if (memberError) throw memberError;
+
+      // Combiner et dédupliquer les groupes
+      const memberGroupItems = ((memberGroups || []) as any[]).map((mg) => mg.groups).flat().filter(Boolean) as any[];
+      const allGroups = [ ...(adminGroups || []), ...memberGroupItems ];
+
+      // Dédupliquer les groupes par ID
+      const uniqueGroups = Array.from(
+        new Map((allGroups as any[]).map((group) => [group.id, group])).values()
+      );
+
+      setGroups(uniqueGroups);
+    } catch (error: any) {
+      console.error('Erreur lors du chargement des groupes:', error);
     }
   };
 
@@ -266,8 +310,11 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
         </div>
 
         {showTaskForm && (
-          <TaskForm 
-            onClose={handleTaskCreated} 
+          <TaskModal
+            isOpen={showTaskForm}
+            onClose={handleTaskCreated}
+            onTaskCreated={handleTaskCreated}
+            groups={groups}
             taskId={editingTaskId}
           />
         )}

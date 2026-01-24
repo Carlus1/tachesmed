@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import TaskForm from '../components/TaskForm';
 import TaskModal from '../components/TaskModal';
 
 // Mock supabase
@@ -33,11 +32,30 @@ describe('Multi-Group Task Management', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders group checkboxes in TaskForm', () => {
-    render(<TaskForm onClose={vi.fn()} taskId={null} />);
+  it('renders group checkboxes in TaskModal for both create and edit modes', () => {
+    const { rerender } = render(
+      <TaskModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onTaskCreated={vi.fn()}
+        groups={mockGroups}
+      />
+    );
     
     // We expect checkboxes to be rendered for group selection
     // This is a basic smoke test to ensure the component renders
+    expect(screen.getByText(/groupes associés/i)).toBeInTheDocument();
+    
+    // Test edit mode
+    rerender(
+      <TaskModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onTaskCreated={vi.fn()}
+        groups={mockGroups}
+        taskId="task-123"
+      />
+    );
     expect(screen.getByText(/groupes associés/i)).toBeInTheDocument();
   });
 

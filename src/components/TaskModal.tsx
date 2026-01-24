@@ -9,9 +9,10 @@ interface TaskModalProps {
   onClose: () => void;
   onTaskCreated: () => void;
   groups: any[];
+  taskId?: string | null;
 }
 
-export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: TaskModalProps) {
+export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, taskId }: TaskModalProps) {
   const { t } = useTranslation();
   const [newTask, setNewTask] = useState({
     title: '',
@@ -26,20 +27,70 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
   });
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Keep group_id in sync when modal opens or groups change
   useEffect(() => {
     if (isOpen && groups && groups.length > 0) {
-      const firstGroupId = groups[0].id;
-      setNewTask(prev => ({ ...prev, group_id: firstGroupId, group: groups[0].name }));
-      setSelectedGroupIds([firstGroupId]);
+      if (taskId) {
+        loadTask();
+      } else {
+        const firstGroupId = groups[0].id;
+        setNewTask(prev => ({ ...prev, group_id: firstGroupId, group: groups[0].name }));
+        setSelectedGroupIds([firstGroupId]);
+      }
     }
-  }, [isOpen, groups]);
+  }, [isOpen, groups, taskId]);
+
+  const loadTask = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', taskId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        const startDate = new Date(data.start_date);
+        const endDate = new Date(data.end_date);
+        
+        setNewTask({
+          title: data.title,
+          description: data.description,
+          startDate: startDate.toISOString().slice(0, 10),
+          endDate: endDate.toISOString().slice(0, 10),
+          startTime: startDate.toTimeString().slice(0, 5),
+          endTime: endDate.toTimeString().slice(0, 5),
+          priority: data.priority,
+          group: '',
+          group_id: data.group_id
+        });
+
+        // Load associated groups from task_groups table
+        const { data: taskGroups, error: tgError } = await supabase
+          .from('task_groups')
+          .select('group_id')
+          .eq('task_id', taskId);
+
+        if (!tgError && taskGroups) {
+          setSelectedGroupIds(taskGroups.map(tg => tg.group_id));
+        } else if (data.group_id) {
+          setSelectedGroupIds([data.group_id]);
+        }
+      }
+    } catch (err: any) {
+      console.error('Erreur lors du chargement de la tâche:', err);
+      setError('Erreur lors du chargement de la tâche');
+    }
+  };
 
   const handleCreateTask = async () => {
     try {
       setError(null);
-      console.log('TaskModal: creating task', newTask, 'groups:', selectedGroupIds);
+      setLoading(true);
+      console.log('TaskModal: saving task', newTask, 'groups:', selectedGroupIds);
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
 
@@ -53,31 +104,52 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
         return;
       }
 
-      const { data: insertedTask, error: insertError } = await supabase
-        .from('tasks')
-        .insert([{
-          title: newTask.title,
-          description: newTask.description,
-          priority: newTask.priority,
-          start_date: startDateTime.toISOString(),
-          end_date: endDateTime.toISOString(),
-          duration: Math.floor((endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60)),
-          created_by: userData.user.id,
-          group_id: selectedGroupIds[0] // Primary group for backward compat
-        }])
-        .select('id')
-        .single();
+      const taskData = {
+        title: newTask.title,
+        description: newTask.description,
+        priority: newTask.priority,
+        start_date: startDateTime.toISOString(),
+        end_date: endDateTime.toISOString(),
+        duration: Math.floor((endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60)),
+        group_id: selectedGroupIds[0] // Primary group for backward compat
+      };
 
-      if (insertError) throw insertError;
+      if (taskId) {
+        // Update existing task
+        const { error: updateError } = await supabase
+          .from('tasks')
+          .update(taskData)
+          .eq('id', taskId);
 
-      // Insert task_groups associations
-      const taskGroupsData = selectedGroupIds.map(gid => ({
-        task_id: insertedTask.id,
-        group_id: gid
-      }));
-      
-      const { error: tgError } = await supabase.from('task_groups').insert(taskGroupsData);
-      if (tgError) throw tgError;
+        if (updateError) throw updateError;
+
+        // Delete old task_groups and insert new ones
+        await supabase.from('task_groups').delete().eq('task_id', taskId);
+        const taskGroupsData = selectedGroupIds.map(gid => ({ task_id: taskId, group_id: gid }));
+        const { error: tgError } = await supabase.from('task_groups').insert(taskGroupsData);
+        if (tgError) throw tgError;
+      } else {
+        // Create new task
+        const { data: insertedTask, error: insertError } = await supabase
+          .from('tasks')
+          .insert([{
+            ...taskData,
+            created_by: userData.user.id
+          }])
+          .select('id')
+          .single();
+
+        if (insertError) throw insertError;
+
+        // Insert task_groups associations
+        const taskGroupsData = selectedGroupIds.map(gid => ({
+          task_id: insertedTask.id,
+          group_id: gid
+        }));
+        
+        const { error: tgError } = await supabase.from('task_groups').insert(taskGroupsData);
+        if (tgError) throw tgError;
+      }
 
       onClose();
       setNewTask({
@@ -94,10 +166,12 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
       setSelectedGroupIds([]);
       onTaskCreated();
     } catch (error) {
-      console.error('Erreur lors de la création de la tâche:', error);
+      console.error('Erreur lors de la sauvegarde de la tâche:', error);
       const msg = error?.message || String(error);
       setError(msg);
-      try { alert('Erreur lors de la création de la tâche : ' + msg); } catch (_e) { /* ignore */ }
+      try { alert('Erreur lors de la sauvegarde de la tâche : ' + msg); } catch (_e) { /* ignore */ }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,7 +181,7 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
     isOpen ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-900/60 backdrop-blur-sm">
         <div className="bg-surface rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-border animate-fade-in">
-          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">{t.tasks.createTask}</h2>
+          <h2 className="text-2xl font-extrabold mb-6 text-primary-700 tracking-tight">{taskId ? t.tasks.editTask : t.tasks.createTask}</h2>
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-primary-700 mb-2">{t.tasks.associatedGroups}</label>
@@ -199,10 +273,11 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups }: Ta
               {t.common.cancel}
             </button>
             <button
-              className="px-5 py-2 bg-accent-400 text-white rounded-xl hover:bg-accent-500 font-semibold shadow-md transition-all"
+              className="px-5 py-2 bg-accent-400 text-white rounded-xl hover:bg-accent-500 font-semibold shadow-md transition-all disabled:opacity-50"
               onClick={handleCreateTask}
+              disabled={loading}
             >
-              {t.tasks.create}
+              {loading ? t.tasks.creating : (taskId ? t.tasks.modify : t.tasks.create)}
             </button>
           </div>
         </div>
