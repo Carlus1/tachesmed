@@ -14,6 +14,7 @@ interface Group {
   admin_id: string;
   created_at: string;
   task_count?: number;
+  unavailability_period_weeks: number;
 }
 
 export default function GroupManagement({ user }: GroupManagementProps) {
@@ -26,7 +27,7 @@ export default function GroupManagement({ user }: GroupManagementProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [newGroup, setNewGroup] = useState({ name: '', description: '' });
+  const [newGroup, setNewGroup] = useState({ name: '', description: '', unavailability_period_weeks: 2 });
   const [deletingGroup, setDeletingGroup] = useState<Group | null>(null);
 
   useEffect(() => {
@@ -107,6 +108,7 @@ export default function GroupManagement({ user }: GroupManagementProps) {
             name: newGroup.name.trim(),
             description: newGroup.description.trim(),
             admin_id: user.id,
+            unavailability_period_weeks: newGroup.unavailability_period_weeks,
           },
         ]);
 
@@ -114,7 +116,7 @@ export default function GroupManagement({ user }: GroupManagementProps) {
 
       setSuccess('Groupe créé avec succès');
       setShowCreateModal(false);
-      setNewGroup({ name: '', description: '' });
+      setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 });
       loadGroups();
     } catch (err: any) {
       console.error('Erreur lors de la création du groupe:', err);
@@ -132,6 +134,7 @@ export default function GroupManagement({ user }: GroupManagementProps) {
         .update({
           name: editingGroup.name.trim(),
           description: editingGroup.description.trim(),
+          unavailability_period_weeks: editingGroup.unavailability_period_weeks,
         })
         .eq('id', editingGroup.id);
 
@@ -299,10 +302,27 @@ export default function GroupManagement({ user }: GroupManagementProps) {
               <label className="block text-sm font-medium text-primary-700">Description</label>
               <textarea value={newGroup.description} onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })} rows={3} className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" placeholder="Décrivez le but de ce groupe" />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-primary-700">Fréquence de mise à jour des indisponibilités</label>
+              <select 
+                value={newGroup.unavailability_period_weeks} 
+                onChange={(e) => setNewGroup({ ...newGroup, unavailability_period_weeks: parseInt(e.target.value) })} 
+                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500"
+              >
+                <option value={1}>Chaque semaine</option>
+                <option value={2}>Toutes les 2 semaines</option>
+                <option value={4}>Chaque mois (4 semaines)</option>
+                <option value={8}>Tous les 2 mois (8 semaines)</option>
+                <option value={12}>Tous les 3 mois (12 semaines)</option>
+                <option value={24}>Tous les 6 mois (24 semaines)</option>
+                <option value={52}>Chaque année (52 semaines)</option>
+              </select>
+              <p className="text-xs text-primary-400 mt-1">Les membres devront mettre à jour leurs indisponibilités selon cette fréquence</p>
+            </div>
           </div>
 
             <div className="mt-6 flex justify-end space-x-3">
-            <button onClick={() => { setShowCreateModal(false); setNewGroup({ name: '', description: '' }); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">Annuler</button>
+            <button onClick={() => { setShowCreateModal(false); setNewGroup({ name: '', description: '', unavailability_period_weeks: 2 }); }} className="px-4 py-2 border border-border rounded-md text-primary-700 hover:bg-surface transition-colors">Annuler</button>
             <button onClick={handleCreateGroup} disabled={!newGroup.name.trim()} className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors">Créer</button>
           </div>
         </div>
@@ -340,6 +360,23 @@ export default function GroupManagement({ user }: GroupManagementProps) {
                 className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500" 
                 placeholder="Décrivez le but de ce groupe" 
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-primary-700">Fréquence de mise à jour des indisponibilités</label>
+              <select 
+                value={editingGroup.unavailability_period_weeks} 
+                onChange={(e) => setEditingGroup({ ...editingGroup, unavailability_period_weeks: parseInt(e.target.value) })} 
+                className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-transparent focus:ring-primary-500"
+              >
+                <option value={1}>Chaque semaine</option>
+                <option value={2}>Toutes les 2 semaines</option>
+                <option value={4}>Chaque mois (4 semaines)</option>
+                <option value={8}>Tous les 2 mois (8 semaines)</option>
+                <option value={12}>Tous les 3 mois (12 semaines)</option>
+                <option value={24}>Tous les 6 mois (24 semaines)</option>
+                <option value={52}>Chaque année (52 semaines)</option>
+              </select>
+              <p className="text-xs text-primary-400 mt-1">Les membres devront mettre à jour leurs indisponibilités selon cette fréquence</p>
             </div>
           </div>
 
