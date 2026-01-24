@@ -5,12 +5,14 @@ import type { User } from '@supabase/gotrue-js';
 import { startOfWeek, endOfWeek, addDays, addWeeks, format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { sendUnavailabilityReminder, setLastNotificationTime, wasNotificationSentToday } from '../services/notificationService';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface AvailabilityReminderProps {
   user: User;
 }
 
 export default function AvailabilityReminder({ user }: AvailabilityReminderProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [lastUpdateDate, setLastUpdateDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
@@ -124,7 +126,7 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
     return (
       <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
+          <h2 className="text-lg font-semibold text-primary-700">{t.unavailabilities.reminder}</h2>
         </div>
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
@@ -138,7 +140,7 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
     return (
       <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
+          <h2 className="text-lg font-semibold text-primary-700">{t.unavailabilities.reminder}</h2>
         </div>
         <div className="p-6 flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-success-50 rounded-full flex items-center justify-center mb-4">
@@ -146,15 +148,15 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-center mb-2 text-success-700">Indisponibilités à jour</h3>
+          <h3 className="text-lg font-medium text-center mb-2 text-success-700">{t.unavailabilities.upToDate}</h3>
           <p className="text-primary-400 text-center mb-4">
-            Prochaine mise à jour dans {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}
+            {t.unavailabilities.nextUpdateIn} {daysRemaining} {t.unavailabilities.daysRemaining}
           </p>
           <button 
             onClick={handleComplete}
             className="w-full py-3 bg-primary-100 hover:bg-primary-200 text-primary-700 font-medium rounded-lg transition-colors"
           >
-            Gérer mes indisponibilités
+            {t.unavailabilities.manageUnavailabilities}
           </button>
         </div>
       </div>
@@ -167,26 +169,26 @@ export default function AvailabilityReminder({ user }: AvailabilityReminderProps
   return (
     <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-primary-700">Rappel d'indisponibilités</h2>
+        <h2 className="text-lg font-semibold text-primary-700">{t.unavailabilities.reminder}</h2>
       </div>
       <div className="p-6 flex flex-col items-center justify-center">
         <div className={`w-16 h-16 ${isUrgent ? 'bg-error-50' : 'bg-warning-50'} rounded-full flex items-center justify-center mb-4`}>
           <span className={`${isUrgent ? 'text-error-600' : 'text-warning-600'} font-bold text-2xl`}>!</span>
         </div>
         <h3 className={`text-lg font-medium text-center mb-2 ${isUrgent ? 'text-error-700' : 'text-warning-700'}`}>
-          {isUrgent ? 'Action requise' : `${daysRemaining} jour${daysRemaining > 1 ? 's' : ''} restant${daysRemaining > 1 ? 's' : ''}`}
+          {isUrgent ? t.unavailabilities.actionRequired : `${daysRemaining} ${t.unavailabilities.daysRemaining}`}
         </h3>
         <p className="text-primary-400 text-center mb-6">
           {lastUpdateDate 
-            ? `Mettez à jour vos indisponibilités (période de ${periodWeeks} semaine${periodWeeks > 1 ? 's' : ''})`
-            : `Saisissez vos indisponibilités pour les ${periodWeeks} prochaines semaines`
+            ? `${t.unavailabilities.updateUnavailabilities} (période de ${periodWeeks} semaine${periodWeeks > 1 ? 's' : ''})`
+            : `${t.unavailabilities.enterUnavailabilities} pour les ${periodWeeks} prochaines semaines`
           }
         </p>
         <button 
           onClick={handleComplete}
           className={`w-full py-3 ${isUrgent ? 'bg-error-600 hover:bg-error-700' : 'bg-primary-600 hover:bg-primary-700'} text-white font-medium rounded-lg transition-colors`}
         >
-          {lastUpdateDate ? 'Mettre à jour maintenant' : 'Saisir maintenant'}
+          {lastUpdateDate ? t.unavailabilities.updateNow : t.unavailabilities.enterNow}
         </button>
       </div>
     </div>
