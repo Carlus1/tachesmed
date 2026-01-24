@@ -37,12 +37,6 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
     return (
         <aside className={`bg-surface dark:bg-surface-dark border-r border-border dark:border-surface p-4 transform transition-transform duration-200 ease-in-out ${isOpen ? 'translate-x-0 fixed z-40 left-0 top-16 h-[calc(100vh-64px)] w-64' : 'hidden md:block w-80 relative h-[calc(100vh-64px)]'}`}>
             <div className="flex flex-col h-full">
-                <div className="mb-6">
-                    <NavLink to="/" className="w-full inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        {t.nav.dashboard}
-                    </NavLink>
-                </div>
-
                 <nav className="space-y-1">
                     <NavLink to="/" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.dashboard}
