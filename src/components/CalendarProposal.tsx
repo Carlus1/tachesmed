@@ -1,11 +1,15 @@
+import { useTranslation } from '../i18n/LanguageContext';
+
 export default function CalendarProposal() {
+    const { t } = useTranslation();
+    
     return (
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="p-4 border-b border-border">
-                <h2 className="text-lg font-semibold text-primary-700">Proposition de calendrier</h2>
+                <h2 className="text-lg font-semibold text-primary-700">{t.dashboard.calendarProposal}</h2>
             </div>
             <div className="p-4">
-                <p className="text-sm text-primary-400 mb-4">Semaine du 03/07/2023 au 09/07</p>
+                <p className="text-sm text-primary-400 mb-4">{t.dashboard.weekOf} 03/07/2023 au 09/07</p>
 
                 <div className="space-y-4">
                     <div className="flex items-start">
@@ -41,10 +45,10 @@ export default function CalendarProposal() {
             </div>
             <div className="flex border-t border-border">
                 <button className="flex-1 py-3 text-center text-primary-700 hover:bg-surface transition-colors">
-                    Accepter
+                    {t.dashboard.accept}
                 </button>
                 <button className="flex-1 py-3 text-center text-primary-700 hover:bg-surface transition-colors border-l border-border">
-                    Regénérer
+                    {t.dashboard.regenerate}
                 </button>
             </div>
         </div>

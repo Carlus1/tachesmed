@@ -162,20 +162,20 @@ export default function SettingsPage({ user }: SettingsPageProps) {
   return (
     <ModernLayout user={user}>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary-700">Paramètres</h1>
-        <p className="text-primary-400 mt-2">Gérez votre profil et vos préférences.</p>
+        <h1 className="text-2xl font-bold text-primary-700">{t.settings.title}</h1>
+        <p className="text-primary-400 mt-2">{t.settings.subtitle}</p>
       </div>
 
       <div className="space-y-6">
         {/* Section Profil */}
         <form onSubmit={handleUpdateProfile} className="bg-surface rounded-lg shadow-sm border border-border p-6">
-          <h2 className="text-lg font-medium text-primary-700 mb-4">Informations du profil</h2>
+          <h2 className="text-lg font-medium text-primary-700 mb-4">{t.settings.profileInfo}</h2>
           
           <div className="space-y-4">
             {/* Email (non modifiable) */}
             <div>
               <label className="block text-sm font-medium text-primary-700">
-                Email
+                {t.auth.email}
               </label>
               <input
                 type="email"
@@ -188,7 +188,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             {/* Nom complet */}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-primary-700">
-                Nom complet
+                {t.settings.fullName}
               </label>
               <input
                 type="text"
@@ -202,7 +202,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             {/* Rôle (non modifiable) */}
             <div>
               <label className="block text-sm font-medium text-primary-700">
-                Rôle
+                {t.settings.role}
               </label>
               <input
                 type="text"
@@ -215,13 +215,13 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             {/* Changement de mot de passe */}
             <div className="border-t border-border pt-4 mt-4">
               <h3 className="text-md font-medium text-primary-700 mb-3">
-                Changer le mot de passe
+                {t.settings.changePassword}
               </h3>
 
               <div className="space-y-3">
                 <div>
                   <label htmlFor="newPassword" className="block text-sm font-medium text-primary-700">
-                    Nouveau mot de passe
+                    {t.settings.newPassword}
                   </label>
                   <input
                     type="password"
@@ -229,13 +229,13 @@ export default function SettingsPage({ user }: SettingsPageProps) {
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Laisser vide pour ne pas changer"
+                    placeholder={t.settings.leaveBlankNoChange}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="confirmPassword" className="block text-sm font-medium text-primary-700">
-                    Confirmer le nouveau mot de passe
+                    {t.settings.confirmPassword}
                   </label>
                   <input
                     type="password"
@@ -261,7 +261,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
               disabled={savingProfile}
               className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
             >
-              {savingProfile ? 'Enregistrement...' : 'Enregistrer le profil'}
+              {savingProfile ? t.settings.saving : t.settings.saveProfile}
             </button>
           </div>
         </form>
@@ -274,9 +274,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             <div>
               <h3 className="text-md font-medium text-primary-700">{t.settings.language}</h3>
               <p className="text-sm text-primary-400">
-                {language === 'fr' ? 'Choisissez la langue de l\'interface.' : 
-                 language === 'es' ? 'Elige el idioma de la interfaz.' : 
-                 'Choose the interface language.'}
+                {t.settings.chooseLanguage}
               </p>
               <div className="mt-3">
                 <select
@@ -295,9 +293,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
             <div>
               <h3 className="text-md font-medium text-primary-700">{t.settings.notifications}</h3>
               <p className="text-sm text-primary-400">
-                {language === 'fr' ? 'Gérer les notifications par email et in-app.' : 
-                 language === 'es' ? 'Gestionar notificaciones por correo electrónico y en la aplicación.' :
-                 'Manage email and in-app notifications.'}
+                {t.settings.manageNotifications}
               </p>
               <div className="mt-3">
                 <label className="inline-flex items-center">
@@ -344,7 +340,7 @@ export default function SettingsPage({ user }: SettingsPageProps) {
               disabled={savingPrefs}
               className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
             >
-              {savingPrefs ? 'Enregistrement...' : 'Enregistrer les préférences'}
+              {savingPrefs ? t.settings.saving : t.settings.savePreferences}
             </button>
           </div>
         </form>

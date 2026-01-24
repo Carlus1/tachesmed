@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface Task {
     id: string;
@@ -23,6 +24,8 @@ interface TasksSectionProps {
 }
 
 export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
+    const { t } = useTranslation();
+    
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case 'high': return 'bg-error-100 text-error-800 border-error-200';
@@ -34,9 +37,9 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
 
     const getPriorityText = (priority: string) => {
         switch (priority) {
-            case 'high': return 'Haute';
-            case 'medium': return 'Moyenne';
-            case 'low': return 'Basse';
+            case 'high': return t.dashboard.high;
+            case 'medium': return t.dashboard.medium;
+            case 'low': return t.dashboard.low;
             default: return priority;
         }
     };
@@ -44,12 +47,12 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
     return (
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b border-border">
-                <h2 className="text-lg font-semibold text-primary-700">Tâches à venir</h2>
+                <h2 className="text-lg font-semibold text-primary-700">{t.dashboard.upcomingTasks}</h2>
                 <button
                     onClick={onAddTask}
                     className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
                 >
-                    Créer une tâche
+                    {t.tasks.createTask}
                 </button>
             </div>
             <div className="divide-y divide-border">
@@ -82,13 +85,13 @@ export default function TasksSection({ tasks, onAddTask }: TasksSectionProps) {
                 ))}
                 {tasks.length === 0 && (
                     <div className="p-6 text-center text-primary-400">
-                        <p>Aucune tâche à venir</p>
+                        <p>{t.dashboard.noTasks}</p>
                     </div>
                 )}
             </div>
             <div className="p-4 border-t border-border bg-background">
                 <Link to="/tasks" className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                    Voir toutes les tâches →
+                    {t.dashboard.viewAllTasks} →
                 </Link>
             </div>
         </div>

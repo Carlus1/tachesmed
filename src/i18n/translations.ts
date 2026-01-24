@@ -71,6 +71,10 @@ export interface Translations {
     saving: string;
     profileSaved: string;
     preferencesSaved: string;
+    profileInfo: string;
+    leaveBlankNoChange: string;
+    chooseLanguage: string;
+    manageNotifications: string;
   };
   
   // Groups
@@ -103,6 +107,20 @@ export interface Translations {
     deleting: string;
   };
   
+  // Dashboard
+  dashboard: {
+    upcomingTasks: string;
+    calendarProposal: string;
+    noTasks: string;
+    viewAllTasks: string;
+    weekOf: string;
+    accept: string;
+    regenerate: string;
+    high: string;
+    medium: string;
+    low: string;
+  };
+
   // Tasks
   tasks: {
     title: string;
@@ -217,6 +235,22 @@ export const translations: Record<Language, Translations> = {
       saving: 'Enregistrement...',
       profileSaved: 'Profil mis à jour avec succès',
       preferencesSaved: 'Préférences enregistrées',
+      profileInfo: 'Informations du profil',
+      leaveBlankNoChange: 'Laisser vide pour ne pas changer',
+      chooseLanguage: 'Choisissez la langue de l\'interface.',
+      manageNotifications: 'Gérer les notifications par email et in-app.',
+    },
+    dashboard: {
+      upcomingTasks: 'Tâches à venir',
+      calendarProposal: 'Proposition de calendrier',
+      noTasks: 'Aucune tâche à venir',
+      viewAllTasks: 'Voir toutes les tâches',
+      weekOf: 'Semaine du',
+      accept: 'Accepter',
+      regenerate: 'Régénérer',
+      high: 'Haute',
+      medium: 'Moyenne',
+      low: 'Basse',
     },
     groups: {
       title: 'Mes groupes',
@@ -351,6 +385,22 @@ export const translations: Record<Language, Translations> = {
       saving: 'Saving...',
       profileSaved: 'Profile updated successfully',
       preferencesSaved: 'Preferences saved',
+      profileInfo: 'Profile Information',
+      leaveBlankNoChange: 'Leave blank to keep unchanged',
+      chooseLanguage: 'Choose the interface language.',
+      manageNotifications: 'Manage email and in-app notifications.',
+    },
+    dashboard: {
+      upcomingTasks: 'Upcoming Tasks',
+      calendarProposal: 'Calendar Proposal',
+      noTasks: 'No upcoming tasks',
+      viewAllTasks: 'View all tasks',
+      weekOf: 'Week of',
+      accept: 'Accept',
+      regenerate: 'Regenerate',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
     },
     groups: {
       title: 'My Groups',
@@ -485,6 +535,22 @@ export const translations: Record<Language, Translations> = {
       saving: 'Saving...',
       profileSaved: 'Profile updated successfully',
       preferencesSaved: 'Preferences saved',
+      profileInfo: 'Profile Information',
+      leaveBlankNoChange: 'Leave blank to keep unchanged',
+      chooseLanguage: 'Choose the interface language.',
+      manageNotifications: 'Manage email and in-app notifications.',
+    },
+    dashboard: {
+      upcomingTasks: 'Upcoming Tasks',
+      calendarProposal: 'Calendar Proposal',
+      noTasks: 'No upcoming tasks',
+      viewAllTasks: 'View all tasks',
+      weekOf: 'Week of',
+      accept: 'Accept',
+      regenerate: 'Regenerate',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
     },
     groups: {
       title: 'My Groups',
@@ -619,6 +685,22 @@ export const translations: Record<Language, Translations> = {
       saving: 'Guardando...',
       profileSaved: 'Perfil actualizado correctamente',
       preferencesSaved: 'Preferencias guardadas',
+      profileInfo: 'Información del perfil',
+      leaveBlankNoChange: 'Dejar en blanco para no cambiar',
+      chooseLanguage: 'Elige el idioma de la interfaz.',
+      manageNotifications: 'Gestionar notificaciones por correo electrónico y en la aplicación.',
+    },
+    dashboard: {
+      upcomingTasks: 'Tareas Próximas',
+      calendarProposal: 'Propuesta de Calendario',
+      noTasks: 'Sin tareas próximas',
+      viewAllTasks: 'Ver todas las tareas',
+      weekOf: 'Semana del',
+      accept: 'Aceptar',
+      regenerate: 'Regenerar',
+      high: 'Alta',
+      medium: 'Media',
+      low: 'Baja',
     },
     groups: {
       title: 'Mis Grupos',
