@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useTranslation } from '../i18n/LanguageContext';
+import TimePicker from './TimePicker';
 
 // Normalized file to ensure no accidental line-wrapping within JSX attributes
 
@@ -243,11 +244,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
                 value={newTask.startDate}
                 onChange={e => setNewTask({ ...newTask, startDate: e.target.value })}
               />
-              <input
-                type="time"
-                className="flex-1 border border-border rounded-xl px-4 py-3 bg-background text-primary-700"
+              <TimePicker
                 value={newTask.startTime}
-                onChange={e => setNewTask({ ...newTask, startTime: e.target.value })}
+                onChange={(time) => setNewTask({ ...newTask, startTime: time })}
+                className="flex-1"
               />
             </div>
             <div className="flex space-x-3">
@@ -257,11 +257,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
                 value={newTask.endDate}
                 onChange={e => setNewTask({ ...newTask, endDate: e.target.value })}
               />
-              <input
-                type="time"
-                className="flex-1 border border-border rounded-xl px-4 py-3 bg-background text-primary-700"
+              <TimePicker
                 value={newTask.endTime}
-                onChange={e => setNewTask({ ...newTask, endTime: e.target.value })}
+                onChange={(time) => setNewTask({ ...newTask, endTime: time })}
+                className="flex-1"
               />
             </div>
             <select
