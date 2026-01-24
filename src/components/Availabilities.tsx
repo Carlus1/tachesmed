@@ -299,6 +299,31 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
               </div>
             )}
 
+            {selectedEvent && (
+                <div className="mb-4 flex justify-between items-center bg-error-50 border border-error-200 rounded-md p-3">
+                  <span className="text-sm text-error-700">
+                    Indisponibilité sélectionnée
+                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-error-600 hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error-600"
+                    >
+                      <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Supprimer
+                    </button>
+                    <button
+                      onClick={() => setSelectedEvent(null)}
+                      className="px-3 py-2 border border-error-300 text-sm font-medium rounded-md text-error-700 bg-white hover:bg-error-50"
+                    >
+                      Fermer
+                    </button>
+                  </div>
+                </div>
+            )}
+
             <div className="calendar-container">
               <FullCalendar
                 ref={calendarRef}
@@ -314,6 +339,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 selectMirror={true}
                 dayMaxEvents={true}
                 weekends={true}
+                unselectAuto={false}
                 events={events}
                 select={handleDateSelect}
                 eventClick={handleEventClick}
@@ -334,23 +360,6 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 }}
               />
             </div>
-
-            {selectedEvent && (
-                <div 
-                  className="mt-4 flex justify-end"
-                  onMouseDown={(e) => e.preventDefault()}
-                >
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-error-600 hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error-600"
-                  >
-                    <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Supprimer
-                  </button>
-              </div>
-            )}
 
             {/* Modale de confirmation de suppression */}
             {showDeleteConfirm && (
