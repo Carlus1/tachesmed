@@ -2,6 +2,8 @@ import ModernLayout from '../components/ModernLayout';
 import type { User } from '@supabase/gotrue-js';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
+import { useTranslation } from '../i18n/LanguageContext';
+import type { Language } from '../i18n/translations';
 
 interface SettingsPageProps {
   user: User;
@@ -17,6 +19,8 @@ interface UserProfile {
 }
 
 export default function SettingsPage({ user }: SettingsPageProps) {
+  const { language, setLanguage, t } = useTranslation();
+  
   // États pour les préférences
   const [notifications, setNotifications] = useState<boolean>(() => {
     try { return localStorage.getItem('pref_notifications') === '1'; } catch { return true; }
@@ -264,12 +268,31 @@ export default function SettingsPage({ user }: SettingsPageProps) {
 
         {/* Section Préférences */}
         <form onSubmit={handleSavePreferences} className="bg-surface rounded-lg shadow-sm border border-border p-6">
-          <h2 className="text-lg font-medium text-primary-700 mb-4">Préférences</h2>
+          <h2 className="text-lg font-medium text-primary-700 mb-4">{t.settings.preferences}</h2>
           
           <div className="space-y-4">
             <div>
-              <h3 className="text-md font-medium text-primary-700">Notifications</h3>
-              <p className="text-sm text-primary-400">Gérer les notifications par email et in-app.</p>
+              <h3 className="text-md font-medium text-primary-700">{t.settings.language}</h3>
+              <p className="text-sm text-primary-400">
+                {language === 'fr' ? 'Choisissez la langue de l\'interface.' : 'Choose the interface language.'}
+              </p>
+              <div className="mt-3">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="border border-border rounded-md px-3 py-2 bg-surface"
+                >
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-md font-medium text-primary-700">{t.settings.notifications}</h3>
+              <p className="text-sm text-primary-400">
+                {language === 'fr' ? 'Gérer les notifications par email et in-app.' : 'Manage email and in-app notifications.'}
+              </p>
               <div className="mt-3">
                 <label className="inline-flex items-center">
                   <input
@@ -278,14 +301,14 @@ export default function SettingsPage({ user }: SettingsPageProps) {
                     onChange={(e) => setNotifications(e.target.checked)}
                     className="mr-2"
                   />
-                  <span className="text-primary-700">Recevoir des notifications</span>
+                  <span className="text-primary-700">{t.settings.receiveNotifications}</span>
                 </label>
               </div>
             </div>
 
             <div>
-              <h3 className="text-md font-medium text-primary-700">Fuseau horaire</h3>
-              <p className="text-sm text-primary-400">Sélectionnez votre fuseau horaire pour les heures affichées.</p>
+              <h3 className="text-md font-medium text-primary-700">{t.settings.timezone}</h3>
+              <p className="text-sm text-primary-400">{t.settings.selectTimezone}</p>
               <div className="mt-3">
                 <select
                   value={timezone}
