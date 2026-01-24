@@ -289,8 +289,6 @@ export default function GroupManagement({ user }: GroupManagementProps) {
           </div>
         </div>
       </div>
-        </div>
-      </div>
     )}
 
     {/* Composant de détail du groupe */}
