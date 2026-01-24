@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { format, startOfWeek, endOfWeek, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS, es } from 'date-fns/locale';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface Task {
@@ -22,12 +22,20 @@ interface CalendarViewProps {
 }
 
 export default function CalendarView({ view = 'week' }: CalendarViewProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDays, setWeekDays] = useState<Date[]>([]);
   const [selectedDayTasks, setSelectedDayTasks] = useState<{ date: Date; tasks: Task[] } | null>(null);
+
+  const getDateFnsLocale = () => {
+    switch (language) {
+      case 'fr': return fr;
+      case 'es': return es;
+      default: return enUS; // English is default
+    }
+  };
 
   useEffect(() => {
     loadTasks();
@@ -158,7 +166,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
             </svg>
           </button>
           <span className="text-sm font-medium text-primary-700">
-            {t.calendar.weekOf} {format(weekDays[0] || currentDate, 'dd/MM/yyyy', { locale: fr })}
+            {t.calendar.weekOf} {format(weekDays[0] || currentDate, 'dd/MM/yyyy', { locale: getDateFnsLocale() })}
           </span>
           <button 
             onClick={nextWeek}
@@ -175,7 +183,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         {weekDays.map((day, index) => (
           <div key={index} className="p-2 text-center border-r border-border last:border-r-0">
             <p className="text-xs font-medium text-primary-400 uppercase">
-              {format(day, 'EEE', { locale: fr })}
+              {format(day, 'EEE', { locale: getDateFnsLocale() })}
             </p>
             <p className={`text-lg font-semibold ${
               day.getDate() === new Date().getDate() && 
@@ -263,7 +271,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
             </svg>
           </button>
           <span className="text-sm font-medium text-primary-700">
-            {format(currentDate, 'MMMM yyyy', { locale: fr })}
+            {format(currentDate, 'MMMM yyyy', { locale: getDateFnsLocale() })}
           </span>
           <button 
             onClick={nextMonth}
@@ -345,7 +353,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         <div className="bg-surface rounded-2xl shadow-xl max-w-md w-full mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
           <div className="p-4 border-b border-border flex justify-between items-center">
             <h3 className="text-lg font-semibold text-primary-700">
-              {t.calendar.tasksOf} {format(selectedDayTasks.date, 'd MMMM yyyy', { locale: fr })}
+              {t.calendar.tasksOf} {format(selectedDayTasks.date, 'd MMMM yyyy', { locale: getDateFnsLocale() })}
             </h3>
             <button 
               onClick={() => setSelectedDayTasks(null)}
