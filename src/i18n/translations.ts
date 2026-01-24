@@ -119,6 +119,14 @@ export interface Translations {
     high: string;
     medium: string;
     low: string;
+    myGroups: string;
+    createGroup: string;
+    seeAll: string;
+    member: string;
+    members: string;
+    seeDetails: string;
+    noGroupMember: string;
+    createOrJoinGroup: string;
   };
 
   // Tasks
@@ -339,6 +347,14 @@ export const translations: Record<Language, Translations> = {
       high: 'Haute',
       medium: 'Moyenne',
       low: 'Basse',
+      myGroups: 'Mes groupes',
+      createGroup: 'Créer un groupe',
+      seeAll: 'Voir tous',
+      member: 'membre',
+      members: 'membres',
+      seeDetails: 'Voir détails',
+      noGroupMember: 'Vous n\'êtes membre d\'aucun groupe',
+      createOrJoinGroup: 'Créer ou rejoindre un groupe',
     },
     groups: {
       title: 'Mes groupes',
@@ -575,6 +591,14 @@ export const translations: Record<Language, Translations> = {
       high: 'High',
       medium: 'Medium',
       low: 'Low',
+      myGroups: 'My Groups',
+      createGroup: 'Create Group',
+      seeAll: 'See all',
+      member: 'member',
+      members: 'members',
+      seeDetails: 'See details',
+      noGroupMember: 'You are not a member of any group',
+      createOrJoinGroup: 'Create or join a group',
     },
     groups: {
       title: 'My Groups',
@@ -811,6 +835,14 @@ export const translations: Record<Language, Translations> = {
       high: 'High',
       medium: 'Medium',
       low: 'Low',
+      myGroups: 'My Groups',
+      createGroup: 'Create Group',
+      seeAll: 'See all',
+      member: 'member',
+      members: 'members',
+      seeDetails: 'See details',
+      noGroupMember: 'You are not a member of any group',
+      createOrJoinGroup: 'Create or join a group',
     },
     groups: {
       title: 'My Groups',
@@ -1047,6 +1079,14 @@ export const translations: Record<Language, Translations> = {
       high: 'Alta',
       medium: 'Media',
       low: 'Baja',
+      myGroups: 'Mis Grupos',
+      createGroup: 'Crear Grupo',
+      seeAll: 'Ver todos',
+      member: 'miembro',
+      members: 'miembros',
+      seeDetails: 'Ver detalles',
+      noGroupMember: 'No eres miembro de ningún grupo',
+      createOrJoinGroup: 'Crear o unirse a un grupo',
     },
     groups: {
       title: 'Mis Grupos',

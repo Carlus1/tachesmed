@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import type { User } from '@supabase/gotrue-js';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface MyGroupsSectionProps {
     user: User;
@@ -16,6 +17,7 @@ interface Group {
 }
 
 export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSectionProps) {
+    const { t } = useTranslation();
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -91,7 +93,7 @@ export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSection
         return (
             <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
                 <div className="p-4 border-b border-border">
-                    <h2 className="text-lg font-semibold text-primary-700">Mes groupes</h2>
+                    <h2 className="text-lg font-semibold text-primary-700">{t.dashboard.myGroups}</h2>
                 </div>
                 <div className="p-8 text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
@@ -106,16 +108,16 @@ export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSection
     return (
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
             <div className="p-4 border-b border-border flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-primary-700">Mes groupes</h2>
+                <h2 className="text-lg font-semibold text-primary-700">{t.dashboard.myGroups}</h2>
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={onCreateGroup}
                         className="px-3 py-1.5 text-sm font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
                     >
-                        Créer un groupe
+                        {t.dashboard.createGroup}
                     </button>
                     <Link to="/groups" className="text-sm text-primary-600 hover:text-primary-700 hover:underline">
-                        Voir tous →
+                        {t.dashboard.seeAll} →
                     </Link>
                 </div>
             </div>
@@ -125,22 +127,22 @@ export default function MyGroupsSection({ user, onCreateGroup }: MyGroupsSection
                         <div key={group.id} className={`${colors[index % colors.length]} rounded-lg p-4 relative overflow-hidden`}>
                             <div className="flex justify-between items-start mb-8">
                                 <h3 className={`font-medium ${textColors[index % textColors.length]}`}>{group.name}</h3>
-                                <span className="text-sm text-primary-600">{group.member_count || 0} membre{(group.member_count || 0) > 1 ? 's' : ''}</span>
+                                <span className="text-sm text-primary-600">{group.member_count || 0} {(group.member_count || 0) > 1 ? t.dashboard.members : t.dashboard.member}</span>
                             </div>
                             <Link 
                                 to={`/groups/${group.id}`} 
                                 className="absolute bottom-2 right-2 text-primary-600 hover:text-primary-800 hover:underline"
                             >
-                                Voir détails
+                                {t.dashboard.seeDetails}
                             </Link>
                         </div>
                     ))}
                 </div>
             ) : (
                 <div className="p-8 text-center text-primary-400">
-                    <p>Vous n'êtes membre d'aucun groupe</p>
+                    <p>{t.dashboard.noGroupMember}</p>
                     <Link to="/groups" className="text-primary-600 hover:text-primary-700 hover:underline mt-2 inline-block">
-                        Créer ou rejoindre un groupe →
+                        {t.dashboard.createOrJoinGroup} →
                     </Link>
                 </div>
             )}
