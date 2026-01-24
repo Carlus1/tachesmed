@@ -114,18 +114,23 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
     try {
       setError(null);
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('availabilities')
         .insert([{
           user_id: selectedUserId,
           start_time: selectInfo.start.toISOString(),
           end_time: selectInfo.end.toISOString()
-        }]);
+        }])
+        .select();
 
       if (error) throw error;
 
+      // Ajouter directement au state au lieu de recharger
+      if (data && data.length > 0) {
+        setAvailabilities(prev => [...prev, data[0]]);
+      }
+
       setSuccess('Indisponibilité ajoutée avec succès');
-      loadAvailabilities();
     } catch (error: any) {
       console.error('Erreur lors de l\'ajout de l\'indisponibilité:', error);
       setError('Erreur lors de l\'ajout de l\'indisponibilité');
@@ -151,8 +156,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
+      // Mise à jour optimiste du state
+      setAvailabilities(prev => prev.map(av => 
+        av.id === dropInfo.event.id 
+          ? { ...av, start_time: dropInfo.event.start.toISOString(), end_time: dropInfo.event.end.toISOString() }
+          : av
+      ));
+
       setSuccess('Indisponibilité mise à jour avec succès');
-      loadAvailabilities();
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
       setError('Erreur lors de la mise à jour de l\'indisponibilité');
@@ -175,8 +186,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
+      // Mise à jour optimiste du state
+      setAvailabilities(prev => prev.map(av => 
+        av.id === resizeInfo.event.id 
+          ? { ...av, start_time: resizeInfo.event.start.toISOString(), end_time: resizeInfo.event.end.toISOString() }
+          : av
+      ));
+
       setSuccess('Indisponibilité mise à jour avec succès');
-      loadAvailabilities();
     } catch (error: any) {
       console.error('Erreur lors de la mise à jour de l\'indisponibilité:', error);
       setError('Erreur lors de la mise à jour de l\'indisponibilité');
@@ -198,10 +215,12 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       if (error) throw error;
 
+      // Mise à jour optimiste du state
+      setAvailabilities(prev => prev.filter(av => av.id !== selectedEvent));
+
       setSuccess('Indisponibilité supprimée avec succès');
       setSelectedEvent(null);
       setShowDeleteConfirm(false);
-      loadAvailabilities();
     } catch (error: any) {
       console.error('Erreur lors de la suppression de l\'indisponibilité:', error);
       setError('Erreur lors de la suppression de l\'indisponibilité');
