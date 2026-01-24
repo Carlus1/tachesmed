@@ -300,14 +300,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             )}
 
             {selectedEvent && (
-                <div className="mb-4 flex justify-between items-center bg-error-50 border border-error-200 rounded-md p-3">
-                  <span className="text-sm text-error-700">
+                <div className="mb-4 flex justify-between items-center bg-red-50 border border-red-200 rounded-md p-3">
+                  <span className="text-sm text-red-700">
                     Indisponibilité sélectionnée
                   </span>
                   <div className="flex space-x-2">
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-error-600 hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error-600"
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
                       <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -316,7 +316,7 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                     </button>
                     <button
                       onClick={() => setSelectedEvent(null)}
-                      className="px-3 py-2 border border-error-300 text-sm font-medium rounded-md text-error-700 bg-white hover:bg-error-50"
+                      className="px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
                     >
                       Fermer
                     </button>
@@ -364,11 +364,11 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
             {/* Modale de confirmation de suppression */}
             {showDeleteConfirm && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-                  <h3 className="text-lg font-semibold text-primary-700 mb-4">
+                <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Confirmer la suppression
                   </h3>
-                  <p className="text-primary-600 mb-6">
+                  <p className="text-gray-600 mb-6">
                     Êtes-vous sûr de vouloir supprimer cette indisponibilité ?
                   </p>
                   <div className="flex justify-end space-x-3">
@@ -376,13 +376,13 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                       onClick={() => {
                         setShowDeleteConfirm(false);
                       }}
-                      className="px-4 py-2 bg-primary-100 text-primary-700 rounded-md hover:bg-primary-200 transition-colors"
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                     >
                       Annuler
                     </button>
                     <button
                       onClick={handleDeleteAvailability}
-                      className="px-4 py-2 bg-error-600 text-white rounded-md hover:bg-error-700 transition-colors"
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                     >
                       Supprimer
                     </button>
