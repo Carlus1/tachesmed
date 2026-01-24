@@ -322,17 +322,14 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 editable={true}
                 height="auto"
                 allDaySlot={false}
-                slotMinTime="06:00:00"
-                slotMaxTime="22:00:00"
+                slotMinTime="00:00:00"
+                slotMaxTime="24:00:00"
+                scrollTime="06:00:00"
                 buttonText={{
                   today: "Aujourd'hui",
                   month: 'Mois',
                   week: 'Semaine',
                   day: 'Jour'
-                }}
-                selectConstraint={{
-                  startTime: '06:00:00',
-                  endTime: '22:00:00'
                 }}
               />
             </div>
