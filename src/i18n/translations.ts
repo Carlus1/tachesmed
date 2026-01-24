@@ -267,6 +267,35 @@ export interface Translations {
     noGroup: string;
   };
   
+  // Calendar Proposal (Optimization)
+  calendarProposal: {
+    title: string;
+    selectGroup: string;
+    chooseGroup: string;
+    constraints: string;
+    balanceWorkload: string;
+    respectPriority: string;
+    minimizeConflicts: string;
+    startHour: string;
+    endHour: string;
+    maxTasksPerUser: string;
+    unlimited: string;
+    generate: string;
+    generating: string;
+    regenerate: string;
+    accept: string;
+    statistics: string;
+    totalTasks: string;
+    assignedTasks: string;
+    unassignedTasks: string;
+    unassignedTasksTitle: string;
+    conflicts: string;
+    noTasksToAssign: string;
+    generationError: string;
+    proposalAccepted: string;
+    acceptError: string;
+  };
+  
   // Unavailabilities
   unavailabilities: {
     title: string;
@@ -557,6 +586,33 @@ export const translations: Record<Language, Translations> = {
       noData: 'Aucune donnée',
       noGroup: 'Aucun groupe',
     },
+    calendarProposal: {
+      title: 'Proposition de calendrier optimisé',
+      selectGroup: 'Sélectionner un groupe',
+      chooseGroup: 'Choisir un groupe...',
+      constraints: 'Contraintes d\'optimisation',
+      balanceWorkload: 'Équilibrer la charge de travail',
+      respectPriority: 'Respecter les priorités',
+      minimizeConflicts: 'Minimiser les conflits',
+      startHour: 'Heure de début',
+      endHour: 'Heure de fin',
+      maxTasksPerUser: 'Nombre maximum de tâches par utilisateur (optionnel)',
+      unlimited: 'Illimité',
+      generate: 'Générer la proposition',
+      generating: 'Génération en cours...',
+      regenerate: 'Régénérer',
+      accept: 'Accepter',
+      statistics: 'Statistiques',
+      totalTasks: 'Tâches totales',
+      assignedTasks: 'Tâches assignées',
+      unassignedTasks: 'Non assignées',
+      unassignedTasksTitle: 'Tâches non assignées',
+      conflicts: 'Conflits détectés',
+      noTasksToAssign: 'Aucune tâche à assigner pour cette période',
+      generationError: 'Erreur lors de la génération de la proposition',
+      proposalAccepted: 'Proposition acceptée et tâches assignées avec succès',
+      acceptError: 'Erreur lors de l\'acceptation de la proposition',
+    },
     unavailabilities: {
       title: 'Indisponibilités',
       reminder: 'Rappel d\'indisponibilités',
@@ -841,6 +897,33 @@ export const translations: Record<Language, Translations> = {
       mostAvailableDay: 'Most Available Day',
       noData: 'No data',
       noGroup: 'No group',
+    },
+    calendarProposal: {
+      title: 'Optimized Calendar Proposal',
+      selectGroup: 'Select a group',
+      chooseGroup: 'Choose a group...',
+      constraints: 'Optimization constraints',
+      balanceWorkload: 'Balance workload',
+      respectPriority: 'Respect priorities',
+      minimizeConflicts: 'Minimize conflicts',
+      startHour: 'Start hour',
+      endHour: 'End hour',
+      maxTasksPerUser: 'Maximum tasks per user (optional)',
+      unlimited: 'Unlimited',
+      generate: 'Generate proposal',
+      generating: 'Generating...',
+      regenerate: 'Regenerate',
+      accept: 'Accept',
+      statistics: 'Statistics',
+      totalTasks: 'Total tasks',
+      assignedTasks: 'Assigned tasks',
+      unassignedTasks: 'Unassigned',
+      unassignedTasksTitle: 'Unassigned tasks',
+      conflicts: 'Conflicts detected',
+      noTasksToAssign: 'No tasks to assign for this period',
+      generationError: 'Error generating proposal',
+      proposalAccepted: 'Proposal accepted and tasks assigned successfully',
+      acceptError: 'Error accepting proposal',
     },
     unavailabilities: {
       title: 'Unavailabilities',
@@ -1127,6 +1210,33 @@ export const translations: Record<Language, Translations> = {
       noData: 'No data',
       noGroup: 'No group',
     },
+    calendarProposal: {
+      title: 'Optimized Calendar Proposal',
+      selectGroup: 'Select a group',
+      chooseGroup: 'Choose a group...',
+      constraints: 'Optimization constraints',
+      balanceWorkload: 'Balance workload',
+      respectPriority: 'Respect priorities',
+      minimizeConflicts: 'Minimize conflicts',
+      startHour: 'Start hour',
+      endHour: 'End hour',
+      maxTasksPerUser: 'Maximum tasks per user (optional)',
+      unlimited: 'Unlimited',
+      generate: 'Generate proposal',
+      generating: 'Generating...',
+      regenerate: 'Regenerate',
+      accept: 'Accept',
+      statistics: 'Statistics',
+      totalTasks: 'Total tasks',
+      assignedTasks: 'Assigned tasks',
+      unassignedTasks: 'Unassigned',
+      unassignedTasksTitle: 'Unassigned tasks',
+      conflicts: 'Conflicts detected',
+      noTasksToAssign: 'No tasks to assign for this period',
+      generationError: 'Error generating proposal',
+      proposalAccepted: 'Proposal accepted and tasks assigned successfully',
+      acceptError: 'Error accepting proposal',
+    },
     unavailabilities: {
       title: 'Unavailabilities',
       reminder: 'Unavailability Reminder',
@@ -1411,6 +1521,33 @@ export const translations: Record<Language, Translations> = {
       mostAvailableDay: 'Día Más Disponible',
       noData: 'Sin datos',
       noGroup: 'Sin grupo',
+    },
+    calendarProposal: {
+      title: 'Propuesta de calendario optimizado',
+      selectGroup: 'Seleccionar un grupo',
+      chooseGroup: 'Elegir un grupo...',
+      constraints: 'Restricciones de optimización',
+      balanceWorkload: 'Equilibrar carga de trabajo',
+      respectPriority: 'Respetar prioridades',
+      minimizeConflicts: 'Minimizar conflictos',
+      startHour: 'Hora de inicio',
+      endHour: 'Hora de fin',
+      maxTasksPerUser: 'Máximo de tareas por usuario (opcional)',
+      unlimited: 'Ilimitado',
+      generate: 'Generar propuesta',
+      generating: 'Generando...',
+      regenerate: 'Regenerar',
+      accept: 'Aceptar',
+      statistics: 'Estadísticas',
+      totalTasks: 'Tareas totales',
+      assignedTasks: 'Tareas asignadas',
+      unassignedTasks: 'Sin asignar',
+      unassignedTasksTitle: 'Tareas sin asignar',
+      conflicts: 'Conflictos detectados',
+      noTasksToAssign: 'No hay tareas para asignar en este período',
+      generationError: 'Error al generar la propuesta',
+      proposalAccepted: 'Propuesta aceptada y tareas asignadas con éxito',
+      acceptError: 'Error al aceptar la propuesta',
     },
     unavailabilities: {
       title: 'Indisponibilidades',
