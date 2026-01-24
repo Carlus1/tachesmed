@@ -184,6 +184,21 @@ export interface Translations {
     create: string;
     noGroupSelected: string;
     endDate: string;
+    recurrenceLabel: string;
+    recurrenceHelp: string;
+    noRecurrence: string;
+    weekly: string;
+    biWeekly: string;
+    monthly: string;
+    biMonthly: string;
+    quarterly: string;
+    semiAnnually: string;
+    yearly: string;
+    custom: string;
+    customWeeks: string;
+    customWeeksHelp: string;
+    recurrenceEndDate: string;
+    recurrenceEndDateHelp: string;
   };
   
   // Calendar
@@ -462,6 +477,21 @@ export const translations: Record<Language, Translations> = {
       create: 'Créer',
       noGroupSelected: 'Aucun groupe sélectionné — sélectionnez au moins un groupe avant de créer une tâche.',
       endDate: 'Date de fin',
+      recurrenceLabel: 'Répétition',
+      recurrenceHelp: 'Définir si cette tâche doit se répéter automatiquement',
+      noRecurrence: 'Pas de répétition',
+      weekly: 'Chaque semaine',
+      biWeekly: 'Toutes les 2 semaines',
+      monthly: 'Chaque mois',
+      biMonthly: 'Tous les 2 mois',
+      quarterly: 'Tous les 3 mois',
+      semiAnnually: 'Tous les 6 mois',
+      yearly: 'Chaque année',
+      custom: 'Personnalisé',
+      customWeeks: 'Nombre de semaines',
+      customWeeksHelp: 'Entrez le nombre de semaines entre chaque répétition',
+      recurrenceEndDate: 'Date de fin de répétition (optionnel)',
+      recurrenceEndDateHelp: 'Laissez vide pour une répétition infinie',
     },
     calendar: {
       title: 'Calendrier',
@@ -730,6 +760,21 @@ export const translations: Record<Language, Translations> = {
       create: 'Create',
       noGroupSelected: 'No group selected — select at least one group before creating a task.',
       endDate: 'End Date',
+      recurrenceLabel: 'Recurrence',
+      recurrenceHelp: 'Define if this task should repeat automatically',
+      noRecurrence: 'No recurrence',
+      weekly: 'Every week',
+      biWeekly: 'Every 2 weeks',
+      monthly: 'Every month',
+      biMonthly: 'Every 2 months',
+      quarterly: 'Every 3 months',
+      semiAnnually: 'Every 6 months',
+      yearly: 'Every year',
+      custom: 'Custom',
+      customWeeks: 'Number of weeks',
+      customWeeksHelp: 'Enter the number of weeks between each recurrence',
+      recurrenceEndDate: 'Recurrence end date (optional)',
+      recurrenceEndDateHelp: 'Leave blank for infinite recurrence',
     },
     calendar: {
       title: 'Calendar',
@@ -998,6 +1043,21 @@ export const translations: Record<Language, Translations> = {
       create: 'Create',
       noGroupSelected: 'No group selected — select at least one group before creating a task.',
       endDate: 'End Date',
+      recurrenceLabel: 'Recurrence',
+      recurrenceHelp: 'Define if this task should repeat automatically',
+      noRecurrence: 'No recurrence',
+      weekly: 'Every week',
+      biWeekly: 'Every 2 weeks',
+      monthly: 'Every month',
+      biMonthly: 'Every 2 months',
+      quarterly: 'Every 3 months',
+      semiAnnually: 'Every 6 months',
+      yearly: 'Every year',
+      custom: 'Custom',
+      customWeeks: 'Number of weeks',
+      customWeeksHelp: 'Enter the number of weeks between each recurrence',
+      recurrenceEndDate: 'Recurrence end date (optional)',
+      recurrenceEndDateHelp: 'Leave blank for infinite recurrence',
     },
     calendar: {
       title: 'Calendar',
@@ -1266,6 +1326,21 @@ export const translations: Record<Language, Translations> = {
       create: 'Crear',
       noGroupSelected: 'Ningún grupo seleccionado — seleccione al menos un grupo antes de crear una tarea.',
       endDate: 'Fecha de Fin',
+      recurrenceLabel: 'Repetición',
+      recurrenceHelp: 'Definir si esta tarea debe repetirse automáticamente',
+      noRecurrence: 'Sin repetición',
+      weekly: 'Cada semana',
+      biWeekly: 'Cada 2 semanas',
+      monthly: 'Cada mes',
+      biMonthly: 'Cada 2 meses',
+      quarterly: 'Cada 3 meses',
+      semiAnnually: 'Cada 6 meses',
+      yearly: 'Cada año',
+      custom: 'Personalizado',
+      customWeeks: 'Número de semanas',
+      customWeeksHelp: 'Ingrese el número de semanas entre cada repetición',
+      recurrenceEndDate: 'Fecha de fin de repetición (opcional)',
+      recurrenceEndDateHelp: 'Dejar en blanco para repetición infinita',
     },
     calendar: {
       title: 'Calendario',

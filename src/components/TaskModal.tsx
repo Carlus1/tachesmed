@@ -23,7 +23,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
     endTime: '16:30',
     priority: 'high',
     group: 'Équipe B',
-    group_id: ''
+    group_id: '',
+    recurrence_type: 'none',
+    recurrence_interval: null as number | null,
+    recurrence_end_date: ''
   });
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +68,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
           endTime: endDate.toTimeString().slice(0, 5),
           priority: data.priority,
           group: '',
-          group_id: data.group_id
+          group_id: data.group_id,
+          recurrence_type: data.recurrence_type || 'none',
+          recurrence_interval: data.recurrence_interval || null,
+          recurrence_end_date: data.recurrence_end_date ? new Date(data.recurrence_end_date).toISOString().slice(0, 10) : ''
         });
 
         // Load associated groups from task_groups table
@@ -111,7 +117,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
         start_date: startDateTime.toISOString(),
         end_date: endDateTime.toISOString(),
         duration: Math.floor((endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60)),
-        group_id: selectedGroupIds[0] // Primary group for backward compat
+        group_id: selectedGroupIds[0], // Primary group for backward compat
+        recurrence_type: newTask.recurrence_type,
+        recurrence_interval: newTask.recurrence_type === 'custom' ? newTask.recurrence_interval : null,
+        recurrence_end_date: newTask.recurrence_end_date ? new Date(`${newTask.recurrence_end_date}T23:59:59`).toISOString() : null
       };
 
       if (taskId) {
@@ -161,7 +170,10 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
         endTime: '16:30',
         priority: 'high',
         group: 'Équipe B',
-        group_id: ''
+        group_id: '',
+        recurrence_type: 'none',
+        recurrence_interval: null,
+        recurrence_end_date: ''
       });
       setSelectedGroupIds([]);
       onTaskCreated();
@@ -261,6 +273,64 @@ export default function TaskModal({ isOpen, onClose, onTaskCreated, groups, task
               <option value="medium">{t.tasks.mediumPriority}</option>
               <option value="low">{t.tasks.lowPriority}</option>
             </select>
+            <div>
+              <label className="block text-sm font-medium text-primary-700 mb-2">
+                {t.tasks.recurrenceLabel}
+              </label>
+              <select
+                className={baseInputClass}
+                value={newTask.recurrence_type}
+                onChange={e => setNewTask({ ...newTask, recurrence_type: e.target.value })}
+              >
+                <option value="none">{t.tasks.noRecurrence}</option>
+                <option value="weekly">{t.tasks.weekly}</option>
+                <option value="bi-weekly">{t.tasks.biWeekly}</option>
+                <option value="monthly">{t.tasks.monthly}</option>
+                <option value="bi-monthly">{t.tasks.biMonthly}</option>
+                <option value="quarterly">{t.tasks.quarterly}</option>
+                <option value="semi-annually">{t.tasks.semiAnnually}</option>
+                <option value="yearly">{t.tasks.yearly}</option>
+                <option value="custom">{t.tasks.custom}</option>
+              </select>
+              {newTask.recurrence_type === 'custom' && (
+                <div className="mt-3">
+                  <input
+                    type="number"
+                    min="1"
+                    max="52"
+                    className={baseInputClass}
+                    placeholder={t.tasks.customWeeks}
+                    value={newTask.recurrence_interval || ''}
+                    onChange={e => {
+                      const weeks = parseInt(e.target.value) || null;
+                      setNewTask({ ...newTask, recurrence_interval: weeks });
+                    }}
+                  />
+                  <p className="text-xs text-primary-400 mt-1">
+                    {t.tasks.customWeeksHelp}
+                  </p>
+                </div>
+              )}
+              {newTask.recurrence_type !== 'none' && (
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-primary-700 mb-2">
+                    {t.tasks.recurrenceEndDate}
+                  </label>
+                  <input
+                    type="date"
+                    className={baseInputClass}
+                    value={newTask.recurrence_end_date}
+                    onChange={e => setNewTask({ ...newTask, recurrence_end_date: e.target.value })}
+                  />
+                  <p className="text-xs text-primary-400 mt-1">
+                    {t.tasks.recurrenceEndDateHelp}
+                  </p>
+                </div>
+              )}
+              <p className="text-xs text-primary-400 mt-1">
+                {t.tasks.recurrenceHelp}
+              </p>
+            </div>
           </div>
           {error && (
             <div className="mt-4 p-3 rounded border border-error-200 bg-error-50 text-error-700">{error}</div>
