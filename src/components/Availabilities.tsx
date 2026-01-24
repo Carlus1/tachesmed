@@ -320,11 +320,12 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
                 eventDrop={handleEventDrop}
                 eventResize={handleEventResize}
                 editable={true}
-                height="auto"
+                height="700px"
                 allDaySlot={false}
                 slotMinTime="00:00:00"
                 slotMaxTime="24:00:00"
                 scrollTime="06:00:00"
+                scrollTimeReset={false}
                 buttonText={{
                   today: "Aujourd'hui",
                   month: 'Mois',
