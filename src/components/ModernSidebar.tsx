@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Settings } from 'lucide-react';
 import { supabase } from '../supabase';
 import RoleBadge from './RoleBadge';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ModernSidebarProps {
     isOpen?: boolean;
@@ -10,6 +11,7 @@ interface ModernSidebarProps {
 }
 
 export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebarProps) {
+    const { t } = useTranslation();
     const baseClass = 'flex items-center px-3 py-2 rounded-lg transition-colors';
     const activeClass = 'text-primary-700 bg-primary-100';
     const [role, setRole] = useState<string | null>(null);
@@ -37,25 +39,25 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
             <div className="flex flex-col h-full">
                 <div className="mb-6">
                     <NavLink to="/" className="w-full inline-flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                        Tableau de bord
+                        {t.nav.dashboard}
                     </NavLink>
                 </div>
 
                 <nav className="space-y-1">
                     <NavLink to="/" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Tableau de bord
+                        {t.nav.dashboard}
                     </NavLink>
                     <NavLink to="/calendar" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Calendrier
+                        {t.nav.calendar}
                     </NavLink>
                     <NavLink to="/tasks" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Tâches
+                        {t.nav.tasks}
                     </NavLink>
                     <NavLink to="/groups" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Groupes
+                        {t.nav.groups}
                     </NavLink>
                     <NavLink to="/reports" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        Rapports
+                        {t.nav.reports}
                     </NavLink>
                 </nav>
 
@@ -68,10 +70,10 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                 <div className="mt-auto">
                     <NavLink to="/settings" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         <Settings className="w-5 h-5" />
-                        <span>Paramètres</span>
+                        <span>{t.nav.settings}</span>
                     </NavLink>
                     <button onClick={() => onClose?.()} className="mt-2 w-full text-left px-3 py-2 text-primary-700 dark:text-surface rounded-lg hover:bg-surface dark:hover:bg-surface transition-colors">
-                        Fermer
+                        {t.common.close}
                     </button>
                 </div>
             </div>

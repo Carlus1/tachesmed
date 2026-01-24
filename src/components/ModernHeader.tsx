@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import RoleBadge from './RoleBadge';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ModernHeaderProps {
     user: User;
@@ -13,6 +14,7 @@ interface ModernHeaderProps {
 }
 
 export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark }: ModernHeaderProps) {
+    const { t } = useTranslation();
     const [role, setRole] = useState<string | null>(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -85,8 +87,8 @@ export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark
                         </button>
                         {showUserMenu && (
                             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark rounded-md shadow-lg py-1 z-10">
-                                <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface" onClick={() => setShowUserMenu(false)}>Paramètres</Link>
-                                <button onClick={() => { onSignOut?.(); setShowUserMenu(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">Déconnexion</button>
+                                <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface" onClick={() => setShowUserMenu(false)}>{t.nav.settings}</Link>
+                                <button onClick={() => { onSignOut?.(); setShowUserMenu(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface">{t.nav.logout}</button>
                             </div>
                         )}
                     </div>
