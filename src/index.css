@@ -20,7 +20,10 @@
   /* Accent (indigo) */
   --color-accent-100: 243 232 255; /* #f3e8ff */
   --color-accent-200: 216 180 254; /* #d8b4fe */
+  --color-accent-400: 147 51 234;  /* #9333ea */
   --color-accent-500: 109 40 217;  /* #6d28d9 */
+  --color-accent-600: 88 28 135;   /* #581c87 */
+  --color-accent-700: 67 20 104;   /* #431468 */
   --color-accent: var(--color-accent-500);
 
   /* Semantic colors */
