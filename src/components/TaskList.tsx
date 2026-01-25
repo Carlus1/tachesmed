@@ -42,8 +42,16 @@ export default function TaskList() {
 
       if (error) throw error;
 
+      // Filtrer pour afficher seulement :
+      // 1. Les tâches parent (pas d'instances non assignées)
+      // 2. Les instances assignées (pour voir le planning réel)
+      const filteredTasks = (data || []).filter(task => 
+        task.parent_task_id === null ||  // Tâches parent
+        task.assigned_to !== null         // Instances assignées
+      );
+
       // Load task_groups associations
-      const tasksWithGroups = await Promise.all((data || []).map(async (task) => {
+      const tasksWithGroups = await Promise.all(filteredTasks.map(async (task) => {
         const { data: taskGroups } = await supabase
           .from('task_groups')
           .select('group:groups (id, name)')

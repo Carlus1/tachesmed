@@ -59,10 +59,15 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
           assigned_to_user:users!assigned_to (id, full_name)
         `)
         .order('start_date', { ascending: true })
-        .limit(10);
+        .limit(20); // Augmenter pour compenser le filtrage
+
+      // Filtrer les instances non assignées
+      const filteredTasks = (tasksData || []).filter(task => 
+        task.parent_task_id === null || task.assigned_to !== null
+      ).slice(0, 10); // Garder seulement les 10 premières
 
       // Load task_groups associations for each task
-      const tasksWithGroups = await Promise.all((tasksData || []).map(async (task) => {
+      const tasksWithGroups = await Promise.all(filteredTasks.map(async (task) => {
         const { data: taskGroups } = await supabase
           .from('task_groups')
           .select('group:groups (id, name)')

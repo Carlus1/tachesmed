@@ -104,14 +104,19 @@ export default function Reports({ user: _user }: ReportsProps) {
 
     if (error) throw error;
 
+    // Filtrer les instances non assignées pour éviter les doublons
+    const filteredTasks = (tasks || []).filter(task => 
+      task.parent_task_id === null || task.assigned_to !== null
+    );
+
     const stats: TaskStats = {
-      total: tasks?.length || 0,
-      completed: tasks?.filter(t => new Date(t.end_date) < new Date()).length || 0,
-      inProgress: tasks?.filter(t => new Date(t.end_date) >= new Date()).length || 0,
+      total: filteredTasks.length,
+      completed: filteredTasks.filter(t => new Date(t.end_date) < new Date()).length,
+      inProgress: filteredTasks.filter(t => new Date(t.end_date) >= new Date()).length,
       byPriority: {
-        high: tasks?.filter(t => t.priority === 'high').length || 0,
-        medium: tasks?.filter(t => t.priority === 'medium').length || 0,
-        low: tasks?.filter(t => t.priority === 'low').length || 0
+        high: filteredTasks.filter(t => t.priority === 'high').length,
+        medium: filteredTasks.filter(t => t.priority === 'medium').length,
+        low: filteredTasks.filter(t => t.priority === 'low').length
       }
     };
 

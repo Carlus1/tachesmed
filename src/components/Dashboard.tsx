@@ -90,9 +90,15 @@ export default function Dashboard({ user }: DashboardProps) {
           assigned_to_user:users!assigned_to (id, full_name)
         `)
         .order('start_date', { ascending: true })
-        .limit(5);
+        .limit(10); // Augmenter la limite pour compenser le filtrage
       if (error) throw error;
-      setTasks((data || []) as TaskItem[]);
+      
+      // Filtrer les instances non assignées
+      const filteredTasks = (data || []).filter(task => 
+        task.parent_task_id === null || task.assigned_to !== null
+      ).slice(0, 5); // Garder seulement les 5 premières après filtrage
+      
+      setTasks(filteredTasks as TaskItem[]);
     } catch (err) {
       console.error('Erreur lors du chargement des tâches:', err);
     }
