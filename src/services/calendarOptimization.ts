@@ -388,6 +388,12 @@ export const calendarOptimizationService = {
           conflictsDetected++;
         }
       } else {
+        console.warn('❌ Impossible d\'assigner la tâche:', task.title, {
+          start_date: task.start_date,
+          end_date: task.end_date,
+          duration_hours: task.duration_hours,
+          parent: task.parent_task_id ? 'instance' : 'parent'
+        });
         unassignedTasks.push(task);
       }
     }
@@ -476,6 +482,7 @@ export const calendarOptimizationService = {
         ).length;
         
         if (memberTaskCount >= constraints.maxTasksPerUser) {
+          console.log(`⏭️ ${member.full_name} ignoré: limite tâches atteinte (${memberTaskCount}/${constraints.maxTasksPerUser})`);
           continue;
         }
       }
@@ -530,6 +537,7 @@ export const calendarOptimizationService = {
 
       if (isUnavailable) {
         if (constraints.minimizeConflicts) {
+          console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": indisponible`);
           continue; // Ignorer ce membre
         }
         score -= 40;
@@ -548,6 +556,7 @@ export const calendarOptimizationService = {
 
       if (conflictingTask) {
         if (constraints.minimizeConflicts) {
+          console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": conflit avec autre tâche`);
           continue;
         }
         score -= 35;
@@ -587,6 +596,7 @@ export const calendarOptimizationService = {
     }
 
     if (!bestMember) {
+      console.warn(`❌ Aucun membre disponible pour "${task.title}" - Tous éliminés par contraintes`);
       return null;
     }
 
