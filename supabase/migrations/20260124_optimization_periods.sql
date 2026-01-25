@@ -99,17 +99,12 @@ CREATE POLICY "Members can view their group periods"
   );
 
 -- Les admins peuvent créer des périodes pour leurs groupes
--- Vérifie via la vue group_admins_view si l'utilisateur est l'admin
+-- Utilise is_group_admin() qui est SECURITY DEFINER
 CREATE POLICY "Admins can create periods"
   ON optimization_periods
   FOR INSERT
   WITH CHECK (
-    EXISTS (
-      SELECT 1 
-      FROM group_admins_view gav
-      WHERE gav.group_id = group_id
-      AND gav.admin_id = auth.uid()
-    )
+    is_group_admin(group_id, auth.uid())
   );
 
 -- Les admins peuvent supprimer des périodes SEULEMENT si avant la date de début
@@ -118,12 +113,7 @@ CREATE POLICY "Admins can delete future periods only"
   ON optimization_periods
   FOR UPDATE
   USING (
-    EXISTS (
-      SELECT 1 
-      FROM group_admins_view gav
-      WHERE gav.group_id = group_id
-      AND gav.admin_id = auth.uid()
-    )
+    is_group_admin(group_id, auth.uid())
     AND start_date > NOW() -- Seulement si la période n'a pas encore commencé
     AND status = 'active'  -- Ne peut pas modifier une période déjà supprimée
   )
