@@ -1,5 +1,4 @@
 import { supabase } from '../supabase';
-import { generateRecurringOccurrences } from '../utils/recurrence';
 
 interface TaskSchedule {
   id: string;
@@ -154,11 +153,29 @@ export const taskSchedulingService = {
 
       if (tasksError) throw tasksError;
 
-      // Générer les occurrences récurrentes pour toutes les tâches
-      const allTaskOccurrences: any[] = [];
-      (tasks || []).forEach(task => {
-        const occurrences = generateRecurringOccurrences(task, startDate, endDate);
-        allTaskOccurrences.push(...occurrences);
+      // Filtrer les tâches à afficher :
+      // 1. Tâches parent non récurrentes
+      // 2. Instances assignées
+      // Exclure : Tâches parent récurrentes (on affiche leurs instances) et instances non assignées
+      const filteredTasks = (tasks || []).filter(task => {
+        // Instance assignée → AFFICHER
+        if (task.parent_task_id !== null && task.assigned_to !== null) {
+          return true;
+        }
+        
+        // Instance non assignée → MASQUER
+        if (task.parent_task_id !== null && task.assigned_to === null) {
+          return false;
+        }
+        
+        // Tâche parent non récurrente → AFFICHER
+        if (task.parent_task_id === null && 
+            (!task.recurrence_type || task.recurrence_type === 'none')) {
+          return true;
+        }
+        
+        // Tâche parent récurrente → MASQUER (on affiche ses instances)
+        return false;
       });
 
       const { data: assignments, error: assignmentsError } = await supabase
@@ -195,7 +212,7 @@ export const taskSchedulingService = {
       }, []);
 
       return {
-        tasks: allTaskOccurrences,
+        tasks: filteredTasks,
         assignments: assignments || [],
         conflicts
       };
