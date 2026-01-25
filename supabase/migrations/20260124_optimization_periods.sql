@@ -198,6 +198,61 @@ CREATE POLICY "Users can view their availabilities"
   FOR SELECT
   USING (user_id = auth.uid());
 
+-- Fonction pour supprimer une période (avant le début uniquement)
+-- Marque la période comme supprimée ET désassigne les tâches pour permettre une nouvelle génération
+CREATE OR REPLACE FUNCTION delete_optimization_period(
+  p_period_id UUID
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  period_record RECORD;
+  tasks_unassigned INTEGER;
+BEGIN
+  -- Récupérer la période
+  SELECT * INTO period_record
+  FROM optimization_periods
+  WHERE id = p_period_id;
+  
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Période non trouvée';
+  END IF;
+  
+  -- Vérifier qu'on est AVANT le début de la période
+  IF NOW() >= period_record.start_date THEN
+    RAISE EXCEPTION 'Impossible de supprimer une période déjà commencée ou passée';
+  END IF;
+  
+  -- Vérifier que l'utilisateur est admin du groupe
+  IF NOT EXISTS (
+    SELECT 1 FROM groups
+    WHERE id = period_record.group_id
+    AND admin_id = auth.uid()
+  ) THEN
+    RAISE EXCEPTION 'Seul l''admin du groupe peut supprimer la période';
+  END IF;
+  
+  -- Marquer la période comme supprimée (soft delete)
+  UPDATE optimization_periods
+  SET status = 'deleted'
+  WHERE id = p_period_id;
+  
+  -- Désassigner toutes les tâches de cette période pour permettre une nouvelle génération
+  UPDATE tasks
+  SET assigned_to = NULL,
+      status = 'pending'
+  WHERE group_id = period_record.group_id
+    AND start_date >= period_record.start_date
+    AND start_date <= period_record.end_date
+    AND status = 'assigned';
+  
+  GET DIAGNOSTICS tasks_unassigned = ROW_COUNT;
+  
+  RAISE NOTICE 'Période % supprimée, % tâches désassignées', p_period_id, tasks_unassigned;
+  
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Fonction pour obtenir l'état d'une période
 CREATE OR REPLACE FUNCTION get_period_status(
   p_period_id UUID
@@ -238,6 +293,7 @@ COMMENT ON TABLE optimization_periods IS 'Stocke les périodes d''optimisation a
 COMMENT ON FUNCTION is_date_in_locked_period IS 'Vérifie si une date est dans une période verrouillée';
 COMMENT ON FUNCTION can_modify_availability IS 'Vérifie si QUELQU''UN (y compris admin) peut modifier ses indisponibilités - bloqué pendant/après les périodes';
 COMMENT ON FUNCTION can_modify_assigned_task IS 'Vérifie si une tâche assignée peut être modifiée - bloqué pendant/après la période pour TOUT LE MONDE';
+COMMENT ON FUNCTION delete_optimization_period IS 'Supprime une période (AVANT début uniquement) et désassigne les tâches pour permettre regénération';
 COMMENT ON FUNCTION get_period_status IS 'Retourne le statut d''une période: future, active, past, deleted';
 
 /*

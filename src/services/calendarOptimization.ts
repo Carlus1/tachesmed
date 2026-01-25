@@ -948,6 +948,48 @@ export const calendarOptimizationService = {
   },
 
   /**
+   * Supprime une période d'optimisation (uniquement AVANT le début)
+   * Désassigne automatiquement les tâches pour permettre une nouvelle génération
+   */
+  async deleteOptimizationPeriod(periodId: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .rpc('delete_optimization_period', {
+          p_period_id: periodId
+        });
+
+      if (error) throw error;
+      
+      console.log('✅ Période supprimée, tâches désassignées');
+      return true;
+    } catch (error: any) {
+      console.error('Erreur lors de la suppression de la période:', error);
+      throw new Error(error.message || 'Impossible de supprimer la période');
+    }
+  },
+
+  /**
+   * Récupère les périodes d'un groupe
+   */
+  async getOptimizationPeriods(groupId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('optimization_periods')
+        .select('*')
+        .eq('group_id', groupId)
+        .eq('status', 'active')
+        .order('start_date', { ascending: false });
+
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erreur lors de la récupération des périodes:', error);
+      return [];
+    }
+  },
+
+  /**
    * Sauvegarde les assignations acceptées et crée une période verrouillée
    */
   async saveAssignments(
