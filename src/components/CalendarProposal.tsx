@@ -44,6 +44,14 @@ export default function CalendarProposal() {
     loadGroups();
   }, []);
 
+  // Sélectionner automatiquement le premier groupe si aucun n'est sélectionné
+  useEffect(() => {
+    if (groups.length > 0 && !selectedGroupId) {
+      console.log('🔄 Auto-sélection du premier groupe:', groups[0].id);
+      setSelectedGroupId(groups[0].id);
+    }
+  }, [groups, selectedGroupId]);
+
   // Charger les préférences sauvegardées
   const loadPreferences = () => {
     try {
@@ -107,13 +115,7 @@ export default function CalendarProposal() {
 
       setGroups(data || []);
       
-      // Ne sélectionner le premier groupe que si aucun groupe n'est déjà sélectionné
-      // (pour ne pas écraser les préférences chargées)
-      if (data && data.length > 0 && !selectedGroupId) {
-        setSelectedGroupId(data[0].id);
-      }
-      
-      console.log('📋 Groupes chargés:', data?.length, 'Groupe sélectionné:', selectedGroupId);
+      console.log('📋 Groupes chargés:', data?.length);
     } catch (err) {
       console.error('Erreur lors du chargement des groupes:', err);
     }

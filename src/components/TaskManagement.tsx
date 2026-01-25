@@ -87,7 +87,13 @@ export default function TaskManagement({ user: _user }: TaskManagementProps) {
       setTasks(tasksWithGroups || []);
     } catch (error: any) {
       console.error('Erreur lors du chargement des tâches:', error);
-      setError(error.message);
+      
+      // Vérifier si c'est un problème de colonne manquante
+      if (error.message?.includes('column') && error.message?.includes('does not exist')) {
+        setError('⚠️ Migration de base de données requise. Veuillez appliquer la migration 20260124_add_assigned_to_column.sql dans Supabase.');
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
