@@ -65,7 +65,29 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
   }, [isOwner]);
 
   useEffect(() => {
-    loadAvailabilities();
+    // Vérifier que l'utilisateur a une session valide
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Erreur session:', error);
+          setError('Session invalide. Veuillez vous reconnecter.');
+          return;
+        }
+        if (!session) {
+          console.warn('Pas de session active');
+          setError('Aucune session active. Veuillez vous reconnecter.');
+          return;
+        }
+        // Session OK, charger les données
+        loadAvailabilities();
+      } catch (err) {
+        console.error('Erreur vérification session:', err);
+        setError('Erreur lors de la vérification de la session.');
+      }
+    };
+    
+    checkSession();
   }, [selectedUserId]);
 
   const checkOwnerRole = async () => {
@@ -131,6 +153,12 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
     try {
       setError(null);
 
+      console.log('📅 Ajout indisponibilité:', {
+        user_id: selectedUserId,
+        start: selectInfo.start.toISOString(),
+        end: selectInfo.end.toISOString()
+      });
+
       const { data, error } = await supabase
         .from('availabilities')
         .insert([{
@@ -140,7 +168,12 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
         }])
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erreur Supabase:', error);
+        throw error;
+      }
+
+      console.log('✅ Indisponibilité ajoutée:', data);
 
       // Ajouter directement au state au lieu de recharger
       if (data && data.length > 0) {
@@ -149,8 +182,16 @@ export default function Availabilities({ user }: AvailabilitiesProps) {
 
       setSuccess(t.unavailabilities.added);
     } catch (error: any) {
-      console.error('Erreur lors de l\'ajout de l\'indisponibilité:', error);
-      setError(t.unavailabilities.errorAdding);
+      console.error('❌ Erreur lors de l\'ajout de l\'indisponibilité:', error);
+      
+      // Message d'erreur détaillé
+      if (error.code === '42501') {
+        setError('⚠️ Erreur de permissions. Veuillez appliquer la migration RLS dans Supabase.');
+      } else if (error.message) {
+        setError(`Erreur: ${error.message}`);
+      } else {
+        setError(t.unavailabilities.errorAdding);
+      }
     }
   }, [selectedUserId, t]);
 
