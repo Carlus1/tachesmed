@@ -45,16 +45,22 @@ CREATE INDEX IF NOT EXISTS idx_optimization_periods_status ON optimization_perio
 ALTER TABLE optimization_periods ENABLE ROW LEVEL SECURITY;
 
 -- Fonction helper pour vérifier si l'utilisateur est admin d'un groupe
+-- Utilise group_members qui est plus accessible que groups directement
 CREATE OR REPLACE FUNCTION is_group_admin(p_group_id UUID, p_user_id UUID)
 RETURNS BOOLEAN AS $$
+DECLARE
+  admin_id UUID;
 BEGIN
-  RETURN EXISTS (
-    SELECT 1 FROM groups
-    WHERE id = p_group_id
-    AND admin_id = p_user_id
-  );
+  -- Récupérer l'admin_id via une requête directe (SECURITY DEFINER bypass RLS)
+  SELECT g.admin_id INTO admin_id
+  FROM groups g
+  WHERE g.id = p_group_id;
+  
+  -- Vérifier si l'utilisateur est l'admin
+  RETURN admin_id = p_user_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 -- Les membres du groupe peuvent voir les périodes de leur groupe
 CREATE POLICY "Members can view their group periods"
