@@ -54,13 +54,19 @@ BEGIN
   WHERE parent_task_id = task_id
     AND (assigned_to IS NULL OR status = 'pending');
 
-  -- Déterminer la date maximale de génération
+  -- Déterminer la date maximale de génération (max 1 an dans le futur)
   IF task_record.recurrence_end_date IS NOT NULL THEN
-    max_date := task_record.recurrence_end_date;
+    max_date := LEAST(
+      task_record.recurrence_end_date,
+      CURRENT_DATE + INTERVAL '1 year'
+    );
   ELSIF end_date IS NOT NULL THEN
-    max_date := end_date;
+    max_date := LEAST(
+      end_date,
+      CURRENT_DATE + INTERVAL '1 year'
+    );
   ELSE
-    -- Par défaut, générer pour 1 an
+    -- Par défaut, générer pour 1 an maximum
     max_date := CURRENT_DATE + INTERVAL '1 year';
   END IF;
 
@@ -173,4 +179,63 @@ CREATE TRIGGER trigger_auto_generate_instances
 -- Commentaires
 COMMENT ON COLUMN tasks.parent_task_id IS 'Référence à la tâche parent si c''est une instance de récurrence';
 COMMENT ON COLUMN tasks.occurrence_date IS 'Date de cette occurrence pour les tâches récurrentes';
-COMMENT ON FUNCTION generate_recurring_task_instances IS 'Génère les instances futures d''une tâche récurrente';
+COMMENT ON FUNCTION generate_recurring_task_instances IS 'Génère les instances futures d''une tâche récurrente (max 1 an)';
+
+-- Fonction pour nettoyer les anciennes instances de tâches récurrentes
+-- Garde seulement les instances des 12 derniers mois et supprime les plus anciennes
+CREATE OR REPLACE FUNCTION cleanup_old_task_instances()
+RETURNS INTEGER AS $$
+DECLARE
+  deleted_count INTEGER;
+BEGIN
+  -- Supprimer les instances terminées de plus de 1 an
+  DELETE FROM tasks
+  WHERE parent_task_id IS NOT NULL
+    AND occurrence_date < CURRENT_DATE - INTERVAL '1 year'
+    AND status IN ('completed', 'cancelled');
+  
+  GET DIAGNOSTICS deleted_count = ROW_COUNT;
+  
+  RAISE NOTICE 'Nettoyage: % instance(s) supprimée(s)', deleted_count;
+  
+  RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION cleanup_old_task_instances IS 'Supprime les instances de tâches récurrentes terminées de plus d''un an';
+
+-- Fonction pour maintenance périodique: nettoyer + régénérer
+CREATE OR REPLACE FUNCTION maintain_recurring_tasks()
+RETURNS TABLE(cleaned INTEGER, regenerated INTEGER) AS $$
+DECLARE
+  clean_count INTEGER;
+  regen_count INTEGER := 0;
+  task_record RECORD;
+BEGIN
+  -- 1. Nettoyer les anciennes instances
+  SELECT cleanup_old_task_instances() INTO clean_count;
+  
+  -- 2. Régénérer les instances pour toutes les tâches récurrentes actives
+  FOR task_record IN 
+    SELECT id, title
+    FROM tasks
+    WHERE parent_task_id IS NULL
+      AND recurrence_type IS NOT NULL
+      AND recurrence_type != 'none'
+      AND (recurrence_end_date IS NULL OR recurrence_end_date >= CURRENT_DATE)
+  LOOP
+    BEGIN
+      regen_count := regen_count + generate_recurring_task_instances(task_record.id, NULL);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING 'Erreur lors de la régénération de la tâche %: %', task_record.title, SQLERRM;
+    END;
+  END LOOP;
+  
+  RAISE NOTICE 'Maintenance terminée: % nettoyées, % régénérées', clean_count, regen_count;
+  
+  RETURN QUERY SELECT clean_count, regen_count;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION maintain_recurring_tasks IS 'Nettoie les anciennes instances et régénère les futures (à exécuter périodiquement)';
+

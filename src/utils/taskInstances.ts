@@ -77,3 +77,57 @@ export async function generateGroupTaskInstances(
     throw err;
   }
 }
+
+/**
+ * Nettoie les anciennes instances de tâches (> 1 an terminées)
+ * et régénère les instances futures pour toutes les tâches récurrentes
+ * @returns Nombre d'instances nettoyées et régénérées
+ */
+export async function maintainRecurringTasks(): Promise<{
+  cleaned: number;
+  regenerated: number;
+}> {
+  try {
+    console.log('🧹 Lancement de la maintenance des tâches récurrentes...');
+    
+    const { data, error } = await supabase.rpc('maintain_recurring_tasks');
+
+    if (error) {
+      console.error('Erreur lors de la maintenance:', error);
+      throw error;
+    }
+
+    const result = data?.[0] || { cleaned: 0, regenerated: 0 };
+    
+    console.log(`✅ Maintenance terminée: ${result.cleaned} nettoyées, ${result.regenerated} régénérées`);
+    
+    return result;
+  } catch (err) {
+    console.error('Exception lors de la maintenance:', err);
+    throw err;
+  }
+}
+
+/**
+ * Nettoie uniquement les anciennes instances terminées (> 1 an)
+ * @returns Nombre d'instances supprimées
+ */
+export async function cleanupOldTaskInstances(): Promise<number> {
+  try {
+    console.log('🧹 Nettoyage des anciennes instances...');
+    
+    const { data, error } = await supabase.rpc('cleanup_old_task_instances');
+
+    if (error) {
+      console.error('Erreur lors du nettoyage:', error);
+      throw error;
+    }
+
+    console.log(`✅ ${data || 0} instance(s) supprimée(s)`);
+    
+    return data || 0;
+  } catch (err) {
+    console.error('Exception lors du nettoyage:', err);
+    throw err;
+  }
+}
