@@ -20,6 +20,10 @@ DROP POLICY IF EXISTS "Users can view their own availabilities" ON availabilitie
 DROP POLICY IF EXISTS "Users can insert their own availabilities" ON availabilities;
 DROP POLICY IF EXISTS "Users can update their own availabilities" ON availabilities;
 DROP POLICY IF EXISTS "Users can delete their own availabilities" ON availabilities;
+DROP POLICY IF EXISTS "Owner can insert availabilities for anyone" ON availabilities;
+DROP POLICY IF EXISTS "Owner can update any availability" ON availabilities;
+DROP POLICY IF EXISTS "Owner can delete any availability" ON availabilities;
+DROP POLICY IF EXISTS "Admins can read group member availabilities" ON availabilities;
 
 -- User policies (manage own availabilities)
 CREATE POLICY "Users can view their own availabilities"
