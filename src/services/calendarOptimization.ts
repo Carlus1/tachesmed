@@ -145,17 +145,26 @@ export const calendarOptimizationService = {
     startDate: Date,
     endDate: Date
   ): Promise<Task[]> {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('group_id', groupId)
-      .is('assigned_to', null)
-      .gte('start_date', startDate.toISOString().split('T')[0])
-      .lte('start_date', endDate.toISOString().split('T')[0])
-      .not('status', 'eq', 'completed');
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('group_id', groupId)
+        .is('assigned_to', null)
+        .gte('start_date', startDate.toISOString().split('T')[0])
+        .lte('start_date', endDate.toISOString().split('T')[0]);
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        console.error('Erreur fetchUnassignedTasks:', error);
+        throw error;
+      }
+      
+      // Filtrer côté client pour éviter les problèmes avec le status
+      return (data || []).filter(task => task.status !== 'completed');
+    } catch (err) {
+      console.error('Exception dans fetchUnassignedTasks:', err);
+      throw err;
+    }
   },
 
   /**

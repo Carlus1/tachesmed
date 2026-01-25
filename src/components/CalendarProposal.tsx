@@ -112,9 +112,14 @@ export default function CalendarProposal() {
       if (optimizationResult.assignments.length === 0) {
         setError(t.calendarProposal?.noTasksToAssign || 'Aucune tâche à assigner');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erreur lors de la génération:', err);
-      setError(t.calendarProposal?.generationError || 'Erreur lors de la génération de la proposition');
+      console.error('Détails erreur:', JSON.stringify(err, null, 2));
+      
+      const errorMessage = err?.message || err?.error?.message || 
+        t.calendarProposal?.generationError || 'Erreur lors de la génération de la proposition';
+      
+      setError(errorMessage);
       setResult(null); // Reset result to show generate button again
     } finally {
       setLoading(false);
