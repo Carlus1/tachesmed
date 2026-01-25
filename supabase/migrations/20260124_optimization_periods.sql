@@ -44,6 +44,14 @@ CREATE INDEX IF NOT EXISTS idx_optimization_periods_status ON optimization_perio
 -- RLS pour optimization_periods
 ALTER TABLE optimization_periods ENABLE ROW LEVEL SECURITY;
 
+-- Vue helper pour exposer les admins des groupes (bypass RLS)
+CREATE OR REPLACE VIEW group_admins_view AS
+SELECT id as group_id, admin_id
+FROM groups;
+
+-- Accorder les permissions sur la vue
+GRANT SELECT ON group_admins_view TO authenticated;
+
 -- Fonction helper pour vérifier si l'utilisateur est admin d'un groupe
 -- Utilise group_members qui est plus accessible que groups directement
 CREATE OR REPLACE FUNCTION is_group_admin(p_group_id UUID, p_user_id UUID)
@@ -90,17 +98,16 @@ CREATE POLICY "Members can view their group periods"
   );
 
 -- Les admins peuvent créer des périodes pour leurs groupes
--- Vérifie via group_members que l'utilisateur est membre ET via une jointure que c'est l'admin
+-- Vérifie via la vue group_admins_view si l'utilisateur est l'admin
 CREATE POLICY "Admins can create periods"
   ON optimization_periods
   FOR INSERT
   WITH CHECK (
     EXISTS (
       SELECT 1 
-      FROM group_members gm
-      WHERE gm.group_id = group_id
-      AND gm.user_id = auth.uid()
-      AND gm.role = 'admin'
+      FROM group_admins_view gav
+      WHERE gav.group_id = group_id
+      AND gav.admin_id = auth.uid()
     )
   );
 
@@ -112,10 +119,9 @@ CREATE POLICY "Admins can delete future periods only"
   USING (
     EXISTS (
       SELECT 1 
-      FROM group_members gm
-      WHERE gm.group_id = group_id
-      AND gm.user_id = auth.uid()
-      AND gm.role = 'admin'
+      FROM group_admins_view gav
+      WHERE gav.group_id = group_id
+      AND gav.admin_id = auth.uid()
     )
     AND start_date > NOW() -- Seulement si la période n'a pas encore commencé
     AND status = 'active'  -- Ne peut pas modifier une période déjà supprimée
