@@ -6,12 +6,12 @@
     - Create separate policies for SELECT, INSERT, UPDATE, DELETE
     - Add WITH CHECK clause for INSERT and UPDATE
     - Add owner policies to manage all availabilities
-    - Add admin policies to manage group member availabilities
+    - Add admin policies to view group member availabilities (read-only)
 
   2. Security
     - Users can only manage their own availabilities
     - Owners can manage all availabilities
-    - Admins can manage group member availabilities
+    - Admins can only view (read-only) group member availabilities
 */
 
 -- Drop all existing policies to avoid conflicts
@@ -83,23 +83,12 @@ CREATE POLICY "Owner can delete any availability"
     AND role = 'owner'
   ));
 
--- Admin policies (manage group member availabilities)
+-- Admin policies (read-only access to group member availabilities)
 CREATE POLICY "Admins can read group member availabilities"
   ON availabilities
   FOR SELECT
   TO authenticated
   USING (EXISTS (
-    SELECT 1 FROM groups g
-    JOIN group_members gm ON g.id = gm.group_id
-    WHERE g.admin_id = auth.uid()
-    AND gm.user_id = availabilities.user_id
-  ));
-
-CREATE POLICY "Admins can insert availabilities for group members"
-  ON availabilities
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (EXISTS (
     SELECT 1 FROM groups g
     JOIN group_members gm ON g.id = gm.group_id
     WHERE g.admin_id = auth.uid()
