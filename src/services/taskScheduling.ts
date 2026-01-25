@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { generateRecurringOccurrences } from '../utils/recurrence';
 
 interface TaskSchedule {
   id: string;
@@ -153,6 +154,13 @@ export const taskSchedulingService = {
 
       if (tasksError) throw tasksError;
 
+      // Générer les occurrences récurrentes pour toutes les tâches
+      const allTaskOccurrences: any[] = [];
+      (tasks || []).forEach(task => {
+        const occurrences = generateRecurringOccurrences(task, startDate, endDate);
+        allTaskOccurrences.push(...occurrences);
+      });
+
       const { data: assignments, error: assignmentsError } = await supabase
         .from('task_assignments_history')
         .select(`
@@ -187,7 +195,7 @@ export const taskSchedulingService = {
       }, []);
 
       return {
-        tasks: tasks || [],
+        tasks: allTaskOccurrences,
         assignments: assignments || [],
         conflicts
       };

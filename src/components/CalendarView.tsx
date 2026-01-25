@@ -3,6 +3,7 @@ import { supabase } from '../supabase';
 import { format, startOfWeek, endOfWeek, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { fr, enUS, es } from 'date-fns/locale';
 import { useTranslation } from '../i18n/LanguageContext';
+import { generateRecurringOccurrences } from '../utils/recurrence';
 
 interface Task {
   id: string;
@@ -12,6 +13,8 @@ interface Task {
   start_date: string;
   end_date: string;
   duration: number;
+  recurrence_type?: 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'semiannual' | 'annual' | null;
+  recurrence_end_date?: string | null;
   user?: {
     full_name: string;
   };
@@ -74,8 +77,9 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         end = endOfMonth(currentDate);
       }
       
-      // Charger toutes les tâches qui chevauchent la période
-      // Une tâche est visible si : start_date <= end_period ET end_date >= start_period
+      // Charger toutes les tâches (y compris celles avec récurrence)
+      // Pour les tâches récurrentes, on charge celles dont la première occurrence
+      // est avant la fin de la période OU qui ont une recurrence_end_date après le début
       const { data, error } = await supabase
         .from('tasks')
         .select(`
@@ -83,12 +87,18 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
           created_by_user:users!created_by (id, full_name),
           assigned_to_user:users!assigned_to (id, full_name)
         `)
-        .lte('start_date', end.toISOString())
-        .gte('end_date', start.toISOString())
         .order('start_date', { ascending: true });
 
       if (error) throw error;
-      setTasks(data || []);
+      
+      // Générer les occurrences récurrentes pour toutes les tâches
+      const allOccurrences: Task[] = [];
+      (data || []).forEach(task => {
+        const occurrences = generateRecurringOccurrences(task, start, end);
+        allOccurrences.push(...occurrences);
+      });
+      
+      setTasks(allOccurrences);
     } catch (error) {
       console.error('Erreur lors du chargement des tâches:', error);
     } finally {
