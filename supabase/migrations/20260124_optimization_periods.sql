@@ -51,6 +51,11 @@ RETURNS BOOLEAN AS $$
 DECLARE
   admin_id UUID;
 BEGIN
+  -- Si p_user_id est NULL, retourner FALSE immédiatement
+  IF p_user_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+  
   -- Récupérer l'admin_id via une requête directe (SECURITY DEFINER bypass RLS)
   SELECT g.admin_id INTO admin_id
   FROM groups g
