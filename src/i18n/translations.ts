@@ -272,10 +272,20 @@ export interface Translations {
     title: string;
     selectGroup: string;
     chooseGroup: string;
+    periodConfiguration: string;
+    periodDuration: string;
+    periodUnit: string;
+    weeks: string;
+    months: string;
+    periodInfo: string;
     constraints: string;
     balanceWorkload: string;
     respectPriority: string;
     minimizeConflicts: string;
+    repetitionConstraints: string;
+    avoidTaskRepetition: string;
+    avoidConsecutiveWeeks: string;
+    considerPreviousPeriod: string;
     startHour: string;
     endHour: string;
     maxTasksPerUser: string;
@@ -290,6 +300,8 @@ export interface Translations {
     unassignedTasks: string;
     unassignedTasksTitle: string;
     conflicts: string;
+    repetitions: string;
+    consecutiveWeeks: string;
     noTasksToAssign: string;
     generationError: string;
     proposalAccepted: string;
@@ -590,10 +602,20 @@ export const translations: Record<Language, Translations> = {
       title: 'Proposition de calendrier optimisé',
       selectGroup: 'Sélectionner un groupe',
       chooseGroup: 'Choisir un groupe...',
+      periodConfiguration: 'Configuration de la période',
+      periodDuration: 'Durée',
+      periodUnit: 'Unité',
+      weeks: 'Semaines',
+      months: 'Mois',
+      periodInfo: 'La proposition sera générée pour cette période',
       constraints: 'Contraintes d\'optimisation',
       balanceWorkload: 'Équilibrer la charge de travail',
       respectPriority: 'Respecter les priorités',
       minimizeConflicts: 'Minimiser les conflits',
+      repetitionConstraints: 'Contraintes de répétition',
+      avoidTaskRepetition: 'Éviter qu\'un utilisateur fasse la même tâche plusieurs fois',
+      avoidConsecutiveWeeks: 'Éviter les semaines consécutives (si répétition nécessaire)',
+      considerPreviousPeriod: 'Tenir compte de la période précédente',
       startHour: 'Heure de début',
       endHour: 'Heure de fin',
       maxTasksPerUser: 'Nombre maximum de tâches par utilisateur (optionnel)',
@@ -608,6 +630,8 @@ export const translations: Record<Language, Translations> = {
       unassignedTasks: 'Non assignées',
       unassignedTasksTitle: 'Tâches non assignées',
       conflicts: 'Conflits détectés',
+      repetitions: 'Répétitions',
+      consecutiveWeeks: 'Semaines consécutives',
       noTasksToAssign: 'Aucune tâche à assigner pour cette période',
       generationError: 'Erreur lors de la génération de la proposition',
       proposalAccepted: 'Proposition acceptée et tâches assignées avec succès',
@@ -902,10 +926,20 @@ export const translations: Record<Language, Translations> = {
       title: 'Optimized Calendar Proposal',
       selectGroup: 'Select a group',
       chooseGroup: 'Choose a group...',
+      periodConfiguration: 'Period Configuration',
+      periodDuration: 'Duration',
+      periodUnit: 'Unit',
+      weeks: 'Weeks',
+      months: 'Months',
+      periodInfo: 'The proposal will be generated for this period',
       constraints: 'Optimization constraints',
       balanceWorkload: 'Balance workload',
       respectPriority: 'Respect priorities',
       minimizeConflicts: 'Minimize conflicts',
+      repetitionConstraints: 'Repetition constraints',
+      avoidTaskRepetition: 'Avoid having a user perform the same task multiple times',
+      avoidConsecutiveWeeks: 'Avoid consecutive weeks (if repetition is necessary)',
+      considerPreviousPeriod: 'Consider previous period',
       startHour: 'Start hour',
       endHour: 'End hour',
       maxTasksPerUser: 'Maximum tasks per user (optional)',
@@ -920,6 +954,8 @@ export const translations: Record<Language, Translations> = {
       unassignedTasks: 'Unassigned',
       unassignedTasksTitle: 'Unassigned tasks',
       conflicts: 'Conflicts detected',
+      repetitions: 'Repetitions',
+      consecutiveWeeks: 'Consecutive weeks',
       noTasksToAssign: 'No tasks to assign for this period',
       generationError: 'Error generating proposal',
       proposalAccepted: 'Proposal accepted and tasks assigned successfully',
@@ -1214,10 +1250,20 @@ export const translations: Record<Language, Translations> = {
       title: 'Optimized Calendar Proposal',
       selectGroup: 'Select a group',
       chooseGroup: 'Choose a group...',
+      periodConfiguration: 'Period Configuration',
+      periodDuration: 'Duration',
+      periodUnit: 'Unit',
+      weeks: 'Weeks',
+      months: 'Months',
+      periodInfo: 'The proposal will be generated for this period',
       constraints: 'Optimization constraints',
       balanceWorkload: 'Balance workload',
       respectPriority: 'Respect priorities',
       minimizeConflicts: 'Minimize conflicts',
+      repetitionConstraints: 'Repetition constraints',
+      avoidTaskRepetition: 'Avoid having a user perform the same task multiple times',
+      avoidConsecutiveWeeks: 'Avoid consecutive weeks (if repetition is necessary)',
+      considerPreviousPeriod: 'Consider previous period',
       startHour: 'Start hour',
       endHour: 'End hour',
       maxTasksPerUser: 'Maximum tasks per user (optional)',
@@ -1232,6 +1278,8 @@ export const translations: Record<Language, Translations> = {
       unassignedTasks: 'Unassigned',
       unassignedTasksTitle: 'Unassigned tasks',
       conflicts: 'Conflicts detected',
+      repetitions: 'Repetitions',
+      consecutiveWeeks: 'Consecutive weeks',
       noTasksToAssign: 'No tasks to assign for this period',
       generationError: 'Error generating proposal',
       proposalAccepted: 'Proposal accepted and tasks assigned successfully',
@@ -1526,10 +1574,20 @@ export const translations: Record<Language, Translations> = {
       title: 'Propuesta de calendario optimizado',
       selectGroup: 'Seleccionar un grupo',
       chooseGroup: 'Elegir un grupo...',
+      periodConfiguration: 'Configuración del período',
+      periodDuration: 'Duración',
+      periodUnit: 'Unidad',
+      weeks: 'Semanas',
+      months: 'Meses',
+      periodInfo: 'La propuesta se generará para este período',
       constraints: 'Restricciones de optimización',
       balanceWorkload: 'Equilibrar carga de trabajo',
       respectPriority: 'Respetar prioridades',
       minimizeConflicts: 'Minimizar conflictos',
+      repetitionConstraints: 'Restricciones de repetición',
+      avoidTaskRepetition: 'Evitar que un usuario realice la misma tarea varias veces',
+      avoidConsecutiveWeeks: 'Evitar semanas consecutivas (si la repetición es necesaria)',
+      considerPreviousPeriod: 'Tener en cuenta el período anterior',
       startHour: 'Hora de inicio',
       endHour: 'Hora de fin',
       maxTasksPerUser: 'Máximo de tareas por usuario (opcional)',
@@ -1544,6 +1602,8 @@ export const translations: Record<Language, Translations> = {
       unassignedTasks: 'Sin asignar',
       unassignedTasksTitle: 'Tareas sin asignar',
       conflicts: 'Conflictos detectados',
+      repetitions: 'Repeticiones',
+      consecutiveWeeks: 'Semanas consecutivas',
       noTasksToAssign: 'No hay tareas para asignar en este período',
       generationError: 'Error al generar la propuesta',
       proposalAccepted: 'Propuesta aceptada y tareas asignadas con éxito',

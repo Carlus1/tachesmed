@@ -38,6 +38,22 @@ export interface OptimizationConstraints {
   maxTasksPerUser: number | null;   // Limite de tâches par utilisateur
   preferredStartHour: number;       // Heure de début préférée (0-23)
   preferredEndHour: number;         // Heure de fin préférée (0-23)
+  avoidTaskRepetition: boolean;     // Éviter qu'un utilisateur fasse la même tâche plusieurs fois
+  avoidConsecutiveWeeks: boolean;   // Éviter les semaines consécutives pour la même tâche
+  considerPreviousPeriod: boolean;  // Tenir compte de la période précédente
+}
+
+export interface PeriodConfig {
+  duration: number;                 // Durée de la période
+  unit: 'weeks' | 'months';         // Unité de temps
+}
+
+export interface HistoricalAssignment {
+  taskId: string;
+  taskTitle: string;
+  userId: string;
+  weekNumber: number;               // Numéro de semaine dans la période
+  periodEndDate: Date;              // Date de fin de la période
 }
 
 export interface TaskAssignment {
@@ -60,6 +76,8 @@ export interface OptimizationResult {
     unassignedTasks: number;
     conflictsDetected: number;
     workloadDistribution: { [userId: string]: number };
+    repetitionsCount: number;          // Nombre de répétitions de tâches
+    consecutiveWeeksCount: number;     // Nombre de semaines consécutives
   };
 }
 
@@ -95,13 +113,21 @@ export const calendarOptimizationService = {
         endDate
       );
 
-      // 5. Exécuter l'algorithme d'optimisation
+      // 5. Récupérer l'historique de la période précédente si demandé
+      const previousPeriodAssignments = constraints.considerPreviousPeriod
+        ? await this.fetchPreviousPeriodAssignments(groupId, startDate)
+        : [];
+
+      // 6. Exécuter l'algorithme d'optimisation
       const result = this.optimizeAssignments(
         tasks,
         members,
         availabilities,
         existingAssignments,
-        constraints
+        previousPeriodAssignments,
+        constraints,
+        startDate,
+        endDate
       );
 
       return result;
@@ -191,6 +217,49 @@ export const calendarOptimizationService = {
   },
 
   /**
+   * Récupère les assignations de la période précédente
+   * Pour éviter qu'un utilisateur termine une période avec une tâche
+   * et commence la suivante avec la même tâche
+   */
+  async fetchPreviousPeriodAssignments(
+    groupId: string,
+    currentPeriodStart: Date
+  ): Promise<HistoricalAssignment[]> {
+    // Calculer la date de fin de la période précédente (juste avant le début de la période actuelle)
+    const previousPeriodEnd = new Date(currentPeriodStart);
+    previousPeriodEnd.setDate(previousPeriodEnd.getDate() - 1);
+    
+    // Récupérer les 4 dernières semaines avant le début de la période actuelle
+    const previousPeriodStart = new Date(previousPeriodEnd);
+    previousPeriodStart.setDate(previousPeriodStart.getDate() - 28); // 4 semaines
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('id, title, assigned_to, start_date')
+      .eq('group_id', groupId)
+      .not('assigned_to', 'is', null)
+      .gte('start_date', previousPeriodStart.toISOString().split('T')[0])
+      .lte('start_date', previousPeriodEnd.toISOString().split('T')[0])
+      .neq('status', 'cancelled');
+
+    if (error) throw error;
+
+    // Convertir en HistoricalAssignment avec calcul du numéro de semaine
+    return (data || []).map(task => {
+      const taskDate = new Date(task.start_date);
+      const weeksDiff = Math.floor((taskDate.getTime() - previousPeriodStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+      
+      return {
+        taskId: task.id,
+        taskTitle: task.title,
+        userId: task.assigned_to,
+        weekNumber: weeksDiff,
+        periodEndDate: previousPeriodEnd,
+      };
+    });
+  },
+
+  /**
    * Algorithme principal d'optimisation
    */
   optimizeAssignments(
@@ -198,17 +267,40 @@ export const calendarOptimizationService = {
     members: UserProfile[],
     unavailabilities: Availability[],
     existingAssignments: Task[],
-    constraints: OptimizationConstraints
+    previousPeriodAssignments: HistoricalAssignment[],
+    constraints: OptimizationConstraints,
+    startDate: Date,
+    endDate: Date
   ): OptimizationResult {
     const assignments: TaskAssignment[] = [];
     const unassignedTasks: Task[] = [];
     const workloadDistribution: { [userId: string]: number } = {};
     let conflictsDetected = 0;
+    let repetitionsCount = 0;
+    let consecutiveWeeksCount = 0;
 
-    // Initialiser la charge de travail
+    // Tracker pour les tâches assignées par utilisateur
+    const userTaskHistory: { [userId: string]: { [taskId: string]: number[] } } = {};
+    
+    // Initialiser la charge de travail et l'historique
     members.forEach(member => {
       workloadDistribution[member.id] = 0;
+      userTaskHistory[member.id] = {};
     });
+
+    // Trouver les dernières tâches de la période précédente (dernière semaine)
+    const lastWeekTasks: { [userId: string]: string[] } = {};
+    if (constraints.considerPreviousPeriod && previousPeriodAssignments.length > 0) {
+      const maxWeek = Math.max(...previousPeriodAssignments.map(a => a.weekNumber));
+      previousPeriodAssignments
+        .filter(a => a.weekNumber === maxWeek)
+        .forEach(a => {
+          if (!lastWeekTasks[a.userId]) {
+            lastWeekTasks[a.userId] = [];
+          }
+          lastWeekTasks[a.userId].push(a.taskId);
+        });
+    }
 
     // Trier les tâches par priorité si demandé
     const sortedTasks = constraints.respectPriority
@@ -227,12 +319,37 @@ export const calendarOptimizationService = {
         existingAssignments,
         workloadDistribution,
         constraints,
-        assignments
+        assignments,
+        userTaskHistory,
+        lastWeekTasks,
+        startDate
       );
 
       if (assignment) {
         assignments.push(assignment);
         workloadDistribution[assignment.userId] += task.duration_hours;
+        
+        // Tracker l'historique des tâches par utilisateur
+        if (!userTaskHistory[assignment.userId][task.id]) {
+          userTaskHistory[assignment.userId][task.id] = [];
+        }
+        
+        // Calculer le numéro de semaine dans la période
+        const weekNumber = Math.floor(
+          (assignment.startDate.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+        );
+        userTaskHistory[assignment.userId][task.id].push(weekNumber);
+        
+        // Vérifier si c'est une répétition
+        if (userTaskHistory[assignment.userId][task.id].length > 1) {
+          repetitionsCount++;
+          
+          // Vérifier si c'est consécutif
+          const weeks = userTaskHistory[assignment.userId][task.id];
+          if (weeks.length >= 2 && weeks[weeks.length - 1] - weeks[weeks.length - 2] === 1) {
+            consecutiveWeeksCount++;
+          }
+        }
         
         if (assignment.hasConflict) {
           conflictsDetected++;
@@ -251,6 +368,8 @@ export const calendarOptimizationService = {
         unassignedTasks: unassignedTasks.length,
         conflictsDetected,
         workloadDistribution,
+        repetitionsCount,
+        consecutiveWeeksCount,
       },
     };
   },
@@ -265,19 +384,32 @@ export const calendarOptimizationService = {
     existingAssignments: Task[],
     workloadDistribution: { [userId: string]: number },
     constraints: OptimizationConstraints,
-    currentAssignments: TaskAssignment[]
+    currentAssignments: TaskAssignment[],
+    userTaskHistory: { [userId: string]: { [taskId: string]: number[] } },
+    lastWeekTasks: { [userId: string]: string[] },
+    periodStartDate: Date
   ): TaskAssignment | null {
     let bestMember: UserProfile | null = null;
     let lowestWorkload = Infinity;
     let hasConflict = false;
     let conflictReason: string | undefined;
+    let bestScore = -Infinity; // Score pour choisir le meilleur membre
 
     // Calculer la date et heure de début/fin de la tâche
     const taskStartDateTime = new Date(`${task.start_date}T${task.start_time}`);
     const taskEndDateTime = new Date(taskStartDateTime);
     taskEndDateTime.setHours(taskEndDateTime.getHours() + task.duration_hours);
+    
+    // Calculer le numéro de semaine actuel
+    const currentWeek = Math.floor(
+      (taskStartDateTime.getTime() - periodStartDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+    );
 
     for (const member of members) {
+      let score = 0; // Score de ce membre pour cette tâche (plus élevé = meilleur)
+      let memberHasConflict = false;
+      let memberConflictReason: string | undefined;
+
       // Vérifier la limite de tâches par utilisateur
       if (constraints.maxTasksPerUser !== null) {
         const memberTaskCount = currentAssignments.filter(
@@ -289,6 +421,46 @@ export const calendarOptimizationService = {
         }
       }
 
+      // CONTRAINTE 1: Éviter la continuité avec la période précédente
+      if (constraints.considerPreviousPeriod && currentWeek === 0) {
+        // C'est la première semaine de la nouvelle période
+        if (lastWeekTasks[member.id]?.includes(task.id)) {
+          // Ce membre avait cette tâche la dernière semaine de la période précédente
+          score -= 100; // Forte pénalité
+          memberHasConflict = true;
+          memberConflictReason = 'Continuité avec période précédente';
+        } else {
+          score += 10; // Bonus pour éviter la continuité
+        }
+      }
+
+      // CONTRAINTE 2: Éviter la répétition de tâche
+      if (constraints.avoidTaskRepetition) {
+        const taskAssignments = userTaskHistory[member.id]?.[task.id] || [];
+        if (taskAssignments.length > 0) {
+          // Ce membre a déjà fait cette tâche dans cette période
+          score -= 50; // Pénalité pour répétition
+          
+          // CONTRAINTE 3: Éviter les semaines consécutives si répétition
+          if (constraints.avoidConsecutiveWeeks) {
+            const lastWeek = taskAssignments[taskAssignments.length - 1];
+            if (currentWeek - lastWeek === 1) {
+              // Semaines consécutives
+              score -= 30; // Pénalité supplémentaire
+              memberHasConflict = true;
+              memberConflictReason = 'Semaines consécutives pour même tâche';
+            } else if (currentWeek - lastWeek < 3) {
+              // Trop proche (moins de 3 semaines d'écart)
+              score -= 15;
+            } else {
+              score += 5; // Léger bonus si suffisamment espacé
+            }
+          }
+        } else {
+          score += 20; // Bonus pour première fois
+        }
+      }
+
       // Vérifier les indisponibilités
       const isUnavailable = this.checkUnavailability(
         member.id,
@@ -297,8 +469,13 @@ export const calendarOptimizationService = {
         unavailabilities
       );
 
-      if (isUnavailable && constraints.minimizeConflicts) {
-        continue;
+      if (isUnavailable) {
+        if (constraints.minimizeConflicts) {
+          continue; // Ignorer ce membre
+        }
+        score -= 40;
+        memberHasConflict = true;
+        memberConflictReason = 'Indisponibilité du membre';
       }
 
       // Vérifier les conflits avec les tâches déjà assignées
@@ -310,8 +487,14 @@ export const calendarOptimizationService = {
         currentAssignments
       );
 
-      if (conflictingTask && constraints.minimizeConflicts) {
-        continue;
+      if (conflictingTask) {
+        if (constraints.minimizeConflicts) {
+          continue;
+        }
+        score -= 35;
+        memberHasConflict = true;
+        const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
+        memberConflictReason = `Conflit avec: ${taskName}`;
       }
 
       // Vérifier les heures préférées
@@ -320,37 +503,27 @@ export const calendarOptimizationService = {
         taskHour < constraints.preferredStartHour ||
         taskHour > constraints.preferredEndHour
       ) {
-        continue;
+        score -= 20; // Pénalité légère au lieu d'éliminer
+      } else {
+        score += 10; // Bonus pour heures préférées
       }
 
       // Équilibrage de la charge
       const currentWorkload = workloadDistribution[member.id];
       
       if (constraints.balanceWorkload) {
-        if (currentWorkload < lowestWorkload) {
-          lowestWorkload = currentWorkload;
-          bestMember = member;
-          hasConflict = isUnavailable || !!conflictingTask;
-          
-          if (isUnavailable) {
-            conflictReason = 'Indisponibilité du membre';
-          } else if (conflictingTask) {
-            const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
-            conflictReason = `Conflit avec: ${taskName}`;
-          }
-        }
-      } else {
-        // Prendre le premier membre disponible
+        // Bonus inversement proportionnel à la charge
+        const workloadScore = 50 - (currentWorkload * 2);
+        score += workloadScore;
+      }
+
+      // Choisir le membre avec le meilleur score
+      if (score > bestScore || (score === bestScore && currentWorkload < lowestWorkload)) {
+        bestScore = score;
+        lowestWorkload = currentWorkload;
         bestMember = member;
-        hasConflict = isUnavailable || !!conflictingTask;
-        
-        if (isUnavailable) {
-          conflictReason = 'Indisponibilité du membre';
-        } else if (conflictingTask) {
-          const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
-          conflictReason = `Conflit avec: ${taskName}`;
-        }
-        break;
+        hasConflict = memberHasConflict;
+        conflictReason = memberConflictReason;
       }
     }
 

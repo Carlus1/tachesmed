@@ -6,6 +6,7 @@ import {
   OptimizationConstraints,
   OptimizationResult,
   TaskAssignment,
+  PeriodConfig,
 } from '../services/calendarOptimization';
 
 export default function CalendarProposal() {
@@ -17,6 +18,13 @@ export default function CalendarProposal() {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([]);
   const [showConstraints, setShowConstraints] = useState(false);
+  
+  // Configuration de période
+  const [periodConfig, setPeriodConfig] = useState<PeriodConfig>({
+    duration: 8,
+    unit: 'weeks',
+  });
+  
   const [constraints, setConstraints] = useState<OptimizationConstraints>({
     balanceWorkload: true,
     respectPriority: true,
@@ -24,6 +32,9 @@ export default function CalendarProposal() {
     maxTasksPerUser: null,
     preferredStartHour: 8,
     preferredEndHour: 18,
+    avoidTaskRepetition: true,
+    avoidConsecutiveWeeks: true,
+    considerPreviousPeriod: true,
   });
 
   useEffect(() => {
@@ -68,10 +79,15 @@ export default function CalendarProposal() {
     setSuccess(null);
 
     try {
-      // Générer pour les 2 prochaines semaines
+      // Calculer la période selon la configuration
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 14);
+      
+      if (periodConfig.unit === 'weeks') {
+        endDate.setDate(endDate.getDate() + (periodConfig.duration * 7));
+      } else if (periodConfig.unit === 'months') {
+        endDate.setMonth(endDate.getMonth() + periodConfig.duration);
+      }
 
       const optimizationResult = await calendarOptimizationService.generateOptimizedCalendar(
         selectedGroupId,
@@ -172,6 +188,56 @@ export default function CalendarProposal() {
           </select>
         </div>
 
+        {/* Configuration de la période */}
+        <div className="mb-4 p-4 bg-accent-50 rounded-lg border border-accent-200">
+          <h3 className="text-sm font-semibold text-primary-800 mb-3">
+            {t.calendarProposal?.periodConfiguration || 'Configuration de la période'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-primary-700 mb-1">
+                {t.calendarProposal?.periodDuration || 'Durée'}
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="52"
+                value={periodConfig.duration}
+                onChange={(e) =>
+                  setPeriodConfig({
+                    ...periodConfig,
+                    duration: parseInt(e.target.value) || 1,
+                  })
+                }
+                className="w-full px-3 py-2 border border-border rounded-lg"
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-primary-700 mb-1">
+                {t.calendarProposal?.periodUnit || 'Unité'}
+              </label>
+              <select
+                value={periodConfig.unit}
+                onChange={(e) =>
+                  setPeriodConfig({
+                    ...periodConfig,
+                    unit: e.target.value as 'weeks' | 'months',
+                  })
+                }
+                className="w-full px-3 py-2 border border-border rounded-lg"
+                disabled={loading}
+              >
+                <option value="weeks">{t.calendarProposal?.weeks || 'Semaines'}</option>
+                <option value="months">{t.calendarProposal?.months || 'Mois'}</option>
+              </select>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-primary-600">
+            {t.calendarProposal?.periodInfo || 'La proposition sera générée pour cette période'}
+          </p>
+        </div>
+
         {/* Bouton pour afficher/masquer les contraintes */}
         <button
           onClick={() => setShowConstraints(!showConstraints)}
@@ -227,6 +293,56 @@ export default function CalendarProposal() {
               </span>
             </label>
 
+            {/* Nouvelles contraintes de répétition */}
+            <div className="border-t border-primary-200 pt-3 mt-3">
+              <p className="text-xs font-semibold text-primary-800 mb-2">
+                {t.calendarProposal?.repetitionConstraints || 'Contraintes de répétition'}
+              </p>
+              
+              <label className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={constraints.avoidTaskRepetition}
+                  onChange={(e) =>
+                    setConstraints({ ...constraints, avoidTaskRepetition: e.target.checked })
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-primary-700">
+                  {t.calendarProposal?.avoidTaskRepetition || 'Éviter qu\'un utilisateur fasse la même tâche plusieurs fois'}
+                </span>
+              </label>
+
+              <label className="flex items-center gap-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={constraints.avoidConsecutiveWeeks}
+                  onChange={(e) =>
+                    setConstraints({ ...constraints, avoidConsecutiveWeeks: e.target.checked })
+                  }
+                  className="rounded"
+                  disabled={!constraints.avoidTaskRepetition}
+                />
+                <span className={`text-sm ${constraints.avoidTaskRepetition ? 'text-primary-700' : 'text-primary-400'}`}>
+                  {t.calendarProposal?.avoidConsecutiveWeeks || 'Éviter les semaines consécutives (si répétition nécessaire)'}
+                </span>
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={constraints.considerPreviousPeriod}
+                  onChange={(e) =>
+                    setConstraints({ ...constraints, considerPreviousPeriod: e.target.checked })
+                  }
+                  className="rounded"
+                />
+                <span className="text-sm text-primary-700">
+                  {t.calendarProposal?.considerPreviousPeriod || 'Tenir compte de la période précédente'}
+                </span>
+              </label>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-primary-700 mb-1">
@@ -243,6 +359,8 @@ export default function CalendarProposal() {
                       preferredStartHour: parseInt(e.target.value) || 0,
                     })
                   }
+                  className="w-full px-3 py-2 border border-border rounded-lg"
+                />                  }
                   className="w-full px-3 py-2 border border-border rounded-lg"
                 />
               </div>
@@ -343,6 +461,22 @@ export default function CalendarProposal() {
                   </span>
                   <span className="ml-2 font-semibold text-warning-700">
                     {result.statistics.conflictsDetected}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-primary-600">
+                    {t.calendarProposal?.repetitions || 'Répétitions'} :
+                  </span>
+                  <span className="ml-2 font-semibold text-warning-600">
+                    {result.statistics.repetitionsCount}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-primary-600">
+                    {t.calendarProposal?.consecutiveWeeks || 'Semaines consécutives'} :
+                  </span>
+                  <span className="ml-2 font-semibold text-warning-600">
+                    {result.statistics.consecutiveWeeksCount}
                   </span>
                 </div>
               </div>
