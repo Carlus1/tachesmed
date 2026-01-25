@@ -40,22 +40,24 @@ export default function CalendarProposal() {
   });
 
   useEffect(() => {
-    loadGroups();
     loadPreferences();
+    loadGroups();
   }, []);
 
   // Charger les préférences sauvegardées
   const loadPreferences = () => {
     try {
       const saved = localStorage.getItem('calendarProposalPreferences');
+      console.log('📦 Chargement préférences:', saved);
       if (saved) {
         const prefs = JSON.parse(saved);
+        console.log('✅ Préférences chargées:', prefs);
         if (prefs.selectedGroupId) setSelectedGroupId(prefs.selectedGroupId);
         if (prefs.periodConfig) setPeriodConfig(prefs.periodConfig);
         if (prefs.constraints) setConstraints(prefs.constraints);
       }
     } catch (err) {
-      console.error('Erreur lors du chargement des préférences:', err);
+      console.error('❌ Erreur lors du chargement des préférences:', err);
     }
   };
 
@@ -67,9 +69,11 @@ export default function CalendarProposal() {
         periodConfig,
         constraints,
       };
+      console.log('💾 Sauvegarde préférences:', prefs);
       localStorage.setItem('calendarProposalPreferences', JSON.stringify(prefs));
+      console.log('✅ Préférences sauvegardées');
     } catch (err) {
-      console.error('Erreur lors de la sauvegarde des préférences:', err);
+      console.error('❌ Erreur lors de la sauvegarde des préférences:', err);
     }
   };
 
@@ -103,9 +107,13 @@ export default function CalendarProposal() {
 
       setGroups(data || []);
       
+      // Ne sélectionner le premier groupe que si aucun groupe n'est déjà sélectionné
+      // (pour ne pas écraser les préférences chargées)
       if (data && data.length > 0 && !selectedGroupId) {
         setSelectedGroupId(data[0].id);
       }
+      
+      console.log('📋 Groupes chargés:', data?.length, 'Groupe sélectionné:', selectedGroupId);
     } catch (err) {
       console.error('Erreur lors du chargement des groupes:', err);
     }
@@ -142,13 +150,16 @@ export default function CalendarProposal() {
         endDate
       );
 
-      setResult(optimizationResult);
+      console.log('📊 Résultat optimisation:', optimizationResult);
 
       if (optimizationResult.assignments.length === 0) {
         setError(t.calendarProposal?.noTasksToAssign || 'Aucune tâche à assigner');
+        setResult(null); // Ne pas afficher les boutons d'action
+      } else {
+        setResult(optimizationResult);
       }
     } catch (err: any) {
-      console.error('Erreur lors de la génération:', err);
+      console.error('❌ Erreur lors de la génération:', err);
       console.error('Détails erreur:', JSON.stringify(err, null, 2));
       
       const errorMessage = err?.message || err?.error?.message || 
