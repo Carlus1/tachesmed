@@ -44,6 +44,18 @@ CREATE INDEX IF NOT EXISTS idx_optimization_periods_status ON optimization_perio
 -- RLS pour optimization_periods
 ALTER TABLE optimization_periods ENABLE ROW LEVEL SECURITY;
 
+-- Fonction helper pour vérifier si l'utilisateur est admin d'un groupe
+CREATE OR REPLACE FUNCTION is_group_admin(p_group_id UUID, p_user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM groups
+    WHERE id = p_group_id
+    AND admin_id = p_user_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Les membres du groupe peuvent voir les périodes de leur groupe
 CREATE POLICY "Members can view their group periods"
   ON optimization_periods
@@ -61,13 +73,7 @@ CREATE POLICY "Admins can create periods"
   ON optimization_periods
   FOR INSERT
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM group_members gm
-      JOIN groups g ON g.id = gm.group_id
-      WHERE gm.group_id = group_id
-      AND gm.user_id = auth.uid()
-      AND g.admin_id = auth.uid()
-    )
+    is_group_admin(group_id, auth.uid())
   );
 
 -- Les admins peuvent supprimer des périodes SEULEMENT si avant la date de début
@@ -76,13 +82,7 @@ CREATE POLICY "Admins can delete future periods only"
   ON optimization_periods
   FOR UPDATE
   USING (
-    EXISTS (
-      SELECT 1 FROM group_members gm
-      JOIN groups g ON g.id = gm.group_id
-      WHERE gm.group_id = group_id
-      AND gm.user_id = auth.uid()
-      AND g.admin_id = auth.uid()
-    )
+    is_group_admin(group_id, auth.uid())
     AND start_date > NOW() -- Seulement si la période n'a pas encore commencé
     AND status = 'active'  -- Ne peut pas modifier une période déjà supprimée
   )
