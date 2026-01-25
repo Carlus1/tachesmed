@@ -13,6 +13,9 @@
     - Bloquer modifications indisponibilités si période active
 */
 
+-- Activer l'extension btree_gist pour utiliser UUID dans les contraintes GIST
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
 -- Table pour stocker les périodes d'optimisation acceptées
 CREATE TABLE IF NOT EXISTS optimization_periods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
