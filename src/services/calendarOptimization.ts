@@ -200,12 +200,16 @@ export const calendarOptimizationService = {
 
     if (error) throw error;
 
-    return (data || []).map((item: any) => ({
+    const members = (data || []).map((item: any) => ({
       id: item.users.id,
       full_name: item.users.full_name,
       email: item.users.email,
       role: item.users.role,
     }));
+    
+    console.log(`👥 ${members.length} membre(s) trouvé(s) dans le groupe:`, members.map(m => m.full_name));
+    
+    return members;
   },
 
   /**
@@ -469,6 +473,8 @@ export const calendarOptimizationService = {
     const currentWeek = Math.floor(
       (taskStartDateTime.getTime() - periodStartDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
     );
+    
+    console.log(`🔍 Recherche membre pour "${task.title}" (${members.length} candidats)`);
 
     for (const member of members) {
       let score = 0; // Score de ce membre pour cette tâche (plus élevé = meilleur)
