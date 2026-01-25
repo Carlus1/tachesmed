@@ -13,7 +13,7 @@ interface ModernHeaderProps {
     onSignOut?: () => void;
 }
 
-export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark }: ModernHeaderProps) {
+export default function ModernHeader({ user, onToggleSidebar, onToggleDark, dark, onSignOut }: ModernHeaderProps) {
     const { t } = useTranslation();
     const [role, setRole] = useState<string | null>(null);
     const [showUserMenu, setShowUserMenu] = useState(false);

@@ -66,7 +66,7 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                         <Settings className="w-5 h-5" />
                         <span>{t.nav.settings}</span>
                     </NavLink>
-                    <button onClick={() => onClose?.()} className="mt-2 w-full text-left px-3 py-2 text-primary-700 dark:text-surface rounded-lg hover:bg-surface dark:hover:bg-surface transition-colors">
+                    <button onClick={() => onClose?.()} className="mt-2 w-full md:hidden text-left px-3 py-2 text-primary-700 dark:text-surface rounded-lg hover:bg-surface dark:hover:bg-surface transition-colors">
                         {t.common.close}
                     </button>
                 </div>

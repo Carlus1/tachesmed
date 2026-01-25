@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { User } from '@supabase/gotrue-js';
 import ModernHeader from './ModernHeader';
 import ModernSidebar from './ModernSidebar';
+import { supabase } from '../supabase';
 
 interface ModernLayoutProps {
   user: User;
@@ -18,6 +19,14 @@ export default function ModernLayout({ user, children }: ModernLayoutProps) {
     try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (_e) { void _e; /* ignore */ }
   }, [dark]);
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-primary-700 dark:text-surface">
       <ModernHeader
@@ -25,6 +34,7 @@ export default function ModernLayout({ user, children }: ModernLayoutProps) {
         onToggleSidebar={() => setSidebarOpen(prev => !prev)}
         onToggleDark={() => setDark((d: boolean) => !d)}
         dark={dark}
+        onSignOut={handleSignOut}
       />
 
       <div className="flex">
