@@ -152,7 +152,7 @@ export const calendarOptimizationService = {
       .is('assigned_to', null)
       .gte('start_date', startDate.toISOString().split('T')[0])
       .lte('start_date', endDate.toISOString().split('T')[0])
-      .neq('status', 'completed');
+      .not('status', 'eq', 'completed');
 
     if (error) throw error;
     return data || [];

@@ -115,6 +115,7 @@ export default function CalendarProposal() {
     } catch (err) {
       console.error('Erreur lors de la génération:', err);
       setError(t.calendarProposal?.generationError || 'Erreur lors de la génération de la proposition');
+      setResult(null); // Reset result to show generate button again
     } finally {
       setLoading(false);
     }
