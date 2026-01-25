@@ -87,6 +87,9 @@ export interface OptimizationResult {
     repetitionsCount: number;          // Nombre de répétitions de tâches
     consecutiveWeeksCount: number;     // Nombre de semaines consécutives
   };
+  attemptNumber?: number;               // Numéro de la tentative réussie
+  isOptimal?: boolean;                  // true si solution optimale, false si meilleure solution après plusieurs tentatives
+  message?: string;                     // Message explicatif si solution non optimale
 }
 
 // Service d'optimisation
@@ -126,8 +129,8 @@ export const calendarOptimizationService = {
         ? await this.fetchPreviousPeriodAssignments(groupId, startDate)
         : [];
 
-      // 6. Exécuter l'algorithme d'optimisation
-      const result = this.optimizeAssignments(
+      // 6. Exécuter l'algorithme d'optimisation avec système de retry
+      const result = this.optimizeWithRetry(
         tasks,
         members,
         availabilities,
@@ -299,6 +302,189 @@ export const calendarOptimizationService = {
         periodEndDate: previousPeriodEnd,
       };
     });
+  },
+
+  /**
+   * Optimisation avec système de retry et différentes stratégies
+   */
+  optimizeWithRetry(
+    tasks: Task[],
+    members: UserProfile[],
+    unavailabilities: Availability[],
+    existingAssignments: Task[],
+    previousPeriodAssignments: HistoricalAssignment[],
+    constraints: OptimizationConstraints,
+    startDate: Date,
+    endDate: Date
+  ): OptimizationResult {
+    const MAX_ATTEMPTS = 5;
+    let bestResult: OptimizationResult | null = null;
+    let bestScore = -Infinity;
+
+    console.log(`🔄 Début optimisation avec ${MAX_ATTEMPTS} tentatives maximum`);
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      console.log(`\n📊 === TENTATIVE ${attempt}/${MAX_ATTEMPTS} ===`);
+      
+      // Créer une variation des contraintes selon la tentative
+      const attemptConstraints = this.getConstraintsForAttempt(attempt, constraints);
+      
+      // Ajouter de la randomisation pour les tentatives suivantes
+      const shuffledTasks = attempt === 1 ? tasks : this.shuffleTasks(tasks, attempt);
+      
+      const result = this.optimizeAssignments(
+        shuffledTasks,
+        members,
+        unavailabilities,
+        existingAssignments,
+        previousPeriodAssignments,
+        attemptConstraints,
+        startDate,
+        endDate
+      );
+
+      // Calculer le score de cette solution
+      const score = this.calculateSolutionScore(result);
+      
+      console.log(`📈 Tentative ${attempt}: ${result.assignments.length}/${tasks.length} assignées, ${result.statistics.conflictsDetected} conflits, score=${score}`);
+
+      // Si on a une solution parfaite (tout assigné, pas de conflits)
+      if (result.assignments.length === tasks.length && result.statistics.conflictsDetected === 0) {
+        console.log(`✅ Solution parfaite trouvée à la tentative ${attempt}!`);
+        return {
+          ...result,
+          attemptNumber: attempt,
+          isOptimal: true,
+        };
+      }
+
+      // Garder la meilleure solution
+      if (score > bestScore) {
+        bestScore = score;
+        bestResult = {
+          ...result,
+          attemptNumber: attempt,
+        };
+      }
+
+      // Si on a assigné toutes les tâches (même avec quelques conflits), c'est acceptable
+      if (result.assignments.length === tasks.length) {
+        console.log(`✅ Toutes les tâches assignées à la tentative ${attempt} (${result.statistics.conflictsDetected} conflits)`);
+        return {
+          ...result,
+          attemptNumber: attempt,
+          isOptimal: result.statistics.conflictsDetected === 0,
+          message: result.statistics.conflictsDetected > 0 
+            ? `Solution trouvée avec ${result.statistics.conflictsDetected} conflit(s). Le système a fait de son mieux avec les contraintes données.`
+            : undefined,
+        };
+      }
+    }
+
+    // Après toutes les tentatives, retourner la meilleure solution
+    console.warn(`⚠️ Aucune solution parfaite après ${MAX_ATTEMPTS} tentatives. Meilleure solution: ${bestResult?.assignments.length}/${tasks.length}`);
+    
+    return {
+      ...bestResult!,
+      isOptimal: false,
+      message: `Le système a essayé ${MAX_ATTEMPTS} stratégies différentes. ` +
+        `Meilleure solution: ${bestResult?.assignments.length}/${tasks.length} tâches assignées. ` +
+        `Certaines tâches n'ont pas pu être assignées en raison des contraintes de disponibilité.`,
+    };
+  },
+
+  /**
+   * Adapte les contraintes selon le numéro de tentative
+   */
+  getConstraintsForAttempt(attemptNumber: number, baseConstraints: OptimizationConstraints): OptimizationConstraints {
+    switch (attemptNumber) {
+      case 1:
+        // Tentative 1: Contraintes strictes originales
+        return baseConstraints;
+      
+      case 2:
+        // Tentative 2: Assouplir la répétition de tâches
+        return {
+          ...baseConstraints,
+          avoidTaskRepetition: false,
+        };
+      
+      case 3:
+        // Tentative 3: Assouplir les semaines consécutives
+        return {
+          ...baseConstraints,
+          avoidTaskRepetition: false,
+          avoidConsecutiveWeeks: false,
+        };
+      
+      case 4:
+        // Tentative 4: Ignorer la période précédente
+        return {
+          ...baseConstraints,
+          avoidTaskRepetition: false,
+          avoidConsecutiveWeeks: false,
+          considerPreviousPeriod: false,
+        };
+      
+      case 5:
+        // Tentative 5: Seulement respecter les conflits réels
+        return {
+          ...baseConstraints,
+          avoidTaskRepetition: false,
+          avoidConsecutiveWeeks: false,
+          considerPreviousPeriod: false,
+          balanceWorkload: true, // Garder l'équilibrage
+          respectPriority: false, // Ignorer les priorités
+        };
+      
+      default:
+        return baseConstraints;
+    }
+  },
+
+  /**
+   * Mélange les tâches pour créer de la variété entre les tentatives
+   */
+  shuffleTasks(tasks: Task[], seed: number): Task[] {
+    const shuffled = [...tasks];
+    
+    // Utiliser le seed pour avoir un mélange déterministe mais différent à chaque tentative
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor((Math.sin(seed * (i + 1)) * 10000) % (i + 1));
+      const absJ = Math.abs(j);
+      [shuffled[i], shuffled[absJ]] = [shuffled[absJ], shuffled[i]];
+    }
+    
+    return shuffled;
+  },
+
+  /**
+   * Calcule un score pour évaluer la qualité d'une solution
+   */
+  calculateSolutionScore(result: OptimizationResult): number {
+    let score = 0;
+    
+    // Priorité 1: Nombre de tâches assignées (poids très élevé)
+    score += result.assignments.length * 1000;
+    
+    // Priorité 2: Absence de conflits (poids élevé)
+    score -= result.statistics.conflictsDetected * 500;
+    
+    // Priorité 3: Équilibrage de la charge (poids moyen)
+    const workloads = Object.values(result.statistics.workloadDistribution);
+    if (workloads.length > 0) {
+      const avgWorkload = workloads.reduce((a, b) => a + b, 0) / workloads.length;
+      const variance = workloads.reduce((sum, w) => sum + Math.pow(w - avgWorkload, 2), 0) / workloads.length;
+      score -= variance * 10; // Pénaliser la variance
+    }
+    
+    // Priorité 4: Minimiser les répétitions (poids faible)
+    score -= result.statistics.repetitionsCount * 20;
+    
+    // Priorité 5: Minimiser les semaines consécutives (poids faible)
+    score -= result.statistics.consecutiveWeeksCount * 10;
+    
+    return score;
   },
 
   /**
@@ -560,7 +746,7 @@ export const calendarOptimizationService = {
         }
       }
 
-      // Vérifier les indisponibilités
+      // Vérifier les indisponibilités - INTERDICTION STRICTE
       const isUnavailable = this.checkUnavailability(
         member.id,
         taskStartDateTime,
@@ -569,17 +755,12 @@ export const calendarOptimizationService = {
       );
 
       if (isUnavailable) {
-        if (constraints.minimizeConflicts) {
-          console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": indisponible`);
-          continue; // Ignorer ce membre
-        }
-        score -= 10; // Pénalité légère si minimizeConflicts désactivé (réduit de 40 à 10)
-        scoreDetails.push('indisponible -10');
-        memberHasConflict = true;
-        memberConflictReason = 'Indisponibilité du membre';
+        // TOUJOURS ignorer ce membre si indisponible (un utilisateur ne peut pas être à deux endroits)
+        console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": indisponible`);
+        continue;
       }
 
-      // Vérifier les conflits avec les tâches déjà assignées
+      // Vérifier les conflits avec les tâches déjà assignées - INTERDICTION STRICTE
       const conflictingTask = this.checkTaskConflict(
         member.id,
         taskStartDateTime,
@@ -589,15 +770,10 @@ export const calendarOptimizationService = {
       );
 
       if (conflictingTask) {
-        if (constraints.minimizeConflicts) {
-          console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": conflit avec autre tâche`);
-          continue;
-        }
-        score -= 5; // Pénalité très légère si minimizeConflicts désactivé (réduit de 35 à 5)
-        scoreDetails.push('conflit tâche -5');
-        memberHasConflict = true;
+        // TOUJOURS ignorer ce membre si conflit (un utilisateur ne peut faire qu'une tâche à la fois)
         const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
-        memberConflictReason = `Conflit avec: ${taskName}`;
+        console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": conflit avec "${taskName}"`);
+        continue;
       }
 
       // Vérifier les heures préférées

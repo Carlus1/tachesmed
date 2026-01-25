@@ -161,6 +161,16 @@ export default function CalendarProposal() {
         setResult(null); // Ne pas afficher les boutons d'action
       } else {
         setResult(optimizationResult);
+        
+        // Afficher un message d'information si solution non optimale
+        if (optimizationResult.message) {
+          setSuccess(`✅ Solution générée (tentative ${optimizationResult.attemptNumber}). ${optimizationResult.message}`);
+          // Effacer après 10 secondes pour les messages longs
+          setTimeout(() => setSuccess(null), 10000);
+        } else if (optimizationResult.isOptimal) {
+          setSuccess(`✅ Solution optimale trouvée à la tentative ${optimizationResult.attemptNumber}!`);
+          setTimeout(() => setSuccess(null), 5000);
+        }
       }
     } catch (err: any) {
       console.error('❌ Erreur lors de la génération:', err);
