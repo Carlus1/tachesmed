@@ -133,6 +133,14 @@ export const taskSchedulingService = {
             name,
             admin_id
           ),
+          created_by_user:users!created_by (
+            id,
+            full_name
+          ),
+          assigned_to_user:users!assigned_to (
+            id,
+            full_name
+          ),
           schedule:task_schedules (
             frequency,
             start_date,

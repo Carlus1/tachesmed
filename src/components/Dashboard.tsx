@@ -82,7 +82,15 @@ export default function Dashboard({ user }: DashboardProps) {
 
   const loadTasks = async () => {
     try {
-      const { data, error } = await supabase.from('tasks').select('*').order('start_date', { ascending: true }).limit(5);
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(`
+          *,
+          created_by_user:users!created_by (id, full_name),
+          assigned_to_user:users!assigned_to (id, full_name)
+        `)
+        .order('start_date', { ascending: true })
+        .limit(5);
       if (error) throw error;
       setTasks((data || []) as TaskItem[]);
     } catch (err) {
