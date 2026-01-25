@@ -3,7 +3,6 @@ import { supabase } from '../supabase';
 import { format, startOfWeek, endOfWeek, addDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { fr, enUS, es } from 'date-fns/locale';
 import { useTranslation } from '../i18n/LanguageContext';
-import { generateRecurringOccurrences } from '../utils/recurrence';
 
 interface Task {
   id: string;
@@ -91,23 +90,34 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
 
       if (error) throw error;
       
-      // Filtrer pour ne garder que:
-      // 1. Les tâches parent (pour générer les occurrences)
-      // 2. Les instances déjà assignées (pour les afficher)
-      // Exclure: Les instances non assignées (pas encore acceptées)
-      const tasksToDisplay = (data || []).filter(task => 
-        task.parent_task_id === null || // Tâches parent
-        task.assigned_to !== null        // Instances assignées
-      );
-      
-      // Générer les occurrences récurrentes pour les tâches parent
-      const allOccurrences: Task[] = [];
-      tasksToDisplay.forEach(task => {
-        const occurrences = generateRecurringOccurrences(task, start, end);
-        allOccurrences.push(...occurrences);
+      // Filtrer pour afficher seulement:
+      // 1. Les tâches parent NON récurrentes (recurrence_type = null ou 'none')
+      // 2. Les instances assignées (tâches récurrentes planifiées)
+      // Exclure: 
+      // - Les tâches parent récurrentes (on montre leurs instances assignées)
+      // - Les instances non assignées (pas encore dans une période acceptée)
+      const tasksToDisplay = (data || []).filter(task => {
+        // Instance assignée → AFFICHER
+        if (task.parent_task_id !== null && task.assigned_to !== null) {
+          return true;
+        }
+        
+        // Instance non assignée → MASQUER
+        if (task.parent_task_id !== null && task.assigned_to === null) {
+          return false;
+        }
+        
+        // Tâche parent non récurrente → AFFICHER
+        if (task.parent_task_id === null && 
+            (!task.recurrence_type || task.recurrence_type === 'none')) {
+          return true;
+        }
+        
+        // Tâche parent récurrente → MASQUER (on affiche ses instances)
+        return false;
       });
       
-      setTasks(allOccurrences);
+      setTasks(tasksToDisplay);
     } catch (error) {
       console.error('Erreur lors du chargement des tâches:', error);
     } finally {
