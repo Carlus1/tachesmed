@@ -11,8 +11,12 @@
     - Admins can read group member availabilities
 */
 
--- Drop the existing "Users can manage their own availabilities" policy
+-- Drop all existing policies to avoid conflicts
 DROP POLICY IF EXISTS "Users can manage their own availabilities" ON availabilities;
+DROP POLICY IF EXISTS "Users can view their own availabilities" ON availabilities;
+DROP POLICY IF EXISTS "Users can insert their own availabilities" ON availabilities;
+DROP POLICY IF EXISTS "Users can update their own availabilities" ON availabilities;
+DROP POLICY IF EXISTS "Users can delete their own availabilities" ON availabilities;
 
 -- Create separate policies for better control
 CREATE POLICY "Users can view their own availabilities"
