@@ -316,6 +316,11 @@ export const calendarOptimizationService = {
     let repetitionsCount = 0;
     let consecutiveWeeksCount = 0;
 
+    // Initialiser workloadDistribution à 0 pour tous les membres
+    members.forEach(member => {
+      workloadDistribution[member.id] = 0;
+    });
+
     // Tracker pour les tâches assignées par utilisateur
     const userTaskHistory: { [userId: string]: { [taskId: string]: number[] } } = {};
     
@@ -364,7 +369,12 @@ export const calendarOptimizationService = {
 
       if (assignment) {
         assignments.push(assignment);
-        workloadDistribution[assignment.userId] += task.duration_hours;
+        
+        // Calculer la durée en heures (pour les instances, duration_hours peut être undefined)
+        const taskDurationHours = task.duration_hours || 
+          (assignment.endDate.getTime() - assignment.startDate.getTime()) / (1000 * 60 * 60);
+        
+        workloadDistribution[assignment.userId] = (workloadDistribution[assignment.userId] || 0) + taskDurationHours;
         
         // Tracker l'historique des tâches par utilisateur
         if (!userTaskHistory[assignment.userId][task.id]) {
