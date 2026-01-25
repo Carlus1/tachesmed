@@ -360,8 +360,6 @@ export default function CalendarProposal() {
                     })
                   }
                   className="w-full px-3 py-2 border border-border rounded-lg"
-                />                  }
-                  className="w-full px-3 py-2 border border-border rounded-lg"
                 />
               </div>
 
