@@ -149,7 +149,7 @@ export const calendarOptimizationService = {
     endDate: Date
   ): Promise<Task[]> {
     try {
-      // D'abord, générer les instances de tâches récurrentes pour toute la période
+      // Générer les instances de tâches récurrentes pour toute la période
       console.log('🔄 Génération des instances de tâches récurrentes...');
       console.log(`📅 Période: ${startDate.toISOString()} → ${endDate.toISOString()}`);
       
@@ -179,8 +179,7 @@ export const calendarOptimizationService = {
       console.log('Détail tâches:', activeTasks.map(t => ({ 
         title: t.title, 
         start: t.start_date,
-        parent: t.parent_task_id ? 'instance' : 'parent',
-        recurrence: t.recurrence_type 
+        end: t.end_date
       })));
       
       return activeTasks;

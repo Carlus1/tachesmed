@@ -182,14 +182,8 @@ export default function CalendarProposal() {
     setError(null);
 
     try {
-      // 1. Sauvegarder les assignations
+      // Sauvegarder les assignations (les instances existent déjà en BDD)
       await calendarOptimizationService.saveAssignments(result.assignments);
-      
-      // 2. Nettoyer les anciennes instances et régénérer (maintenance en arrière-plan)
-      maintainRecurringTasks().catch(err => {
-        console.warn('⚠️ Maintenance des tâches récurrentes échouée:', err);
-        // Ne pas bloquer l'acceptation si la maintenance échoue
-      });
       
       setSuccess(t.calendarProposal?.proposalAccepted || 'Proposition acceptée et tâches assignées avec succès');
       setResult(null);

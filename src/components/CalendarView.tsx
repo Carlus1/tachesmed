@@ -91,9 +91,18 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
 
       if (error) throw error;
       
-      // Générer les occurrences récurrentes pour toutes les tâches
+      // Filtrer pour ne garder que:
+      // 1. Les tâches parent (pour générer les occurrences)
+      // 2. Les instances déjà assignées (pour les afficher)
+      // Exclure: Les instances non assignées (pas encore acceptées)
+      const tasksToDisplay = (data || []).filter(task => 
+        task.parent_task_id === null || // Tâches parent
+        task.assigned_to !== null        // Instances assignées
+      );
+      
+      // Générer les occurrences récurrentes pour les tâches parent
       const allOccurrences: Task[] = [];
-      (data || []).forEach(task => {
+      tasksToDisplay.forEach(task => {
         const occurrences = generateRecurringOccurrences(task, start, end);
         allOccurrences.push(...occurrences);
       });
