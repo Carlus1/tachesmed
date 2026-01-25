@@ -38,19 +38,19 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
         <aside className={`bg-surface dark:bg-surface-dark border-r border-border dark:border-surface p-4 transform transition-transform duration-200 ease-in-out ${isOpen ? 'translate-x-0 fixed z-40 left-0 top-16 h-[calc(100vh-64px)] w-64' : 'hidden md:block w-80 relative h-[calc(100vh-64px)]'}`}>
             <div className="flex flex-col h-full">
                 <nav className="space-y-1">
-                    <NavLink to="/" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.dashboard}
                     </NavLink>
-                    <NavLink to="/calendar" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/calendar" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.calendar}
                     </NavLink>
-                    <NavLink to="/tasks" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/tasks" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.tasks}
                     </NavLink>
-                    <NavLink to="/groups" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/groups" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.groups}
                     </NavLink>
-                    <NavLink to="/reports" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/reports" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.reports}
                     </NavLink>
                 </nav>
@@ -62,7 +62,7 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                 )}
 
                 <div className="mt-auto">
-                    <NavLink to="/settings" className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                    <NavLink to="/settings" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         <Settings className="w-5 h-5" />
                         <span>{t.nav.settings}</span>
                     </NavLink>

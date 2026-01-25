@@ -38,6 +38,14 @@ export default function ModernLayout({ user, children }: ModernLayoutProps) {
       />
 
       <div className="flex">
+        {/* Backdrop pour mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        
         <ModernSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="flex-1 p-6 overflow-auto">
