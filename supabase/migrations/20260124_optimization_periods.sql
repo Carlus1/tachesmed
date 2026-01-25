@@ -72,6 +72,11 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = public;
 
+-- Supprimer les anciennes policies si elles existent
+DROP POLICY IF EXISTS "Members can view their group periods" ON optimization_periods;
+DROP POLICY IF EXISTS "Admins can create periods" ON optimization_periods;
+DROP POLICY IF EXISTS "Admins can delete future periods only" ON optimization_periods;
+
 -- Les membres du groupe peuvent voir les périodes de leur groupe
 CREATE POLICY "Members can view their group periods"
   ON optimization_periods
