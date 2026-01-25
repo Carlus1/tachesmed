@@ -52,7 +52,12 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
       setLoading(true);
       const { data: tasksData } = await supabase
         .from('tasks')
-        .select(`*, group:groups (name)`)
+        .select(`
+          *,
+          group:groups (name),
+          created_by_user:users!created_by (id, full_name),
+          assigned_to_user:users!assigned_to (id, full_name)
+        `)
         .order('start_date', { ascending: true })
         .limit(10);
 

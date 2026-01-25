@@ -80,7 +80,8 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         .from('tasks')
         .select(`
           *,
-          user:users (full_name)
+          created_by_user:users!created_by (id, full_name),
+          assigned_to_user:users!assigned_to (id, full_name)
         `)
         .lte('start_date', end.toISOString())
         .gte('end_date', start.toISOString())

@@ -32,7 +32,12 @@ export default function TaskList() {
       setLoading(true);
       const { data, error } = await supabase
         .from('tasks')
-        .select(`*, group:groups (name)`)
+        .select(`
+          *,
+          group:groups (name),
+          created_by_user:users!created_by (id, full_name),
+          assigned_to_user:users!assigned_to (id, full_name)
+        `)
         .order('start_date', { ascending: true });
 
       if (error) throw error;
