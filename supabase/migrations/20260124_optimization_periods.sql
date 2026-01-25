@@ -44,8 +44,9 @@ CREATE INDEX IF NOT EXISTS idx_optimization_periods_status ON optimization_perio
 -- RLS pour optimization_periods
 ALTER TABLE optimization_periods ENABLE ROW LEVEL SECURITY;
 
--- Vue helper pour exposer les admins des groupes (bypass RLS)
-CREATE OR REPLACE VIEW group_admins_view AS
+-- Vue helper SECURITY DEFINER pour exposer les admins des groupes (bypass RLS)
+CREATE OR REPLACE VIEW group_admins_view 
+WITH (security_invoker = false) AS
 SELECT id as group_id, admin_id
 FROM groups;
 
