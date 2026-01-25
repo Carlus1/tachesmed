@@ -156,13 +156,14 @@ export const calendarOptimizationService = {
       const instancesGenerated = await generateGroupTaskInstances(groupId, endDate);
       console.log(`✅ ${instancesGenerated} instance(s) générée(s)`);
       
-      // Charger toutes les tâches non assignées du groupe (parent + instances)
+      // Charger SEULEMENT les instances (pas les tâches parent) non assignées
       // qui tombent dans la période
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('group_id', groupId)
         .is('assigned_to', null)
+        .not('parent_task_id', 'is', null)  // ✅ SEULEMENT les instances
         .gte('start_date', startDate.toISOString().split('T')[0])
         .lte('start_date', endDate.toISOString().split('T')[0]);
 
