@@ -10,7 +10,7 @@ interface ModernCalendarPageProps {
 
 export default function ModernCalendarPage({ user }: ModernCalendarPageProps) {
   const { t } = useTranslation();
-  const [view, setView] = useState<'week' | 'month'>('week');
+  const [view, setView] = useState<'week' | 'month'>('month');
 
   return (
   <ModernLayout user={user}>

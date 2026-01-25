@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../i18n/LanguageContext';
 import { supabase } from '../supabase';
 import {
@@ -11,6 +12,7 @@ import {
 
 export default function CalendarProposal() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -39,7 +41,37 @@ export default function CalendarProposal() {
 
   useEffect(() => {
     loadGroups();
+    loadPreferences();
   }, []);
+
+  // Charger les préférences sauvegardées
+  const loadPreferences = () => {
+    try {
+      const saved = localStorage.getItem('calendarProposalPreferences');
+      if (saved) {
+        const prefs = JSON.parse(saved);
+        if (prefs.selectedGroupId) setSelectedGroupId(prefs.selectedGroupId);
+        if (prefs.periodConfig) setPeriodConfig(prefs.periodConfig);
+        if (prefs.constraints) setConstraints(prefs.constraints);
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement des préférences:', err);
+    }
+  };
+
+  // Sauvegarder les préférences
+  const savePreferences = () => {
+    try {
+      const prefs = {
+        selectedGroupId,
+        periodConfig,
+        constraints,
+      };
+      localStorage.setItem('calendarProposalPreferences', JSON.stringify(prefs));
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde des préférences:', err);
+    }
+  };
 
   const loadGroups = async () => {
     try {
@@ -84,6 +116,9 @@ export default function CalendarProposal() {
       setError(t.calendarProposal?.selectGroup || 'Veuillez sélectionner un groupe');
       return;
     }
+
+    // Sauvegarder les préférences
+    savePreferences();
 
     setLoading(true);
     setError(null);
@@ -145,6 +180,10 @@ export default function CalendarProposal() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const viewInCalendar = () => {
+    navigate('/calendar');
   };
 
   const formatDateTime = (date: Date) => {
@@ -567,6 +606,12 @@ export default function CalendarProposal() {
             ) : (
               t.calendarProposal?.accept || t.dashboard.accept
             )}
+          </button>
+          <button
+            onClick={viewInCalendar}
+            className="flex-1 py-3 text-center text-primary-700 hover:bg-primary-50 transition-colors border-l border-border font-medium"
+          >
+            📅 {t.calendarProposal?.viewInCalendar || 'Voir dans le calendrier'}
           </button>
           <button
             onClick={() => {

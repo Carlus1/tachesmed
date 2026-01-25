@@ -294,6 +294,7 @@ export interface Translations {
     generating: string;
     regenerate: string;
     accept: string;
+    viewInCalendar: string;
     statistics: string;
     totalTasks: string;
     assignedTasks: string;
@@ -624,6 +625,7 @@ export const translations: Record<Language, Translations> = {
       generating: 'Génération en cours...',
       regenerate: 'Régénérer',
       accept: 'Accepter',
+      viewInCalendar: 'Voir dans le calendrier',
       statistics: 'Statistiques',
       totalTasks: 'Tâches totales',
       assignedTasks: 'Tâches assignées',
@@ -948,6 +950,7 @@ export const translations: Record<Language, Translations> = {
       generating: 'Generating...',
       regenerate: 'Regenerate',
       accept: 'Accept',
+      viewInCalendar: 'View in calendar',
       statistics: 'Statistics',
       totalTasks: 'Total tasks',
       assignedTasks: 'Assigned tasks',
@@ -1272,6 +1275,7 @@ export const translations: Record<Language, Translations> = {
       generating: 'Generating...',
       regenerate: 'Regenerate',
       accept: 'Accept',
+      viewInCalendar: 'View in calendar',
       statistics: 'Statistics',
       totalTasks: 'Total tasks',
       assignedTasks: 'Assigned tasks',
@@ -1596,6 +1600,7 @@ export const translations: Record<Language, Translations> = {
       generating: 'Generando...',
       regenerate: 'Regenerar',
       accept: 'Aceptar',
+      viewInCalendar: 'Ver en el calendario',
       statistics: 'Estadísticas',
       totalTasks: 'Tareas totales',
       assignedTasks: 'Tareas asignadas',
