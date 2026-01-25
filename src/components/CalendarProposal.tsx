@@ -575,46 +575,6 @@ export default function CalendarProposal() {
               </div>
             </div>
 
-            {/* Liste des assignations */}
-            <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
-              {result.assignments.map((assignment, index) => (
-                <div
-                  key={index}
-                  className={`flex items-start p-3 rounded-lg border ${
-                    assignment.hasConflict
-                      ? 'bg-warning-50 border-warning-200'
-                      : 'bg-success-50 border-success-200'
-                  }`}
-                >
-                  <div className="flex-shrink-0 w-32 text-sm text-primary-600">
-                    <div>{formatTime(assignment.startDate)}</div>
-                    <div>{formatTime(assignment.endDate)}</div>
-                  </div>
-                  <div className="flex-1">
-                    <h3
-                      className={`font-medium ${
-                        assignment.hasConflict ? 'text-warning-800' : 'text-success-800'
-                      }`}
-                    >
-                      {assignment.taskTitle}
-                    </h3>
-                    <p
-                      className={`text-sm ${
-                        assignment.hasConflict ? 'text-warning-600' : 'text-success-600'
-                      }`}
-                    >
-                      {assignment.userName}
-                    </p>
-                    {assignment.hasConflict && assignment.conflictReason && (
-                      <p className="text-xs text-warning-700 mt-1">
-                        ⚠️ {assignment.conflictReason}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
             {/* Tâches non assignées */}
             {result.unassignedTasks.length > 0 && (
               <div className="mb-4 p-4 bg-danger-50 rounded-lg">
