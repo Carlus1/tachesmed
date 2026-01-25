@@ -492,7 +492,7 @@ export const calendarOptimizationService = {
         // C'est la première semaine de la nouvelle période
         if (lastWeekTasks[member.id]?.includes(task.id)) {
           // Ce membre avait cette tâche la dernière semaine de la période précédente
-          score -= 100; // Forte pénalité
+          score -= 20; // Pénalité légère (réduit de 100 à 20)
           memberHasConflict = true;
           memberConflictReason = 'Continuité avec période précédente';
         } else {
@@ -505,19 +505,19 @@ export const calendarOptimizationService = {
         const taskAssignments = userTaskHistory[member.id]?.[task.id] || [];
         if (taskAssignments.length > 0) {
           // Ce membre a déjà fait cette tâche dans cette période
-          score -= 50; // Pénalité pour répétition
+          score -= 10; // Pénalité légère pour répétition (réduit de 50 à 10)
           
           // CONTRAINTE 3: Éviter les semaines consécutives si répétition
           if (constraints.avoidConsecutiveWeeks) {
             const lastWeek = taskAssignments[taskAssignments.length - 1];
             if (currentWeek - lastWeek === 1) {
               // Semaines consécutives
-              score -= 30; // Pénalité supplémentaire
+              score -= 15; // Pénalité supplémentaire (réduit de 30 à 15)
               memberHasConflict = true;
               memberConflictReason = 'Semaines consécutives pour même tâche';
             } else if (currentWeek - lastWeek < 3) {
               // Trop proche (moins de 3 semaines d'écart)
-              score -= 15;
+              score -= 5; // Réduit de 15 à 5
             } else {
               score += 5; // Léger bonus si suffisamment espacé
             }
@@ -540,7 +540,7 @@ export const calendarOptimizationService = {
           console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": indisponible`);
           continue; // Ignorer ce membre
         }
-        score -= 40;
+        score -= 10; // Pénalité légère si minimizeConflicts désactivé (réduit de 40 à 10)
         memberHasConflict = true;
         memberConflictReason = 'Indisponibilité du membre';
       }
@@ -559,7 +559,7 @@ export const calendarOptimizationService = {
           console.log(`⏭️ ${member.full_name} ignoré pour "${task.title}": conflit avec autre tâche`);
           continue;
         }
-        score -= 35;
+        score -= 5; // Pénalité très légère si minimizeConflicts désactivé (réduit de 35 à 5)
         memberHasConflict = true;
         const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
         memberConflictReason = `Conflit avec: ${taskName}`;
