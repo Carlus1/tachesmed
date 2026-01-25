@@ -46,22 +46,33 @@ export default function CalendarProposal() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
 
-      const { data, error } = await supabase
-        .from('group_members')
-        .select('group_id, groups!inner(id, name)')
-        .eq('user_id', userData.user.id);
+      // Vérifier le rôle de l'utilisateur
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userData.user.id)
+        .single();
+
+      const isOwner = userProfile?.role === 'owner';
+
+      let groupsQuery = supabase
+        .from('groups')
+        .select('id, name')
+        .order('name');
+
+      // Si pas owner, filtrer uniquement les groupes dont l'utilisateur est admin
+      if (!isOwner) {
+        groupsQuery = groupsQuery.eq('admin_id', userData.user.id);
+      }
+
+      const { data, error } = await groupsQuery;
 
       if (error) throw error;
 
-      const groupsList = (data || []).map((item: any) => ({
-        id: item.groups.id,
-        name: item.groups.name,
-      }));
-
-      setGroups(groupsList);
+      setGroups(data || []);
       
-      if (groupsList.length > 0 && !selectedGroupId) {
-        setSelectedGroupId(groupsList[0].id);
+      if (data && data.length > 0 && !selectedGroupId) {
+        setSelectedGroupId(data[0].id);
       }
     } catch (err) {
       console.error('Erreur lors du chargement des groupes:', err);
