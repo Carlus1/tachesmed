@@ -429,9 +429,35 @@ export const calendarOptimizationService = {
     let bestScore = -Infinity; // Score pour choisir le meilleur membre
 
     // Calculer la date et heure de début/fin de la tâche
-    const taskStartDateTime = new Date(`${task.start_date}T${task.start_time}`);
-    const taskEndDateTime = new Date(taskStartDateTime);
-    taskEndDateTime.setHours(taskEndDateTime.getHours() + task.duration_hours);
+    // Pour les instances récurrentes, start_date contient déjà date + heure
+    let taskStartDateTime: Date;
+    let taskEndDateTime: Date;
+    
+    if (task.start_time) {
+      // Ancienne méthode (tâches avec start_time séparé)
+      taskStartDateTime = new Date(`${task.start_date}T${task.start_time}`);
+      taskEndDateTime = new Date(taskStartDateTime);
+      taskEndDateTime.setHours(taskEndDateTime.getHours() + task.duration_hours);
+    } else {
+      // Nouvelle méthode (instances récurrentes avec date complète)
+      taskStartDateTime = new Date(task.start_date);
+      if (task.end_date) {
+        taskEndDateTime = new Date(task.end_date);
+      } else {
+        taskEndDateTime = new Date(taskStartDateTime);
+        taskEndDateTime.setHours(taskEndDateTime.getHours() + (task.duration_hours || 1));
+      }
+    }
+    
+    // Vérifier si les dates sont valides
+    if (isNaN(taskStartDateTime.getTime()) || isNaN(taskEndDateTime.getTime())) {
+      console.warn('⚠️ Dates invalides pour la tâche:', task.title, {
+        start_date: task.start_date,
+        start_time: task.start_time,
+        end_date: task.end_date
+      });
+      return null;
+    }
     
     // Calculer le numéro de semaine actuel
     const currentWeek = Math.floor(
