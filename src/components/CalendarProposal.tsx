@@ -187,20 +187,39 @@ export default function CalendarProposal() {
   };
 
   const acceptProposal = async () => {
-    if (!result || result.assignments.length === 0) return;
+    if (!result || result.assignments.length === 0 || !selectedGroupId) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      // Sauvegarder les assignations (les instances existent déjà en BDD)
-      await calendarOptimizationService.saveAssignments(result.assignments);
+      // Calculer les dates de la période
+      const startDate = new Date();
+      const endDate = new Date();
       
-      setSuccess(t.calendarProposal?.proposalAccepted || 'Proposition acceptée et tâches assignées avec succès');
+      if (periodConfig.unit === 'weeks') {
+        endDate.setDate(endDate.getDate() + (periodConfig.duration * 7));
+      } else if (periodConfig.unit === 'months') {
+        endDate.setMonth(endDate.getMonth() + periodConfig.duration);
+      }
+
+      // Sauvegarder les assignations et créer la période verrouillée
+      const saveResult = await calendarOptimizationService.saveAssignments(
+        result.assignments,
+        selectedGroupId,
+        startDate,
+        endDate,
+        result.statistics.totalTasks
+      );
+      
+      setSuccess(
+        `✅ Proposition acceptée et période verrouillée (ID: ${saveResult.periodId.substring(0, 8)}...). ` +
+        `Les modifications d'indisponibilités sont maintenant bloquées pour cette période.`
+      );
       setResult(null);
       
       // Attendre un peu puis effacer le message
-      setTimeout(() => setSuccess(null), 5000);
+      setTimeout(() => setSuccess(null), 8000);
     } catch (err) {
       console.error('Erreur lors de l\'acceptation:', err);
       setError(t.calendarProposal?.acceptError || 'Erreur lors de l\'acceptation de la proposition');

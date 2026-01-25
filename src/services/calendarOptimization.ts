@@ -910,11 +910,64 @@ export const calendarOptimizationService = {
   },
 
   /**
-   * Sauvegarde les assignations acceptées
+   * Crée une période d'optimisation verrouillée
    */
-  async saveAssignments(assignments: TaskAssignment[]): Promise<boolean> {
+  async createOptimizationPeriod(
+    groupId: string,
+    startDate: Date,
+    endDate: Date,
+    totalTasks: number,
+    assignedTasks: number
+  ): Promise<string> {
     try {
-      // Mettre à jour chaque tâche avec son assignation
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error('Utilisateur non connecté');
+
+      const { data, error } = await supabase
+        .from('optimization_periods')
+        .insert({
+          group_id: groupId,
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          accepted_by: userData.user.id,
+          total_tasks: totalTasks,
+          assigned_tasks: assignedTasks,
+          status: 'active',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      console.log('✅ Période d\'optimisation créée:', data.id);
+      return data.id;
+    } catch (error) {
+      console.error('Erreur lors de la création de la période:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Sauvegarde les assignations acceptées et crée une période verrouillée
+   */
+  async saveAssignments(
+    assignments: TaskAssignment[],
+    groupId: string,
+    startDate: Date,
+    endDate: Date,
+    totalTasks: number
+  ): Promise<{ success: boolean; periodId: string }> {
+    try {
+      // 1. Créer la période d'optimisation verrouillée
+      const periodId = await this.createOptimizationPeriod(
+        groupId,
+        startDate,
+        endDate,
+        totalTasks,
+        assignments.length
+      );
+
+      // 2. Mettre à jour chaque tâche avec son assignation
       for (const assignment of assignments) {
         const { error } = await supabase
           .from('tasks')
@@ -927,7 +980,8 @@ export const calendarOptimizationService = {
         if (error) throw error;
       }
 
-      return true;
+      console.log(`✅ ${assignments.length} tâches assignées pour la période ${periodId}`);
+      return { success: true, periodId };
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des assignations:', error);
       throw error;
