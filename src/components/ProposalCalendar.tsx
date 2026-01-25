@@ -30,16 +30,16 @@ interface CalendarEvent {
   };
 }
 
-// Couleurs pour différencier les utilisateurs
+// Couleurs pour différencier les utilisateurs (couleurs vives avec bon contraste pour texte blanc)
 const USER_COLORS = [
-  { bg: '#3B82F6', border: '#2563EB' }, // Bleu
-  { bg: '#10B981', border: '#059669' }, // Vert
-  { bg: '#F59E0B', border: '#D97706' }, // Orange
-  { bg: '#8B5CF6', border: '#7C3AED' }, // Violet
-  { bg: '#EF4444', border: '#DC2626' }, // Rouge
-  { bg: '#06B6D4', border: '#0891B2' }, // Cyan
-  { bg: '#EC4899', border: '#DB2777' }, // Rose
-  { bg: '#6366F1', border: '#4F46E5' }, // Indigo
+  { bg: '#2563EB', border: '#1E40AF' }, // Bleu foncé
+  { bg: '#059669', border: '#047857' }, // Vert foncé
+  { bg: '#D97706', border: '#B45309' }, // Orange foncé
+  { bg: '#7C3AED', border: '#6D28D9' }, // Violet foncé
+  { bg: '#DC2626', border: '#B91C1C' }, // Rouge foncé
+  { bg: '#0891B2', border: '#0E7490' }, // Cyan foncé
+  { bg: '#DB2777', border: '#BE185D' }, // Rose foncé
+  { bg: '#4F46E5', border: '#4338CA' }, // Indigo foncé
 ];
 
 export default function ProposalCalendar({ assignments, view = 'month' }: ProposalCalendarProps) {
@@ -111,20 +111,20 @@ export default function ProposalCalendar({ assignments, view = 'month' }: Propos
     const tooltip = document.createElement('div');
     tooltip.className = 'proposal-tooltip';
     tooltip.style.cssText = `
-      position: absolute;
+      position: fixed;
       z-index: 10000;
       background: white;
       border: 2px solid #E5E7EB;
       border-radius: 8px;
       padding: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      max-width: 300px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      max-width: 350px;
       font-size: 13px;
       pointer-events: none;
     `;
     
     let content = `
-      <div style="font-weight: 600; color: #1F2937; margin-bottom: 8px;">
+      <div style="font-weight: 600; color: #1F2937; margin-bottom: 8px; font-size: 14px;">
         ${event.title}
       </div>
     `;
@@ -180,20 +180,54 @@ export default function ProposalCalendar({ assignments, view = 'month' }: Propos
     }
     
     tooltip.innerHTML = content;
-    
-    // Positionner le tooltip
-    const rect = info.el.getBoundingClientRect();
-    tooltip.style.left = `${rect.right + 10}px`;
-    tooltip.style.top = `${rect.top}px`;
-    
     document.body.appendChild(tooltip);
+    
+    // Fonction pour positionner le tooltip en suivant la souris
+    const positionTooltip = (e: MouseEvent) => {
+      const offsetX = 15; // Décalage horizontal
+      const offsetY = 15; // Décalage vertical
+      
+      // Position par défaut: à droite et en bas du curseur
+      let left = e.clientX + offsetX;
+      let top = e.clientY + offsetY;
+      
+      // Vérifier si le tooltip dépasse à droite de l'écran
+      const tooltipRect = tooltip.getBoundingClientRect();
+      if (left + tooltipRect.width > window.innerWidth) {
+        // Afficher à gauche du curseur
+        left = e.clientX - tooltipRect.width - offsetX;
+      }
+      
+      // Vérifier si le tooltip dépasse en bas de l'écran
+      if (top + tooltipRect.height > window.innerHeight) {
+        // Afficher au-dessus du curseur
+        top = e.clientY - tooltipRect.height - offsetY;
+      }
+      
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${top}px`;
+    };
+    
+    // Positionner initialement
+    positionTooltip(info.jsEvent);
+    
+    // Suivre le mouvement de la souris
+    const mouseMoveHandler = (e: MouseEvent) => positionTooltip(e);
+    info.el.addEventListener('mousemove', mouseMoveHandler);
+    
+    // Stocker les références pour le nettoyage
     info.el.tooltipElement = tooltip;
+    info.el.mouseMoveHandler = mouseMoveHandler;
   };
 
   const handleEventMouseLeave = (info: any) => {
     if (info.el.tooltipElement) {
       document.body.removeChild(info.el.tooltipElement);
       info.el.tooltipElement = null;
+    }
+    if (info.el.mouseMoveHandler) {
+      info.el.removeEventListener('mousemove', info.el.mouseMoveHandler);
+      info.el.mouseMoveHandler = null;
     }
   };
 
@@ -287,9 +321,19 @@ export default function ProposalCalendar({ assignments, view = 'month' }: Propos
             border-radius: 4px;
             padding: 2px 4px;
             font-size: 0.875rem;
+            color: white !important;
+            font-weight: 500;
           }
           
           .fc-event-title {
+            font-weight: 600;
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+          }
+          
+          .fc-event-time {
+            color: white !important;
+            opacity: 0.95;
             font-weight: 500;
           }
           
