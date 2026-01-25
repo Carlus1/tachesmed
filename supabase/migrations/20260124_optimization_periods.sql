@@ -62,8 +62,10 @@ CREATE POLICY "Admins can create periods"
   FOR INSERT
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM groups g
-      WHERE g.id = group_id
+      SELECT 1 FROM group_members gm
+      JOIN groups g ON g.id = gm.group_id
+      WHERE gm.group_id = group_id
+      AND gm.user_id = auth.uid()
       AND g.admin_id = auth.uid()
     )
   );
@@ -75,8 +77,10 @@ CREATE POLICY "Admins can delete future periods only"
   FOR UPDATE
   USING (
     EXISTS (
-      SELECT 1 FROM groups g
-      WHERE g.id = group_id
+      SELECT 1 FROM group_members gm
+      JOIN groups g ON g.id = gm.group_id
+      WHERE gm.group_id = group_id
+      AND gm.user_id = auth.uid()
       AND g.admin_id = auth.uid()
     )
     AND start_date > NOW() -- Seulement si la période n'a pas encore commencé
