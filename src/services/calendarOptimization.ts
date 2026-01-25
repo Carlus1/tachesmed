@@ -475,11 +475,13 @@ export const calendarOptimizationService = {
     );
     
     console.log(`🔍 Recherche membre pour "${task.title}" (${members.length} candidats)`);
+    console.log(`   Tâche: ${task.start_date} → ${task.end_date}`);
 
     for (const member of members) {
       let score = 0; // Score de ce membre pour cette tâche (plus élevé = meilleur)
       let memberHasConflict = false;
       let memberConflictReason: string | undefined;
+      const scoreDetails: string[] = [];
 
       // Vérifier la limite de tâches par utilisateur
       if (constraints.maxTasksPerUser !== null) {
@@ -499,10 +501,12 @@ export const calendarOptimizationService = {
         if (lastWeekTasks[member.id]?.includes(task.id)) {
           // Ce membre avait cette tâche la dernière semaine de la période précédente
           score -= 20; // Pénalité légère (réduit de 100 à 20)
+          scoreDetails.push('continuité période -20');
           memberHasConflict = true;
           memberConflictReason = 'Continuité avec période précédente';
         } else {
           score += 10; // Bonus pour éviter la continuité
+          scoreDetails.push('évite continuité +10');
         }
       }
 
@@ -512,6 +516,7 @@ export const calendarOptimizationService = {
         if (taskAssignments.length > 0) {
           // Ce membre a déjà fait cette tâche dans cette période
           score -= 10; // Pénalité légère pour répétition (réduit de 50 à 10)
+          scoreDetails.push(`répétition -10 (${taskAssignments.length}x)`);
           
           // CONTRAINTE 3: Éviter les semaines consécutives si répétition
           if (constraints.avoidConsecutiveWeeks) {
@@ -519,17 +524,21 @@ export const calendarOptimizationService = {
             if (currentWeek - lastWeek === 1) {
               // Semaines consécutives
               score -= 15; // Pénalité supplémentaire (réduit de 30 à 15)
+              scoreDetails.push('semaines consécutives -15');
               memberHasConflict = true;
               memberConflictReason = 'Semaines consécutives pour même tâche';
             } else if (currentWeek - lastWeek < 3) {
               // Trop proche (moins de 3 semaines d'écart)
               score -= 5; // Réduit de 15 à 5
+              scoreDetails.push(`trop proche -5 (écart: ${currentWeek - lastWeek})`);
             } else {
               score += 5; // Léger bonus si suffisamment espacé
+              scoreDetails.push('bien espacé +5');
             }
           }
         } else {
           score += 20; // Bonus pour première fois
+          scoreDetails.push('première fois +20');
         }
       }
 
@@ -547,6 +556,7 @@ export const calendarOptimizationService = {
           continue; // Ignorer ce membre
         }
         score -= 10; // Pénalité légère si minimizeConflicts désactivé (réduit de 40 à 10)
+        scoreDetails.push('indisponible -10');
         memberHasConflict = true;
         memberConflictReason = 'Indisponibilité du membre';
       }
@@ -566,6 +576,7 @@ export const calendarOptimizationService = {
           continue;
         }
         score -= 5; // Pénalité très légère si minimizeConflicts désactivé (réduit de 35 à 5)
+        scoreDetails.push('conflit tâche -5');
         memberHasConflict = true;
         const taskName = 'title' in conflictingTask ? conflictingTask.title : conflictingTask.taskTitle;
         memberConflictReason = `Conflit avec: ${taskName}`;
@@ -578,8 +589,10 @@ export const calendarOptimizationService = {
         taskHour > constraints.preferredEndHour
       ) {
         score -= 20; // Pénalité légère au lieu d'éliminer
+        scoreDetails.push(`heure ${taskHour}h -20`);
       } else {
         score += 10; // Bonus pour heures préférées
+        scoreDetails.push(`heure OK +10`);
       }
 
       // Équilibrage de la charge
@@ -589,7 +602,11 @@ export const calendarOptimizationService = {
         // Bonus inversement proportionnel à la charge
         const workloadScore = 50 - (currentWorkload * 2);
         score += workloadScore;
+        scoreDetails.push(`charge(${currentWorkload}) ${workloadScore > 0 ? '+' : ''}${workloadScore}`);
       }
+
+      // Log du score final pour ce membre
+      console.log(`   ${member.full_name}: score=${score} [${scoreDetails.join(', ')}]`);
 
       // Choisir le membre avec le meilleur score
       if (score > bestScore || (score === bestScore && currentWorkload < lowestWorkload)) {
@@ -602,9 +619,11 @@ export const calendarOptimizationService = {
     }
 
     if (!bestMember) {
-      console.warn(`❌ Aucun membre disponible pour "${task.title}" - Tous éliminés par contraintes`);
+      console.warn(`❌ Aucun membre disponible pour "${task.title}" - Tous éliminés (bestScore=${bestScore})`);
       return null;
     }
+
+    console.log(`   ✅ Sélectionné: ${bestMember.full_name} (score=${bestScore})`);
 
     return {
       taskId: task.id,
