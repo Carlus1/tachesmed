@@ -208,8 +208,10 @@ export default function CalendarProposal() {
     navigate('/calendar');
   };
 
-  const formatDateTime = (date: Date) => {
-    return date.toLocaleString('fr-FR', {
+  const formatDateTime = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return 'Invalid Date';
+    return d.toLocaleString('fr-FR', {
       day: '2-digit',
       month: '2-digit',
       hour: '2-digit',
@@ -217,8 +219,10 @@ export default function CalendarProposal() {
     });
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('fr-FR', {
+  const formatTime = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return 'Invalid Date';
+    return d.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit',
     });

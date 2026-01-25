@@ -151,7 +151,10 @@ export const calendarOptimizationService = {
     try {
       // D'abord, générer les instances de tâches récurrentes pour toute la période
       console.log('🔄 Génération des instances de tâches récurrentes...');
-      await generateGroupTaskInstances(groupId, endDate);
+      console.log(`📅 Période: ${startDate.toISOString()} → ${endDate.toISOString()}`);
+      
+      const instancesGenerated = await generateGroupTaskInstances(groupId, endDate);
+      console.log(`✅ ${instancesGenerated} instance(s) générée(s)`);
       
       // Charger toutes les tâches non assignées du groupe (parent + instances)
       // qui tombent dans la période
@@ -172,6 +175,12 @@ export const calendarOptimizationService = {
       const activeTasks = (data || []).filter(task => task.status !== 'completed');
       
       console.log(`📅 ${activeTasks.length} tâche(s) non assignée(s) dans la période`);
+      console.log('Détail tâches:', activeTasks.map(t => ({ 
+        title: t.title, 
+        start: t.start_date,
+        parent: t.parent_task_id ? 'instance' : 'parent',
+        recurrence: t.recurrence_type 
+      })));
       
       return activeTasks;
     } catch (err) {
