@@ -16,6 +16,7 @@ export interface Task {
   assigned_to: string | null;
   created_by: string;
   group_id: string | null;
+  parent_task_id?: string | null;
   recurrence_type?: 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'semiannual' | 'annual' | null;
   recurrence_end_date?: string | null;
 }
@@ -68,6 +69,10 @@ export interface TaskAssignment {
   endDate: Date;
   hasConflict: boolean;
   conflictReason?: string;
+  score?: number;                   // Score d'assignation
+  scoreDetails?: string;            // Détails du calcul du score
+  isRepetition?: boolean;           // Indique si c'est une répétition
+  isConsecutive?: boolean;          // Indique si semaines consécutives
 }
 
 export interface OptimizationResult {
@@ -447,6 +452,9 @@ export const calendarOptimizationService = {
     let hasConflict = false;
     let conflictReason: string | undefined;
     let bestScore = -Infinity; // Score pour choisir le meilleur membre
+    let bestScoreDetails: string[] = []; // Détails du calcul du score
+    let isRepetition = false;
+    let isConsecutive = false;
 
     // Calculer la date et heure de début/fin de la tâche
     // Pour les instances récurrentes, start_date contient déjà date + heure
@@ -625,6 +633,15 @@ export const calendarOptimizationService = {
         bestMember = member;
         hasConflict = memberHasConflict;
         conflictReason = memberConflictReason;
+        bestScoreDetails = scoreDetails;
+        
+        // Détecter si c'est une répétition ou consécutif
+        const taskHistory = userTaskHistory[member.id]?.[task.id] || [];
+        isRepetition = taskHistory.length > 0;
+        if (taskHistory.length > 0) {
+          const lastWeek = taskHistory[taskHistory.length - 1];
+          isConsecutive = (currentWeek - lastWeek === 1);
+        }
       }
     }
 
@@ -644,6 +661,10 @@ export const calendarOptimizationService = {
       endDate: taskEndDateTime,
       hasConflict,
       conflictReason,
+      score: bestScore,
+      scoreDetails: bestScoreDetails.join(', '),
+      isRepetition,
+      isConsecutive,
     };
   },
 

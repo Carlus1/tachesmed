@@ -10,6 +10,7 @@ import {
   TaskAssignment,
   PeriodConfig,
 } from '../services/calendarOptimization';
+import ProposalCalendar from './ProposalCalendar';
 
 export default function CalendarProposal() {
   const { t } = useTranslation();
@@ -501,6 +502,14 @@ export default function CalendarProposal() {
         {/* Résultats */}
         {result && (
           <>
+            {/* Calendrier de prévisualisation */}
+            <div className="mb-4">
+              <ProposalCalendar 
+                assignments={result.assignments}
+                view="month"
+              />
+            </div>
+
             {/* Statistiques */}
             <div className="mb-4 p-4 bg-primary-50 rounded-lg">
               <h3 className="font-semibold text-primary-800 mb-2">
