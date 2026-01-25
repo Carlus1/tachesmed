@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { generateGroupTaskInstances } from '../utils/taskInstances';
 
 // Types
 export interface Task {
@@ -15,6 +16,8 @@ export interface Task {
   assigned_to: string | null;
   created_by: string;
   group_id: string | null;
+  recurrence_type?: 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'semiannual' | 'annual' | null;
+  recurrence_end_date?: string | null;
 }
 
 export interface Availability {
@@ -146,6 +149,12 @@ export const calendarOptimizationService = {
     endDate: Date
   ): Promise<Task[]> {
     try {
+      // D'abord, générer les instances de tâches récurrentes pour toute la période
+      console.log('🔄 Génération des instances de tâches récurrentes...');
+      await generateGroupTaskInstances(groupId, endDate);
+      
+      // Charger toutes les tâches non assignées du groupe (parent + instances)
+      // qui tombent dans la période
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
@@ -159,8 +168,12 @@ export const calendarOptimizationService = {
         throw error;
       }
       
-      // Filtrer côté client pour éviter les problèmes avec le status
-      return (data || []).filter(task => task.status !== 'completed');
+      // Filtrer les tâches complétées
+      const activeTasks = (data || []).filter(task => task.status !== 'completed');
+      
+      console.log(`📅 ${activeTasks.length} tâche(s) non assignée(s) dans la période`);
+      
+      return activeTasks;
     } catch (err) {
       console.error('Exception dans fetchUnassignedTasks:', err);
       throw err;
@@ -213,6 +226,7 @@ export const calendarOptimizationService = {
     startDate: Date,
     endDate: Date
   ): Promise<Task[]> {
+    // Charger toutes les tâches assignées dans la période (instances incluses)
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
@@ -222,6 +236,7 @@ export const calendarOptimizationService = {
       .neq('status', 'completed');
 
     if (error) throw error;
+    
     return data || [];
   },
 
