@@ -56,6 +56,11 @@ BEGIN
   FROM groups g
   WHERE g.id = p_group_id;
   
+  -- Si le groupe n'existe pas ou admin_id est NULL, retourner FALSE
+  IF admin_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+  
   -- Vérifier si l'utilisateur est l'admin
   RETURN admin_id = p_user_id;
 END;
