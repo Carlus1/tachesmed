@@ -57,6 +57,41 @@ export default function CalendarProposal() {
     }
   }, [groups, selectedGroupId]);
 
+  // Suggérer automatiquement la date de début après la période active
+  useEffect(() => {
+    if (selectedGroupId) {
+      suggestNextStartDate();
+    }
+  }, [selectedGroupId]);
+
+  const suggestNextStartDate = async () => {
+    if (!selectedGroupId) return;
+
+    try {
+      const { data: existingPeriods } = await supabase
+        .from('optimization_periods')
+        .select('end_date')
+        .eq('group_id', selectedGroupId)
+        .eq('status', 'active')
+        .order('end_date', { ascending: false })
+        .limit(1);
+
+      if (existingPeriods && existingPeriods.length > 0) {
+        const lastPeriodEnd = new Date(existingPeriods[0].end_date);
+        const suggestedDate = new Date(lastPeriodEnd);
+        suggestedDate.setDate(suggestedDate.getDate() + 1); // Lendemain
+        
+        setCustomStartDate(suggestedDate.toISOString().split('T')[0]);
+        console.log('💡 Date suggérée:', suggestedDate.toLocaleDateString('fr-FR'));
+      } else {
+        // Pas de période active, vider le champ (commence aujourd'hui)
+        setCustomStartDate('');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suggestion de date:', error);
+    }
+  };
+
   // Charger les préférences sauvegardées
   const loadPreferences = () => {
     try {
@@ -429,10 +464,12 @@ export default function CalendarProposal() {
               min={new Date().toISOString().split('T')[0]}
               className="w-full px-3 py-2 border border-border rounded-lg"
               disabled={loading}
+              placeholder="Aujourd'hui si vide"
             />
             <p className="mt-1 text-xs text-primary-600">
               {customStartDate 
-                ? `Période: ${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
+                ? `📆 Période: ${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
+                : "💡 Date suggérée automatiquement (modifiable)"}
                 : "Laissez vide pour commencer aujourd'hui"}
             </p>
           </div>
