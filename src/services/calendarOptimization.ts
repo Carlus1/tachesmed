@@ -1015,7 +1015,7 @@ export const calendarOptimizationService = {
           .from('tasks')
           .update({
             assigned_to: assignment.userId,
-            status: 'assigned',
+            // Status reste 'pending' - la tâche est assignée mais pas encore commencée
           })
           .eq('id', assignment.taskId);
 
