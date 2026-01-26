@@ -193,6 +193,22 @@ export default function CalendarProposal() {
     setError(null);
 
     try {
+      // Vérifier que l'utilisateur est admin du groupe
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error('Utilisateur non connecté');
+      }
+
+      const { data: groupData } = await supabase
+        .from('groups')
+        .select('admin_id')
+        .eq('id', selectedGroupId)
+        .single();
+
+      if (!groupData || groupData.admin_id !== userData.user.id) {
+        throw new Error('Seul l\'administrateur du groupe peut accepter une proposition');
+      }
+
       // Calculer les dates de la période
       const startDate = new Date();
       const endDate = new Date();
@@ -222,7 +238,10 @@ export default function CalendarProposal() {
       setTimeout(() => setSuccess(null), 8000);
     } catch (err) {
       console.error('Erreur lors de l\'acceptation:', err);
-      setError(t.calendarProposal?.acceptError || 'Erreur lors de l\'acceptation de la proposition');
+      setError(
+        err instanceof Error ? err.message : 
+        (t.calendarProposal?.acceptError || 'Erreur lors de l\'acceptation de la proposition')
+      );
     } finally {
       setLoading(false);
     }
