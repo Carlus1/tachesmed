@@ -671,6 +671,7 @@ export default function CalendarProposal() {
               <ProposalCalendar 
                 assignments={result.assignments}
                 view="month"
+                startDate={customStartDate ? new Date(customStartDate) : new Date()}
               />
             </div>
 

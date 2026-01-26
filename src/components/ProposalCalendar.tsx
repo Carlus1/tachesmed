@@ -10,6 +10,7 @@ import { useTranslation } from '../i18n/LanguageContext';
 interface ProposalCalendarProps {
   assignments: TaskAssignment[];
   view?: 'month' | 'week';
+  startDate?: Date;  // Date de début de la période pour positionner le calendrier
 }
 
 interface CalendarEvent {
@@ -42,11 +43,18 @@ const USER_COLORS = [
   { bg: '#4F46E5', border: '#4338CA' }, // Indigo foncé
 ];
 
-export default function ProposalCalendar({ assignments, view = 'month' }: ProposalCalendarProps) {
+export default function ProposalCalendar({ assignments, view = 'month', startDate }: ProposalCalendarProps) {
   const { t } = useTranslation();
   const [currentView, setCurrentView] = useState(view);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [userColorMap, setUserColorMap] = useState<Map<string, { bg: string; border: string }>>(new Map());
+  const [initialDate, setInitialDate] = useState<Date>(startDate || new Date());
+
+  useEffect(() => {
+    if (startDate) {
+      setInitialDate(startDate);
+    }
+  }, [startDate]);
 
   useEffect(() => {
     // Créer une map de couleurs pour chaque utilisateur
@@ -362,6 +370,7 @@ export default function ProposalCalendar({ assignments, view = 'month' }: Propos
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView={currentView === 'month' ? 'dayGridMonth' : 'timeGridWeek'}
+          initialDate={initialDate}
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',

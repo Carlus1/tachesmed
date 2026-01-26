@@ -654,8 +654,10 @@ export const calendarOptimizationService = {
       taskEndDateTime = new Date(taskStartDateTime);
       taskEndDateTime.setHours(taskEndDateTime.getHours() + task.duration_hours);
     } else {
-      // Nouvelle méthode (instances récurrentes avec date complète)
-      taskStartDateTime = new Date(task.start_date);
+      // Nouvelle méthode (instances récurrentes avec occurrence_date)
+      // ⚠️ IMPORTANT: Utiliser occurrence_date pour instances, pas start_date
+      const effectiveDate = (task as any).occurrence_date || task.start_date;
+      taskStartDateTime = new Date(effectiveDate);
       if (task.end_date) {
         taskEndDateTime = new Date(task.end_date);
       } else {
@@ -668,6 +670,7 @@ export const calendarOptimizationService = {
     if (isNaN(taskStartDateTime.getTime()) || isNaN(taskEndDateTime.getTime())) {
       console.warn('⚠️ Dates invalides pour la tâche:', task.title, {
         start_date: task.start_date,
+        occurrence_date: (task as any).occurrence_date,
         start_time: task.start_time,
         end_date: task.end_date
       });
@@ -680,7 +683,7 @@ export const calendarOptimizationService = {
     );
     
     console.log(`🔍 Recherche membre pour "${task.title}" (${members.length} candidats)`);
-    console.log(`   Tâche: ${task.start_date} → ${task.end_date}`);
+    console.log(`   Tâche: ${effectiveDate} → ${task.end_date}`);
 
     for (const member of members) {
       let score = 0; // Score de ce membre pour cette tâche (plus élevé = meilleur)
