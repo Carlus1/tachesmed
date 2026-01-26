@@ -137,6 +137,23 @@ export default function CalendarProposal() {
     setSuccess(null);
 
     try {
+      // **VÉRIFICATION PÉRIODE EXISTANTE AVANT GÉNÉRATION**
+      const { data: existingPeriods } = await supabase
+        .from('optimization_periods')
+        .select('id, start_date, end_date, status')
+        .eq('group_id', selectedGroupId)
+        .eq('status', 'active');
+
+      if (existingPeriods && existingPeriods.length > 0) {
+        const period = existingPeriods[0];
+        const startStr = new Date(period.start_date).toLocaleDateString('fr-FR');
+        const endStr = new Date(period.end_date).toLocaleDateString('fr-FR');
+        throw new Error(
+          `❌ Une période est déjà acceptée (${startStr} au ${endStr}).\n\n` +
+          `Vous devez d'abord la supprimer avant de générer une nouvelle proposition.`
+        );
+      }
+
       // Calculer la période selon la configuration
       const startDate = new Date();
       const endDate = new Date();

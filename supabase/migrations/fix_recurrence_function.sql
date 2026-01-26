@@ -25,10 +25,11 @@ BEGIN
     RETURN 0;
   END IF;
 
-  -- Supprimer les instances existantes qui n'ont pas été assignées
+  -- ⚠️ NE SUPPRIMER QUE LES INSTANCES NON ASSIGNÉES
+  -- Les instances assignées sont dans des périodes acceptées et doivent être préservées
   DELETE FROM tasks
   WHERE parent_task_id = task_id
-    AND (assigned_to IS NULL OR status = 'pending');
+    AND assigned_to IS NULL;
 
   -- Déterminer la date maximale de génération (max 1 an dans le futur)
   IF task_record.recurrence_end_date IS NOT NULL THEN

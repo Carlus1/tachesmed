@@ -170,11 +170,12 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
       ? 'border-2 border-dashed' // Tâche figée : bordure pointillée
       : 'border';
     
+    // 🎨 Couleurs enrichies pour plus de variété visuelle
     switch (priority) {
-      case 'high': return `${baseClasses} bg-error-100 border-error-400 text-error-900`;
-      case 'medium': return `${baseClasses} bg-accent-100 border-accent-400 text-accent-900`;
-      case 'low': return `${baseClasses} bg-success-100 border-success-400 text-success-900`;
-      default: return `${baseClasses} bg-primary-100 border-primary-400 text-primary-900`;
+      case 'high': return `${baseClasses} bg-red-100 border-red-500 text-red-900 hover:bg-red-200`;
+      case 'medium': return `${baseClasses} bg-orange-100 border-orange-500 text-orange-900 hover:bg-orange-200`;
+      case 'low': return `${baseClasses} bg-green-100 border-green-500 text-green-900 hover:bg-green-200`;
+      default: return `${baseClasses} bg-blue-100 border-blue-500 text-blue-900 hover:bg-blue-200`;
     }
   };
 
