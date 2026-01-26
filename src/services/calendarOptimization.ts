@@ -157,12 +157,30 @@ export const calendarOptimizationService = {
     endDate: Date
   ): Promise<Task[]> {
     try {
-      // Générer les instances de tâches récurrentes pour toute la période
-      console.log('🔄 Génération des instances de tâches récurrentes...');
-      console.log(`📅 Période: ${startDate.toISOString()} → ${endDate.toISOString()}`);
-      
-      const instancesGenerated = await generateGroupTaskInstances(groupId, endDate);
-      console.log(`✅ ${instancesGenerated} instance(s) générée(s)`);
+      // ⚠️ SÉCURITÉ: Vérifier qu'il n'y a pas de période active qui chevauche
+      // pour éviter de régénérer et supprimer les instances assignées
+      const { data: existingPeriods } = await supabase
+        .from('optimization_periods')
+        .select('start_date, end_date')
+        .eq('group_id', groupId)
+        .eq('status', 'active');
+
+      const hasOverlap = existingPeriods?.some(period => {
+        const pStart = new Date(period.start_date);
+        const pEnd = new Date(period.end_date);
+        return startDate <= pEnd && endDate >= pStart;
+      });
+
+      if (hasOverlap) {
+        console.warn('⚠️ Période existante détectée - Pas de régénération pour éviter suppression');
+      } else {
+        // Générer les instances de tâches récurrentes SEULEMENT si pas de chevauchement
+        console.log('🔄 Génération des instances de tâches récurrentes...');
+        console.log(`📅 Période: ${startDate.toISOString()} → ${endDate.toISOString()}`);
+        
+        const instancesGenerated = await generateGroupTaskInstances(groupId, endDate);
+        console.log(`✅ ${instancesGenerated} instance(s) générée(s)`);
+      }
       
       // Charger SEULEMENT les instances (pas les tâches parent) non assignées
       // qui tombent dans la période
