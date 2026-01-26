@@ -166,14 +166,15 @@ export const calendarOptimizationService = {
       
       // Charger SEULEMENT les instances (pas les tâches parent) non assignées
       // qui tombent dans la période
+      // ⚠️ Utiliser occurrence_date pour les instances, pas start_date
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('group_id', groupId)
         .is('assigned_to', null)
         .not('parent_task_id', 'is', null)  // ✅ SEULEMENT les instances
-        .gte('start_date', startDate.toISOString().split('T')[0])
-        .lte('start_date', endDate.toISOString().split('T')[0]);
+        .gte('occurrence_date', startDate.toISOString().split('T')[0])
+        .lte('occurrence_date', endDate.toISOString().split('T')[0]);
 
       if (error) {
         console.error('Erreur fetchUnassignedTasks:', error);
