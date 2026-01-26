@@ -50,33 +50,11 @@ BEGIN
   -- Calculer la durée de la tâche
   task_duration := task_record.end_date - task_record.start_date;
 
-  -- Première occurrence = la tâche originale elle-même
+  -- Première occurrence = start_date de la tâche parent
   current_occurrence := task_record.start_date::DATE;
   
-  -- Boucle pour générer les occurrences suivantes
+  -- Boucle pour générer les occurrences (y compris la première)
   LOOP
-    -- Calculer la prochaine occurrence selon le type
-    CASE task_record.recurrence_type
-      WHEN 'daily' THEN
-        current_occurrence := current_occurrence + INTERVAL '1 day';
-      WHEN 'weekly' THEN
-        current_occurrence := current_occurrence + INTERVAL '1 week';
-      WHEN 'bi-weekly' THEN  -- ✅ Accepter avec tiret
-        current_occurrence := current_occurrence + INTERVAL '2 weeks';
-      WHEN 'monthly' THEN
-        current_occurrence := current_occurrence + INTERVAL '1 month';
-      WHEN 'bi-monthly' THEN  -- ✅ Accepter avec tiret
-        current_occurrence := current_occurrence + INTERVAL '2 months';
-      WHEN 'quarterly' THEN
-        current_occurrence := current_occurrence + INTERVAL '3 months';
-      WHEN 'semi-annually' THEN  -- ✅ Accepter avec tiret
-        current_occurrence := current_occurrence + INTERVAL '6 months';
-      WHEN 'yearly' THEN
-        current_occurrence := current_occurrence + INTERVAL '1 year';
-      ELSE
-        EXIT; -- Type inconnu, sortir
-    END CASE;
-
     -- Vérifier si on a dépassé la date maximale
     IF current_occurrence > max_date::DATE THEN
       EXIT;
@@ -125,6 +103,30 @@ BEGIN
       RAISE WARNING 'Limite de 1000 occurrences atteinte pour la tâche %', task_id;
       EXIT;
     END IF;
+
+    -- Calculer la prochaine occurrence selon le type (APRÈS avoir créé l'instance)
+    CASE task_record.recurrence_type
+    -- Calculer la prochaine occurrence selon le type (APRÈS avoir créé l'instance)
+    CASE task_record.recurrence_type
+      WHEN 'daily' THEN
+        current_occurrence := current_occurrence + INTERVAL '1 day';
+      WHEN 'weekly' THEN
+        current_occurrence := current_occurrence + INTERVAL '1 week';
+      WHEN 'bi-weekly' THEN  -- ✅ Accepter avec tiret
+        current_occurrence := current_occurrence + INTERVAL '2 weeks';
+      WHEN 'monthly' THEN
+        current_occurrence := current_occurrence + INTERVAL '1 month';
+      WHEN 'bi-monthly' THEN  -- ✅ Accepter avec tiret
+        current_occurrence := current_occurrence + INTERVAL '2 months';
+      WHEN 'quarterly' THEN
+        current_occurrence := current_occurrence + INTERVAL '3 months';
+      WHEN 'semi-annually' THEN  -- ✅ Accepter avec tiret
+        current_occurrence := current_occurrence + INTERVAL '6 months';
+      WHEN 'yearly' THEN
+        current_occurrence := current_occurrence + INTERVAL '1 year';
+      ELSE
+        EXIT; -- Type inconnu, sortir
+    END CASE;
   END LOOP;
 
   RETURN occurrence_count;
