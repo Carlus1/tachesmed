@@ -142,7 +142,8 @@ export default function CalendarProposal() {
       const endDate = new Date();
       
       if (periodConfig.unit === 'weeks') {
-        endDate.setDate(endDate.getDate() + (periodConfig.duration * 7));
+        // Pour N semaines, générer N occurrences hebdomadaires = (N-1) * 7 jours
+        endDate.setDate(endDate.getDate() + ((periodConfig.duration - 1) * 7));
       } else if (periodConfig.unit === 'months') {
         endDate.setMonth(endDate.getMonth() + periodConfig.duration);
       }
@@ -214,7 +215,8 @@ export default function CalendarProposal() {
       const endDate = new Date();
       
       if (periodConfig.unit === 'weeks') {
-        endDate.setDate(endDate.getDate() + (periodConfig.duration * 7));
+        // Pour N semaines, générer N occurrences hebdomadaires = (N-1) * 7 jours
+        endDate.setDate(endDate.getDate() + ((periodConfig.duration - 1) * 7));
       } else if (periodConfig.unit === 'months') {
         endDate.setMonth(endDate.getMonth() + periodConfig.duration);
       }
