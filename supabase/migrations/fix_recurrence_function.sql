@@ -130,5 +130,3 @@ BEGIN
   RETURN occurrence_count;
 END;
 $$ LANGUAGE plpgsql;
-END;
-$$ LANGUAGE plpgsql;
