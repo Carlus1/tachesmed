@@ -665,16 +665,18 @@ export const calendarOptimizationService = {
     // Pour les instances récurrentes, start_date contient déjà date + heure
     let taskStartDateTime: Date;
     let taskEndDateTime: Date;
+    let effectiveDate: string; // Déclaré ici pour être accessible partout
     
     if (task.start_time) {
       // Ancienne méthode (tâches avec start_time séparé)
+      effectiveDate = task.start_date;
       taskStartDateTime = new Date(`${task.start_date}T${task.start_time}`);
       taskEndDateTime = new Date(taskStartDateTime);
       taskEndDateTime.setHours(taskEndDateTime.getHours() + task.duration_hours);
     } else {
       // Nouvelle méthode (instances récurrentes avec occurrence_date)
       // ⚠️ IMPORTANT: Utiliser occurrence_date pour instances, pas start_date
-      const effectiveDate = (task as any).occurrence_date || task.start_date;
+      effectiveDate = (task as any).occurrence_date || task.start_date;
       taskStartDateTime = new Date(effectiveDate);
       if (task.end_date) {
         taskEndDateTime = new Date(task.end_date);
