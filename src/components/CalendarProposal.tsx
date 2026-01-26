@@ -82,10 +82,12 @@ export default function CalendarProposal() {
         suggestedDate.setDate(suggestedDate.getDate() + 1); // Lendemain
         
         setCustomStartDate(suggestedDate.toISOString().split('T')[0]);
-        console.log('💡 Date suggérée:', suggestedDate.toLocaleDateString('fr-FR'));
+        console.log('💡 Date suggérée (après période):', suggestedDate.toLocaleDateString('fr-FR'));
       } else {
-        // Pas de période active, vider le champ (commence aujourd'hui)
-        setCustomStartDate('');
+        // Pas de période active, utiliser la date d'aujourd'hui
+        const today = new Date();
+        setCustomStartDate(today.toISOString().split('T')[0]);
+        console.log('💡 Date suggérée (aujourd\'hui):', today.toLocaleDateString('fr-FR'));
       }
     } catch (error) {
       console.error('Erreur lors de la suggestion de date:', error);
@@ -464,13 +466,11 @@ export default function CalendarProposal() {
               min={new Date().toISOString().split('T')[0]}
               className="w-full px-3 py-2 border border-border rounded-lg"
               disabled={loading}
-              placeholder="Aujourd'hui si vide"
             />
             <p className="mt-1 text-xs text-primary-600">
-              {customStartDate 
-                ? `📆 Période: ${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
-                : "💡 Date suggérée automatiquement (modifiable)"}
-                : "Laissez vide pour commencer aujourd'hui"}
+              📆 Période: {customStartDate 
+                ? `${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
+                : 'Chargement...'}
             </p>
           </div>
           
