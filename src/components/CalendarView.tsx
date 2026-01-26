@@ -156,12 +156,13 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const isTaskLocked = (task: Task): boolean => {
     if (!task.occurrence_date) return false;
     
-    const taskDate = new Date(task.occurrence_date);
+    // Normaliser les dates (enlever les heures) pour comparaison fiable
+    const taskDateStr = task.occurrence_date.split('T')[0];
     
     return optimizationPeriods.some(period => {
-      const periodStart = new Date(period.start_date);
-      const periodEnd = new Date(period.end_date);
-      return taskDate >= periodStart && taskDate <= periodEnd;
+      const periodStartStr = period.start_date.split('T')[0];
+      const periodEndStr = period.end_date.split('T')[0];
+      return taskDateStr >= periodStartStr && taskDateStr <= periodEndStr;
     });
   };
 

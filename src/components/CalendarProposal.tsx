@@ -137,7 +137,17 @@ export default function CalendarProposal() {
     setSuccess(null);
 
     try {
-      // **VÉRIFICATION PÉRIODE EXISTANTE AVANT GÉNÉRATION**
+      // Calculer d'abord la période qu'on veut générer
+      const startDate = new Date();
+      const endDate = new Date();
+      
+      if (periodConfig.unit === 'weeks') {
+        endDate.setDate(endDate.getDate() + ((periodConfig.duration - 1) * 7));
+      } else if (periodConfig.unit === 'months') {
+        endDate.setMonth(endDate.getMonth() + periodConfig.duration);
+      }
+
+      // **VÉRIFICATION CHEVAUCHEMENT avec périodes existantes**
       const { data: existingPeriods } = await supabase
         .from('optimization_periods')
         .select('id, start_date, end_date, status')
@@ -145,24 +155,24 @@ export default function CalendarProposal() {
         .eq('status', 'active');
 
       if (existingPeriods && existingPeriods.length > 0) {
-        const period = existingPeriods[0];
-        const startStr = new Date(period.start_date).toLocaleDateString('fr-FR');
-        const endStr = new Date(period.end_date).toLocaleDateString('fr-FR');
-        throw new Error(
-          `❌ Une période est déjà acceptée (${startStr} au ${endStr}).\n\n` +
-          `Vous devez d'abord la supprimer avant de générer une nouvelle proposition.`
-        );
-      }
+        // Vérifier si la nouvelle période CHEVAUCHE une période existante
+        const hasOverlap = existingPeriods.some(period => {
+          const existingStart = new Date(period.start_date);
+          const existingEnd = new Date(period.end_date);
+          
+          // Chevauchement si: nouvelle commence avant fin existante ET nouvelle finit après début existante
+          return startDate <= existingEnd && endDate >= existingStart;
+        });
 
-      // Calculer la période selon la configuration
-      const startDate = new Date();
-      const endDate = new Date();
-      
-      if (periodConfig.unit === 'weeks') {
-        // Pour N semaines, générer N occurrences hebdomadaires = (N-1) * 7 jours
-        endDate.setDate(endDate.getDate() + ((periodConfig.duration - 1) * 7));
-      } else if (periodConfig.unit === 'months') {
-        endDate.setMonth(endDate.getMonth() + periodConfig.duration);
+        if (hasOverlap) {
+          const period = existingPeriods[0];
+          const startStr = new Date(period.start_date).toLocaleDateString('fr-FR');
+          const endStr = new Date(period.end_date).toLocaleDateString('fr-FR');
+          throw new Error(
+            `❌ La période que vous tentez de générer chevauche une période déjà acceptée (${startStr} au ${endStr}).\n\n` +
+            `Choisissez une date de début après le ${endStr}.`
+          );
+        }
       }
 
       const optimizationResult = await calendarOptimizationService.generateOptimizedCalendar(
