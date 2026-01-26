@@ -16,8 +16,8 @@ interface ProposalCalendarProps {
 interface CalendarEvent {
   id: string;
   title: string;
-  start: Date;
-  end: Date;
+  start: string;  // YYYY-MM-DD format pour éviter timezone issues
+  end: string;
   backgroundColor: string;
   borderColor: string;
   extendedProps: {
@@ -71,11 +71,19 @@ export default function ProposalCalendar({ assignments, view = 'month', startDat
     const calendarEvents: CalendarEvent[] = assignments.map((assignment, index) => {
       const colors = colorMap.get(assignment.userId) || USER_COLORS[0];
       
+      // Extraire juste la date sans l'heure pour éviter décalage timezone
+      const startDateStr = assignment.startDate instanceof Date 
+        ? assignment.startDate.toISOString().split('T')[0]
+        : assignment.startDate.split('T')[0];
+      const endDateStr = assignment.endDate instanceof Date
+        ? assignment.endDate.toISOString().split('T')[0]
+        : assignment.endDate.split('T')[0];
+      
       return {
         id: `assignment-${index}`,
         title: `${assignment.taskTitle} - ${assignment.userName}`,
-        start: new Date(assignment.startDate),
-        end: new Date(assignment.endDate),
+        start: startDateStr,  // String YYYY-MM-DD au lieu de Date object
+        end: endDateStr,
         backgroundColor: assignment.hasConflict ? '#FEF3C7' : colors.bg,
         borderColor: assignment.hasConflict ? '#F59E0B' : colors.border,
         extendedProps: {
