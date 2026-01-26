@@ -106,8 +106,6 @@ BEGIN
 
     -- Calculer la prochaine occurrence selon le type (APRÈS avoir créé l'instance)
     CASE task_record.recurrence_type
-    -- Calculer la prochaine occurrence selon le type (APRÈS avoir créé l'instance)
-    CASE task_record.recurrence_type
       WHEN 'daily' THEN
         current_occurrence := current_occurrence + INTERVAL '1 day';
       WHEN 'weekly' THEN
@@ -130,5 +128,7 @@ BEGIN
   END LOOP;
 
   RETURN occurrence_count;
+END;
+$$ LANGUAGE plpgsql;
 END;
 $$ LANGUAGE plpgsql;
