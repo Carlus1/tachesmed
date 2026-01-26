@@ -29,6 +29,9 @@ export default function CalendarProposal() {
     unit: 'weeks',
   });
   
+  // Date de début personnalisée (optionnelle)
+  const [customStartDate, setCustomStartDate] = useState<string>('');
+  
   const [constraints, setConstraints] = useState<OptimizationConstraints>({
     balanceWorkload: true,
     respectPriority: true,
@@ -138,8 +141,8 @@ export default function CalendarProposal() {
 
     try {
       // Calculer d'abord la période qu'on veut générer
-      const startDate = new Date();
-      const endDate = new Date();
+      const startDate = customStartDate ? new Date(customStartDate) : new Date();
+      const endDate = new Date(startDate);
       
       if (periodConfig.unit === 'weeks') {
         endDate.setDate(endDate.getDate() + ((periodConfig.duration - 1) * 7));
@@ -166,11 +169,18 @@ export default function CalendarProposal() {
 
         if (hasOverlap) {
           const period = existingPeriods[0];
+          const existingEndDate = new Date(period.end_date);
+          const suggestedStartDate = new Date(existingEndDate);
+          suggestedStartDate.setDate(suggestedStartDate.getDate() + 1); // Jour après la fin
+          
           const startStr = new Date(period.start_date).toLocaleDateString('fr-FR');
-          const endStr = new Date(period.end_date).toLocaleDateString('fr-FR');
+          const endStr = existingEndDate.toLocaleDateString('fr-FR');
+          const suggestedStr = suggestedStartDate.toISOString().split('T')[0];
+          
           throw new Error(
             `❌ La période que vous tentez de générer chevauche une période déjà acceptée (${startStr} au ${endStr}).\n\n` +
-            `Choisissez une date de début après le ${endStr}.`
+            `💡 Suggestion: Choisissez une date de début après le ${endStr}, par exemple le ${suggestedStartDate.toLocaleDateString('fr-FR')}.\n\n` +
+            `Cliquez sur "Date de début" ci-dessus et sélectionnez ${suggestedStartDate.toLocaleDateString('fr-FR')} ou plus tard.`
           );
         }
       }
@@ -406,6 +416,27 @@ export default function CalendarProposal() {
               </select>
             </div>
           </div>
+          
+          {/* Date de début personnalisée */}
+          <div>
+            <label className="block text-sm font-medium text-primary-700 mb-1">
+              📅 {t.calendarProposal?.startDate || 'Date de début'}
+            </label>
+            <input
+              type="date"
+              value={customStartDate}
+              onChange={(e) => setCustomStartDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              className="w-full px-3 py-2 border border-border rounded-lg"
+              disabled={loading}
+            />
+            <p className="mt-1 text-xs text-primary-600">
+              {customStartDate 
+                ? `Période: ${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
+                : "Laissez vide pour commencer aujourd'hui"}
+            </p>
+          </div>
+          
           <p className="mt-2 text-xs text-primary-600">
             {t.calendarProposal?.periodInfo || 'La proposition sera générée pour cette période'}
           </p>
