@@ -469,7 +469,18 @@ export default function CalendarProposal() {
             />
             <p className="mt-1 text-xs text-primary-600">
               📆 Période: {customStartDate 
-                ? `${new Date(customStartDate).toLocaleDateString('fr-FR')} → ${new Date(new Date(customStartDate).getTime() + (periodConfig.unit === 'weeks' ? (periodConfig.duration - 1) * 7 : periodConfig.duration * 30) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')}`
+                ? (() => {
+                    // Parse date sans conversion timezone
+                    const [year, month, day] = customStartDate.split('-').map(Number);
+                    const start = new Date(year, month - 1, day);
+                    const end = new Date(start);
+                    if (periodConfig.unit === 'weeks') {
+                      end.setDate(end.getDate() + ((periodConfig.duration - 1) * 7));
+                    } else {
+                      end.setMonth(end.getMonth() + periodConfig.duration);
+                    }
+                    return `${start.toLocaleDateString('fr-FR')} → ${end.toLocaleDateString('fr-FR')}`;
+                  })()
                 : 'Chargement...'}
             </p>
           </div>
