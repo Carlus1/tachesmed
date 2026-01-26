@@ -1,4 +1,4 @@
--- Vérifier la contrainte CHECK sur tasks.status
+--- Vérifier la contrainte CHECK sur tasks.status
 SELECT 
   conname as constraint_name,
   pg_get_constraintdef(oid) as constraint_definition

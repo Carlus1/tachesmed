@@ -219,6 +219,25 @@ export default function CalendarProposal() {
         endDate.setMonth(endDate.getMonth() + periodConfig.duration);
       }
 
+      // Vérifier qu'il n'existe pas déjà une période pour ce groupe à ces dates
+      const { data: existingPeriods } = await supabase
+        .from('optimization_periods')
+        .select('id, start_date, end_date')
+        .eq('group_id', selectedGroupId)
+        .eq('status', 'active')
+        .gte('end_date', startDate.toISOString())
+        .lte('start_date', endDate.toISOString());
+
+      if (existingPeriods && existingPeriods.length > 0) {
+        const period = existingPeriods[0];
+        const existingStart = new Date(period.start_date).toLocaleDateString('fr-FR');
+        const existingEnd = new Date(period.end_date).toLocaleDateString('fr-FR');
+        throw new Error(
+          `Une période d'optimisation existe déjà pour ce groupe (${existingStart} - ${existingEnd}). ` +
+          `Supprimez-la avant d'en créer une nouvelle.`
+        );
+      }
+
       // Sauvegarder les assignations et créer la période verrouillée
       const saveResult = await calendarOptimizationService.saveAssignments(
         result.assignments,
