@@ -31,17 +31,12 @@ BEGIN
   WHERE parent_task_id = task_id
     AND assigned_to IS NULL;
 
-  -- Déterminer la date maximale de génération (max 1 an dans le futur)
+  -- Déterminer la date maximale de génération
   IF task_record.recurrence_end_date IS NOT NULL THEN
-    max_date := LEAST(
-      task_record.recurrence_end_date,
-      CURRENT_DATE + INTERVAL '1 year'
-    );
+    max_date := task_record.recurrence_end_date;
   ELSIF end_date IS NOT NULL THEN
-    max_date := LEAST(
-      end_date,
-      CURRENT_DATE + INTERVAL '1 year'
-    );
+    -- ✅ Générer UNIQUEMENT jusqu'à end_date (date de fin de période)
+    max_date := end_date;
   ELSE
     -- Par défaut, générer pour 1 an maximum
     max_date := CURRENT_DATE + INTERVAL '1 year';

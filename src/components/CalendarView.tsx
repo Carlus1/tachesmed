@@ -94,25 +94,6 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         end = endOfMonth(currentDate);
       }
       
-      // Charger d'abord les périodes actives pour connaître les dates limites
-      const { data: periods, error: periodsError } = await supabase
-        .from('optimization_periods')
-        .select('start_date, end_date')
-        .eq('status', 'active')
-        .order('start_date', { ascending: true });
-
-      if (periodsError) throw periodsError;
-
-      // Déterminer la plage de dates à afficher
-      let minDate: string | null = null;
-      let maxDate: string | null = null;
-
-      if (periods && periods.length > 0) {
-        // Prendre la date de début la plus ancienne et la date de fin la plus récente
-        minDate = periods[0].start_date;
-        maxDate = periods[periods.length - 1].end_date;
-      }
-      
       // Charger toutes les tâches avec les utilisateurs assignés
       const { data, error } = await supabase
         .from('tasks')
@@ -127,17 +108,11 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
       
       // Filtrer pour afficher seulement:
       // 1. Les tâches parent NON récurrentes
-      // 2. Les instances assignées DANS LA PÉRIODE ACTIVE
+      // 2. TOUTES les instances assignées (toutes périodes acceptées: passées, actuelles, futures)
       const tasksToDisplay = (data || []).filter(task => {
-        // Instance assignée → Vérifier si dans période active
+        // Instance assignée → AFFICHER (peu importe la période)
         if (task.parent_task_id !== null && task.assigned_to !== null) {
-          const taskDate = (task.occurrence_date || task.start_date).split('T')[0];
-          
-          // Si pas de période active, afficher toutes les instances
-          if (!minDate || !maxDate) return true;
-          
-          // Vérifier si la tâche est dans une période active
-          return taskDate >= minDate.split('T')[0] && taskDate <= maxDate.split('T')[0];
+          return true;
         }
         
         // Instance non assignée → MASQUER
