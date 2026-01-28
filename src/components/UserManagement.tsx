@@ -706,7 +706,9 @@ export default function UserManagement({ user }: UserManagementProps) {
             <div className="space-y-4">
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
                 <p className="text-sm text-blue-700">
-                  <strong>💡 Astuce:</strong> Laissez les dates vides pour réactiver l'utilisateur immédiatement.
+                  <strong>ℹ️ Absences exceptionnelles uniquement:</strong> Maladie, opération, accident, urgence.
+                  <br />
+                  <strong>❌ Pas pour les vacances</strong> → L'utilisateur les saisit dans ses indisponibilités.
                 </p>
               </div>
 
@@ -753,7 +755,7 @@ export default function UserManagement({ user }: UserManagementProps) {
                   value={absenceData.inactive_reason}
                   onChange={(e) => setAbsenceData({ ...absenceData, inactive_reason: e.target.value })}
                   className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
-                  placeholder="Ex: Opération, Vacances, Congé maladie..."
+                  placeholder="Ex: Opération, Congé maladie, Accident..."
                   maxLength={100}
                 />
               </div>

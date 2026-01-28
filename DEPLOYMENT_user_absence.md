@@ -38,6 +38,9 @@ SELECT * FROM users_with_status LIMIT 5;
 6. Attendre 3 jours (ou modifier date) → Badge devient `⏸️ Absent (7j)` (orange)
 7. Nouvelle génération → Utilisateur exclu
 
+> **💡 Note:** Les vacances planifiées ne doivent PAS utiliser ce système.
+> Les utilisateurs les saisissent directement dans leurs **indisponibilités**.
+
 **Scénario 2: Absence brusque indéfinie**
 1. Cliquer sur badge utilisateur
 2. Planifier:
@@ -81,9 +84,17 @@ SELECT * FROM users_with_status LIMIT 5;
 
 ## ✅ Fonctionnalités
 
+### ⚠️ Usage prévu
+Ce système gère les **absences exceptionnelles** uniquement:
+- ✅ Congé maladie soudain
+- ✅ Opération chirurgicale
+- ✅ Accident / Urgence
+- ✅ Invalidité temporaire
+- ❌ ~~Vacances planifiées~~ → À saisir dans les **indisponibilités**
+
 ### Badges intelligents
 - **✅ Actif** (vert): Utilisateur disponible
-- **📅 Absence dans Nj** (bleu): Absence planifiée future
+- **📅 Absence dans Nj** (bleu): Absence exceptionnelle planifiée
 - **⏸️ Absent (Nj)** (orange): En absence avec décompte jours restants
 - **⏸️ Absent (∞)** (orange): Absence de durée indéterminée
 
