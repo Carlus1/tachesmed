@@ -44,12 +44,16 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                     <NavLink to="/calendar" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.calendar}
                     </NavLink>
-                    <NavLink to="/tasks" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        {t.nav.tasks}
-                    </NavLink>
-                    <NavLink to="/groups" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
-                        {t.nav.groups}
-                    </NavLink>
+                    {(role === 'owner' || role === 'admin') && (
+                        <NavLink to="/tasks" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                            {t.nav.tasks}
+                        </NavLink>
+                    )}
+                    {(role === 'owner' || role === 'admin') && (
+                        <NavLink to="/groups" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                            {t.nav.groups}
+                        </NavLink>
+                    )}
                     {(role === 'owner' || role === 'admin') && (
                         <NavLink to="/users" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                             👥 Utilisateurs

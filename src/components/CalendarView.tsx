@@ -174,15 +174,21 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
             // 2. Récupérer tous les membres de ces groupes
             const { data: groupMembers, error: memberError } = await supabase
               .from('group_members')
-              .select('user_id')
+              .select('user_id, users!inner(id, full_name)')
               .in('group_id', groupIdsToUse);
             
-            console.log('👥 Membres trouvés:', groupMembers, 'Error:', memberError);
+            console.log('👥 Membres trouvés (données brutes):', JSON.stringify(groupMembers, null, 2));
+            console.log('👥 Nombre total de lignes group_members:', groupMembers?.length);
+            console.log('👥 Error:', memberError);
             
             if (groupMembers && groupMembers.length > 0) {
               const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
               
               console.log('✅ IDs membres uniques:', memberIds);
+              console.log('⚠️ ATTENTION: Votre groupe ne contient que', memberIds.length, 'membre(s)');
+              if (memberIds.length === 1 && memberIds[0] === currentUserId) {
+                console.warn('⚠️ Vous êtes le SEUL membre de votre groupe! Ajoutez d\'autres membres pour voir leurs tâches.');
+              }
               console.log('📝 Nombre de tâches avant filtre équipe:', tasksToDisplay.length);
               
               // Filtrer les tâches assignées aux membres des groupes
