@@ -452,26 +452,32 @@ export default function UserManagement({ user }: UserManagementProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Breadcrumb />
-      <div className="max-w-7xl mx-auto py-8 sm:px-8 lg:px-12">
+    <div className="space-y-6">
+      {/* Titre de la page */}
+      <div>
+        <h1 className="text-2xl font-bold text-primary-700">Gestion des utilisateurs</h1>
+        {currentUserRole === 'admin' && (
+          <p className="text-sm text-primary-500 mt-1">
+            ℹ️ Vous voyez uniquement les membres de vos groupes
+          </p>
+        )}
+      </div>
+
+      <div className="max-w-7xl mx-auto">
         <div className="bg-surface shadow-xl rounded-2xl overflow-hidden border border-border">
           <div className="px-8 py-8 sm:p-10">
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-extrabold text-primary-700 tracking-tight">Gestion des utilisateurs</h1>
-                {currentUserRole === 'admin' && (
-                  <p className="text-sm text-primary-500 mt-2">
-                    ℹ️ Vous voyez uniquement les membres de vos groupes
-                  </p>
-                )}
+                <h2 className="text-xl font-semibold text-primary-700">Liste des utilisateurs</h2>
               </div>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 bg-accent-400 text-white rounded-xl hover:bg-accent-500 shadow-md font-semibold transition-all"
-              >
-                Nouvel utilisateur
-              </button>
+              {currentUserRole === 'owner' && (
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-6 py-3 bg-accent-400 text-white rounded-xl hover:bg-accent-500 shadow-md font-semibold transition-all"
+                >
+                  Nouvel utilisateur
+                </button>
+              )}
             </div>
 
             <div className="mb-6 flex space-x-4">
@@ -616,13 +622,15 @@ export default function UserManagement({ user }: UserManagementProps) {
                             >
                               Modifier
                             </button>
-                            <button
-                              onClick={() => setShowDeleteConfirm(user.id)}
-                              className="text-error-600 hover:text-error-800"
-                              disabled={processingAction === user.id}
-                            >
-                              {processingAction === user.id ? 'En cours...' : 'Supprimer'}
-                            </button>
+                            {currentUserRole === 'owner' && (
+                              <button
+                                onClick={() => setShowDeleteConfirm(user.id)}
+                                className="text-error-600 hover:text-error-800"
+                                disabled={processingAction === user.id}
+                              >
+                                {processingAction === user.id ? 'En cours...' : 'Supprimer'}
+                              </button>
+                            )}
                           </div>
                           {messages.map((message, index) => 
                             message.userId === user.id && (
@@ -671,30 +679,39 @@ export default function UserManagement({ user }: UserManagementProps) {
         <div className="fixed inset-0 bg-background/60 flex items-center justify-center z-50">
           <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border">
             <h3 className="text-lg font-medium mb-4 text-primary-700">Modifier l'utilisateur</h3>
+            {currentUserRole === 'admin' && (
+              <p className="text-sm text-primary-500 mb-4">
+                ℹ️ En tant qu'administrateur, vous pouvez modifier le statut d'abonnement. Pour gérer les absences, cliquez sur le badge de statut.
+              </p>
+            )}
             <div className="space-y-4">
+              {currentUserRole === 'owner' && (
+                <div>
+                  <label className="block text-sm font-medium text-primary-700">Nom complet</label>
+                  <input
+                    type="text"
+                    value={editingUser.full_name}
+                    onChange={(e) => setEditingUser({ ...editingUser, full_name: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
+                  />
+                </div>
+              )}
+              {currentUserRole === 'owner' && (
+                <div>
+                  <label className="block text-sm font-medium text-primary-700">Rôle</label>
+                  <select
+                    value={editingUser.role}
+                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
+                  >
+                    <option value="user">Utilisateur</option>
+                    <option value="admin">Administrateur</option>
+                    <option value="owner">Propriétaire</option>
+                  </select>
+                </div>
+              )}
               <div>
-                <label className="block text-sm font-medium text-primary-700">Nom complet</label>
-                <input
-                  type="text"
-                  value={editingUser.full_name}
-                  onChange={(e) => setEditingUser({ ...editingUser, full_name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-primary-700">Rôle</label>
-                <select
-                  value={editingUser.role}
-                  onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-border shadow-sm focus:border-accent-400 focus:ring-accent-400 p-2 border"
-                >
-                  <option value="user">Utilisateur</option>
-                  <option value="admin">Administrateur</option>
-                  <option value="owner">Propriétaire</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-primary-700">Statut</label>
+                <label className="block text-sm font-medium text-primary-700">Statut d'abonnement</label>
                 <select
                   value={editingUser.subscription_status}
                   onChange={(e) => setEditingUser({ ...editingUser, subscription_status: e.target.value })}
