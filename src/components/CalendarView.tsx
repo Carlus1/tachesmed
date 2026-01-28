@@ -95,6 +95,8 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
     try {
       setLoading(true);
       
+      console.log('🔄 loadTasks - Params:', { showGlobal, currentUserId, selectedGroupId });
+      
       let start: Date;
       let end: Date;
       
@@ -142,16 +144,21 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
         return false;
       });
       
+      console.log('📊 Tâches avant filtrage:', tasksToDisplay.length);
+      
       // Filtrer selon la vue et les groupes de l'utilisateur
       if (currentUserId) {
         if (showGlobal) {
           // VUE ÉQUIPE: Récupérer les tâches de tous les membres des groupes
+          console.log('🌍 Mode: Vue équipe activée');
           
           // 1. Récupérer les groupes de l'utilisateur
-          const { data: userGroups } = await supabase
+          const { data: userGroups, error: groupError } = await supabase
             .from('group_members')
             .select('group_id')
             .eq('user_id', currentUserId);
+          
+          console.log('📁 Groupes de l\'utilisateur:', userGroups, 'Error:', groupError);
           
           if (userGroups && userGroups.length > 0) {
             let groupIdsToUse = userGroups.map(g => g.group_id);
@@ -159,38 +166,51 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
             // Si un groupe spécifique est sélectionné, filtrer uniquement ce groupe
             if (selectedGroupId) {
               groupIdsToUse = [selectedGroupId];
+              console.log('🎯 Groupe spécifique sélectionné:', selectedGroupId);
             }
             
+            console.log('📌 IDs groupes à utiliser:', groupIdsToUse);
+            
             // 2. Récupérer tous les membres de ces groupes
-            const { data: groupMembers } = await supabase
+            const { data: groupMembers, error: memberError } = await supabase
               .from('group_members')
               .select('user_id')
               .in('group_id', groupIdsToUse);
             
+            console.log('👥 Membres trouvés:', groupMembers, 'Error:', memberError);
+            
             if (groupMembers && groupMembers.length > 0) {
               const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
               
-              console.log('🌍 Vue équipe - Membres des groupes:', memberIds);
+              console.log('✅ IDs membres uniques:', memberIds);
+              console.log('📝 Nombre de tâches avant filtre équipe:', tasksToDisplay.length);
               
               // Filtrer les tâches assignées aux membres des groupes
               tasksToDisplay = tasksToDisplay.filter(task => 
                 task.assigned_to && memberIds.includes(task.assigned_to)
               );
+              
+              console.log('📝 Nombre de tâches après filtre équipe:', tasksToDisplay.length);
             } else {
               // Pas de membres trouvés, afficher seulement ses tâches
+              console.log('⚠️ Aucun membre trouvé, affichage tâches personnelles');
               tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
             }
           } else {
             // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
+            console.log('⚠️ Utilisateur sans groupe, affichage tâches personnelles');
             tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
           }
         } else {
           // VUE PERSONNELLE: Seulement mes tâches
-          console.log('👤 Vue personnelle - User ID:', currentUserId);
+          console.log('👤 Mode: Vue personnelle - User ID:', currentUserId);
+          console.log('📝 Nombre de tâches avant filtre perso:', tasksToDisplay.length);
           tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
+          console.log('📝 Nombre de tâches après filtre perso:', tasksToDisplay.length);
         }
       }
       
+      console.log('✨ Tâches finales à afficher:', tasksToDisplay.length);
       setTasks(tasksToDisplay);
     } catch (error) {
       console.error('Erreur lors du chargement des tâches:', error);
