@@ -7,10 +7,10 @@ import ModernCalendarPage from './pages/ModernCalendarPage';
 import ModernTasksPage from './pages/ModernTasksPage';
 import ModernGroupsPage from './pages/ModernGroupsPage';
 import ModernReportsPage from './pages/ModernReportsPage';
+import ModernUsersPage from './pages/ModernUsersPage';
 import MessagesPage from './pages/MessagesPage';
 import SettingsPage from './pages/SettingsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
-import UserManagement from './components/UserManagement';
 import Availabilities from './components/Availabilities';
 import type { User } from '@supabase/gotrue-js';
 
@@ -95,7 +95,7 @@ function App() {
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
         <Route path="/" element={user ? <ModernDashboard user={user} /> : <Navigate to="/login" />} />
-        <Route path="/users" element={user ? <UserManagement user={user} /> : <Navigate to="/login" />} />
+        <Route path="/users" element={user ? <ModernUsersPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/reports" element={user ? <ModernReportsPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/calendar" element={user ? <ModernCalendarPage user={user} /> : <Navigate to="/login" />} />
         <Route path="/groups" element={user ? <ModernGroupsPage user={user} /> : <Navigate to="/login" />} />
