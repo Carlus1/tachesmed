@@ -50,6 +50,11 @@ export default function ModernSidebar({ isOpen = false, onClose }: ModernSidebar
                     <NavLink to="/groups" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.groups}
                     </NavLink>
+                    {(role === 'owner' || role === 'admin') && (
+                        <NavLink to="/users" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
+                            👥 Utilisateurs
+                        </NavLink>
+                    )}
                     <NavLink to="/reports" onClick={() => onClose?.()} className={({ isActive }) => `${baseClass} ${isActive ? activeClass : 'text-primary-700 hover:bg-surface'}`}>
                         {t.nav.reports}
                     </NavLink>

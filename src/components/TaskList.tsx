@@ -42,13 +42,28 @@ export default function TaskList() {
 
       if (error) throw error;
 
-      // Filtrer pour afficher seulement :
-      // 1. Les tâches parent (pas d'instances non assignées)
-      // 2. Les instances assignées (pour voir le planning réel)
-      const filteredTasks = (data || []).filter(task => 
-        task.parent_task_id === null ||  // Tâches parent
-        task.assigned_to !== null         // Instances assignées
-      );
+      // Filtrer pour afficher seulement:
+      // 1. Les tâches parent NON récurrentes (recurrence_type = 'none' ou NULL)
+      // 2. Les instances assignées (assigned_to IS NOT NULL)
+      const filteredTasks = (data || []).filter(task => {
+        // Instance assignée → AFFICHER (tâches planifiées)
+        if (task.parent_task_id !== null && task.assigned_to !== null) {
+          return true;
+        }
+        
+        // Instance non assignée → MASQUER (brouillon non utilisé)
+        if (task.parent_task_id !== null && task.assigned_to === null) {
+          return false;
+        }
+        
+        // Tâche parent non récurrente → AFFICHER
+        if (task.parent_task_id === null && (!task.recurrence_type || task.recurrence_type === 'none')) {
+          return true;
+        }
+        
+        // Tâche parent récurrente → MASQUER (on affiche ses instances)
+        return false;
+      });
 
       // Load task_groups associations
       const tasksWithGroups = await Promise.all(filteredTasks.map(async (task) => {
