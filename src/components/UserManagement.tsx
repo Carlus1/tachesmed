@@ -36,6 +36,7 @@ interface Message {
 export default function UserManagement({ user }: UserManagementProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserRole, setCurrentUserRole] = useState<string>('user');
   const [messages, setMessages] = useState<Message[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('all');
@@ -82,17 +83,66 @@ export default function UserManagement({ user }: UserManagementProps) {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Récupérer le rôle de l'utilisateur actuel
+      const { data: currentUserData } = await supabase
         .from('users')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-      if (error) throw error;
+      const userRole = currentUserData?.role || 'user';
+      setCurrentUserRole(userRole);
+
+      let usersToDisplay: UserProfile[] = [];
+
+      if (userRole === 'owner') {
+        // OWNER: Voir tous les utilisateurs
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        usersToDisplay = data || [];
+        
+      } else if (userRole === 'admin') {
+        // ADMIN: Voir seulement les utilisateurs des groupes dont il est admin
+        // 1. Récupérer les groupes où l'utilisateur est admin
+        const { data: adminGroups, error: groupsError } = await supabase
+          .from('groups')
+          .select('id')
+          .eq('admin_id', user.id);
+
+        if (groupsError) throw groupsError;
+
+        if (adminGroups && adminGroups.length > 0) {
+          const groupIds = adminGroups.map(g => g.id);
+
+          // 2. Récupérer les membres de ces groupes
+          const { data: groupMembers, error: membersError } = await supabase
+            .from('group_members')
+            .select('user_id, users!inner(*)')
+            .in('group_id', groupIds);
+
+          if (membersError) throw membersError;
+
+          // 3. Extraire les utilisateurs uniques
+          const userMap = new Map<string, UserProfile>();
+          groupMembers?.forEach((member: any) => {
+            if (member.users) {
+              userMap.set(member.users.id, member.users);
+            }
+          });
+
+          usersToDisplay = Array.from(userMap.values());
+        }
+      }
       
       // Dédupliquer les utilisateurs par email (insensible à la casse)
       const uniqueUsers = new Map<string, UserProfile>();
       
-      data?.forEach(user => {
+      usersToDisplay.forEach(user => {
         const lowerEmail = user.email.toLowerCase();
         // Si l'utilisateur n'existe pas encore ou si cet utilisateur est plus récent
         if (!uniqueUsers.has(lowerEmail) || 
@@ -408,7 +458,14 @@ export default function UserManagement({ user }: UserManagementProps) {
         <div className="bg-surface shadow-xl rounded-2xl overflow-hidden border border-border">
           <div className="px-8 py-8 sm:p-10">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-extrabold text-primary-700 tracking-tight">Gestion des utilisateurs</h1>
+              <div>
+                <h1 className="text-3xl font-extrabold text-primary-700 tracking-tight">Gestion des utilisateurs</h1>
+                {currentUserRole === 'admin' && (
+                  <p className="text-sm text-primary-500 mt-2">
+                    ℹ️ Vous voyez uniquement les membres de vos groupes
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="px-6 py-3 bg-accent-400 text-white rounded-xl hover:bg-accent-500 shadow-md font-semibold transition-all"
