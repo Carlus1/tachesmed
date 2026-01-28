@@ -38,9 +38,10 @@ interface OptimizationPeriod {
 interface CalendarViewProps {
   view?: 'week' | 'month';
   showGlobal?: boolean;
+  selectedGroupId?: string | null;
 }
 
-export default function CalendarView({ view = 'week', showGlobal = false }: CalendarViewProps) {
+export default function CalendarView({ view = 'week', showGlobal = false, selectedGroupId = null }: CalendarViewProps) {
   const { t, language } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [optimizationPeriods, setOptimizationPeriods] = useState<OptimizationPeriod[]>([]);
@@ -73,7 +74,7 @@ export default function CalendarView({ view = 'week', showGlobal = false }: Cale
     if (view === 'week') {
       generateWeekDays();
     }
-  }, [currentDate, view, showGlobal, currentUserId]);
+  }, [currentDate, view, showGlobal, currentUserId, selectedGroupId]);
 
   const generateWeekDays = () => {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Lundi
@@ -141,10 +142,8 @@ export default function CalendarView({ view = 'week', showGlobal = false }: Cale
         return false;
       });
       
-      // Filtrer selon la vue (personnelle ou globale)
-      if (!showGlobal && currentUserId) {
-        // Vue personnelle: afficher les tâches des membres des groupes de l'utilisateur
-        
+      // Filtrer selon la vue et les groupes de l'utilisateur
+      if (currentUserId) {
         // 1. Récupérer les groupes de l'utilisateur
         const { data: userGroups } = await supabase
           .from('group_members')
@@ -152,21 +151,35 @@ export default function CalendarView({ view = 'week', showGlobal = false }: Cale
           .eq('user_id', currentUserId);
         
         if (userGroups && userGroups.length > 0) {
-          const groupIds = userGroups.map(g => g.group_id);
+          let groupIdsToUse = userGroups.map(g => g.group_id);
+          
+          // Si un groupe spécifique est sélectionné, filtrer uniquement ce groupe
+          if (selectedGroupId) {
+            groupIdsToUse = [selectedGroupId];
+          }
           
           // 2. Récupérer tous les membres de ces groupes
           const { data: groupMembers } = await supabase
             .from('group_members')
             .select('user_id')
-            .in('group_id', groupIds);
+            .in('group_id', groupIdsToUse);
           
           if (groupMembers && groupMembers.length > 0) {
             const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
             
-            // 3. Filtrer les tâches assignées aux membres des groupes
-            tasksToDisplay = tasksToDisplay.filter(task => 
-              task.assigned_to && memberIds.includes(task.assigned_to)
-            );
+            // 3. Filtrer selon vue personnelle ou équipe
+            if (showGlobal) {
+              // Vue équipe: Toutes les tâches des membres du/des groupe(s)
+              tasksToDisplay = tasksToDisplay.filter(task => 
+                task.assigned_to && memberIds.includes(task.assigned_to)
+              );
+            } else {
+              // Vue personnelle: Seulement mes tâches
+              tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
+            }
+          } else {
+            // Pas de membres trouvés, afficher seulement ses tâches
+            tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
           }
         } else {
           // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
