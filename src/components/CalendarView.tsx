@@ -44,7 +44,6 @@ interface CalendarViewProps {
 export default function CalendarView({ view = 'week', showGlobal = false, selectedGroupId = null }: CalendarViewProps) {
   const { t, language } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [optimizationPeriods, setOptimizationPeriods] = useState<OptimizationPeriod[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDays, setWeekDays] = useState<Date[]>([]);
@@ -70,7 +69,6 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
 
   useEffect(() => {
     loadTasks();
-    loadOptimizationPeriods();
     if (view === 'week') {
       generateWeekDays();
     }
@@ -225,45 +223,13 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
     }
   };
 
-  const loadOptimizationPeriods = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('optimization_periods')
-        .select('*')
-        .eq('status', 'active');
-
-      if (error) throw error;
-      setOptimizationPeriods(data || []);
-    } catch (error) {
-      console.error('Erreur lors du chargement des périodes:', error);
-    }
-  };
-
-  // Vérifie si une tâche est dans une période figée
-  const isTaskLocked = (task: Task): boolean => {
-    if (!task.occurrence_date) return false;
-    
-    // Normaliser les dates (enlever les heures) pour comparaison fiable
-    const taskDateStr = task.occurrence_date.split('T')[0];
-    
-    return optimizationPeriods.some(period => {
-      const periodStartStr = period.start_date.split('T')[0];
-      const periodEndStr = period.end_date.split('T')[0];
-      return taskDateStr >= periodStartStr && taskDateStr <= periodEndStr;
-    });
-  };
-
-  const getPriorityColor = (priority: string, isLocked: boolean = false) => {
-    const baseClasses = isLocked
-      ? 'border-2 border-dashed' // Tâche figée : bordure pointillée
-      : 'border';
-    
+  const getPriorityColor = (priority: string) => {
     // 🎨 Couleurs enrichies pour plus de variété visuelle
     switch (priority) {
-      case 'high': return `${baseClasses} bg-red-100 border-red-500 text-red-900 hover:bg-red-200`;
-      case 'medium': return `${baseClasses} bg-orange-100 border-orange-500 text-orange-900 hover:bg-orange-200`;
-      case 'low': return `${baseClasses} bg-green-100 border-green-500 text-green-900 hover:bg-green-200`;
-      default: return `${baseClasses} bg-blue-100 border-blue-500 text-blue-900 hover:bg-blue-200`;
+      case 'high': return 'border bg-red-100 border-red-500 text-red-900 hover:bg-red-200';
+      case 'medium': return 'border bg-orange-100 border-orange-500 text-orange-900 hover:bg-orange-200';
+      case 'low': return 'border bg-green-100 border-green-500 text-green-900 hover:bg-green-200';
+      default: return 'border bg-blue-100 border-blue-500 text-blue-900 hover:bg-blue-200';
     }
   };
 
@@ -377,33 +343,23 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
             >
               {dayTasks.length > 0 ? (
                 <div className="space-y-2">
-                  {dayTasks.map(task => {
-                    const locked = isTaskLocked(task);
-                    return (
-                      <div 
-                        key={task.id} 
-                        className={`p-2 rounded-lg ${getPriorityColor(task.priority, locked)} relative`}
-                        title={locked ? `🔒 ${task.title} - Période figée` : task.title}
-                      >
-                        {locked && (
-                          <div className="absolute top-1 right-1">
-                            <svg className="w-3 h-3 text-current opacity-60" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )}
-                        <p className="font-medium truncate text-xs pr-4">{task.title}</p>
-                        {task.assigned_to_user && (
-                          <p className="text-xs font-semibold mt-1 truncate">
-                            👤 {task.assigned_to_user.full_name}
-                          </p>
-                        )}
-                        <p className="text-xs opacity-75 mt-0.5">
-                          {format(parseISO(task.start_date), 'HH:mm')} - {format(parseISO(task.end_date), 'HH:mm')}
+                  {dayTasks.map(task => (
+                    <div 
+                      key={task.id} 
+                      className={`p-2 rounded-lg ${getPriorityColor(task.priority)} relative`}
+                      title={task.title}
+                    >
+                      <p className="font-medium truncate text-xs pr-4">{task.title}</p>
+                      {task.assigned_to_user && (
+                        <p className="text-xs font-semibold mt-1 truncate">
+                          👤 {task.assigned_to_user.full_name}
                         </p>
-                      </div>
-                    );
-                  })}
+                      )}
+                      <p className="text-xs opacity-75 mt-0.5">
+                        {format(parseISO(task.start_date), 'HH:mm')} - {format(parseISO(task.end_date), 'HH:mm')}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="h-full flex items-center justify-center">
@@ -420,21 +376,6 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
           <span className="text-sm text-primary-400">
             {tasks.length} {t.calendar.taskCount}{tasks.length !== 1 ? 's' : ''} {t.calendar.thisWeek}
           </span>
-          
-          {/* Légende */}
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-primary-100 border border-primary-400 rounded"></div>
-              <span className="text-primary-600">Modifiable</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-primary-100 border-2 border-dashed border-primary-400 rounded"></div>
-              <svg className="w-3 h-3 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-              <span className="text-primary-600">Période figée</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -511,32 +452,24 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
               </p>
               {dayTasks.length > 0 && (
                 <div className="space-y-1">
-                  {dayTasks.slice(0, 2).map(task => {
-                    const locked = isTaskLocked(task);
-                    return (
-                      <div 
-                        key={task.id} 
-                        className={`p-1 rounded text-xs ${getPriorityColor(task.priority, locked)} relative`}
-                        title={locked ? `🔒 ${task.title}${task.assigned_to_user ? ` - ${task.assigned_to_user.full_name}` : ''}` : `${task.title}${task.assigned_to_user ? ` - ${task.assigned_to_user.full_name}` : ''}`}
-                      >
-                        <div className="flex items-start gap-1">
-                          {locked && (
-                            <svg className="w-3 h-3 flex-shrink-0 mt-0.5 text-current opacity-60" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                            </svg>
+                  {dayTasks.slice(0, 2).map(task => (
+                    <div 
+                      key={task.id} 
+                      className={`p-1 rounded text-xs ${getPriorityColor(task.priority)} relative`}
+                      title={`${task.title}${task.assigned_to_user ? ` - ${task.assigned_to_user.full_name}` : ''}`}
+                    >
+                      <div className="flex items-start gap-1">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{task.title}</p>
+                          {task.assigned_to_user && (
+                            <p className="text-[10px] font-semibold truncate opacity-80">
+                              {task.assigned_to_user.full_name}
+                            </p>
                           )}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{task.title}</p>
-                            {task.assigned_to_user && (
-                              <p className="text-[10px] font-semibold truncate opacity-80">
-                                {task.assigned_to_user.full_name}
-                              </p>
-                            )}
-                          </div>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                   {dayTasks.length > 2 && (
                     <button 
                       onClick={() => setSelectedDayTasks({ date: day, tasks: dayTasks })}
@@ -557,21 +490,6 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
           <span className="text-sm text-primary-400">
             {tasks.length} {t.calendar.taskCount}{tasks.length !== 1 ? 's' : ''} {t.calendar.thisMonth}
           </span>
-          
-          {/* Légende */}
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-primary-100 border border-primary-400 rounded"></div>
-              <span className="text-primary-600">Modifiable</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-primary-100 border-2 border-dashed border-primary-400 rounded"></div>
-              <svg className="w-3 h-3 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-              <span className="text-primary-600">Période figée</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -595,41 +513,28 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
           </div>
           <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
             <div className="space-y-3">
-              {selectedDayTasks.tasks.map(task => {
-                const locked = isTaskLocked(task);
-                return (
-                  <div 
-                    key={task.id} 
-                    className={`p-3 rounded-lg ${getPriorityColor(task.priority, locked)} relative`}
-                  >
-                    {locked && (
-                      <div className="absolute top-2 right-2">
-                        <svg className="w-4 h-4 text-current opacity-60" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                    <h4 className="font-semibold mb-1 pr-6">{task.title}</h4>
-                    {task.assigned_to_user && (
-                      <p className="text-sm font-semibold mb-2 flex items-center gap-1">
-                        <span>👤</span>
-                        <span>{task.assigned_to_user.full_name}</span>
-                      </p>
-                    )}
-                    {task.description && (
-                      <p className="text-xs opacity-75 mb-2">{task.description}</p>
-                    )}
-                    <div className="flex items-center justify-between text-xs">
-                      <span>
-                        {format(parseISO(task.start_date), 'HH:mm')} - {format(parseISO(task.end_date), 'HH:mm')}
-                      </span>
-                      {locked && (
-                        <span className="text-xs font-semibold opacity-80">🔒 Période figée</span>
-                      )}
-                    </div>
+              {selectedDayTasks.tasks.map(task => (
+                <div 
+                  key={task.id} 
+                  className={`p-3 rounded-lg ${getPriorityColor(task.priority)} relative`}
+                >
+                  <h4 className="font-semibold mb-1">{task.title}</h4>
+                  {task.assigned_to_user && (
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-1">
+                      <span>👤</span>
+                      <span>{task.assigned_to_user.full_name}</span>
+                    </p>
+                  )}
+                  {task.description && (
+                    <p className="text-xs opacity-75 mb-2">{task.description}</p>
+                  )}
+                  <div className="flex items-center justify-between text-xs">
+                    <span>
+                      {format(parseISO(task.start_date), 'HH:mm')} - {format(parseISO(task.end_date), 'HH:mm')}
+                    </span>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
