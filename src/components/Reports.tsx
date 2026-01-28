@@ -57,6 +57,43 @@ export default function Reports({ user: _user }: ReportsProps) {
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [groupStats, setGroupStats] = useState<GroupStats | null>(null);
   const [availabilityStats, setAvailabilityStats] = useState<AvailabilityStats | null>(null);
+  const [userRole, setUserRole] = useState<string>('user');
+
+  // Vérifier le rôle de l'utilisateur
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        if (!authData?.user?.id) return;
+        
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', authData.user.id)
+          .single();
+        
+        setUserRole(data?.role || 'user');
+      } catch (err) {
+        console.error('Erreur lors de la vérification du rôle:', err);
+      }
+    };
+    checkRole();
+  }, []);
+
+  // Bloquer l'accès si pas admin ou owner
+  if (userRole !== 'owner' && userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="bg-surface rounded-lg p-8 max-w-md text-center border border-border">
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-primary-700 mb-2">Accès restreint</h2>
+          <p className="text-primary-500">
+            Cette fonctionnalité est réservée aux administrateurs et propriétaires.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     loadStats();

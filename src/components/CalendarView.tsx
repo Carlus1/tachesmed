@@ -37,9 +37,10 @@ interface OptimizationPeriod {
 
 interface CalendarViewProps {
   view?: 'week' | 'month';
+  showGlobal?: boolean;
 }
 
-export default function CalendarView({ view = 'week' }: CalendarViewProps) {
+export default function CalendarView({ view = 'week', showGlobal = false }: CalendarViewProps) {
   const { t, language } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [optimizationPeriods, setOptimizationPeriods] = useState<OptimizationPeriod[]>([]);
@@ -47,6 +48,16 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDays, setWeekDays] = useState<Date[]>([]);
   const [selectedDayTasks, setSelectedDayTasks] = useState<{ date: Date; tasks: Task[] } | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Récupérer l'ID de l'utilisateur connecté
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      setCurrentUserId(authData?.user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   const getDateFnsLocale = () => {
     switch (language) {
@@ -62,7 +73,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
     if (view === 'week') {
       generateWeekDays();
     }
-  }, [currentDate, view]);
+  }, [currentDate, view, showGlobal, currentUserId]);
 
   const generateWeekDays = () => {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Lundi
@@ -109,7 +120,7 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
       // Filtrer pour afficher seulement:
       // 1. Les tâches parent NON récurrentes
       // 2. TOUTES les instances assignées (toutes périodes acceptées: passées, actuelles, futures)
-      const tasksToDisplay = (data || []).filter(task => {
+      let tasksToDisplay = (data || []).filter(task => {
         // Instance assignée → AFFICHER (peu importe la période)
         if (task.parent_task_id !== null && task.assigned_to !== null) {
           return true;
@@ -129,6 +140,39 @@ export default function CalendarView({ view = 'week' }: CalendarViewProps) {
         // Tâche parent récurrente → MASQUER (on affiche ses instances)
         return false;
       });
+      
+      // Filtrer selon la vue (personnelle ou globale)
+      if (!showGlobal && currentUserId) {
+        // Vue personnelle: afficher les tâches des membres des groupes de l'utilisateur
+        
+        // 1. Récupérer les groupes de l'utilisateur
+        const { data: userGroups } = await supabase
+          .from('group_members')
+          .select('group_id')
+          .eq('user_id', currentUserId);
+        
+        if (userGroups && userGroups.length > 0) {
+          const groupIds = userGroups.map(g => g.group_id);
+          
+          // 2. Récupérer tous les membres de ces groupes
+          const { data: groupMembers } = await supabase
+            .from('group_members')
+            .select('user_id')
+            .in('group_id', groupIds);
+          
+          if (groupMembers && groupMembers.length > 0) {
+            const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
+            
+            // 3. Filtrer les tâches assignées aux membres des groupes
+            tasksToDisplay = tasksToDisplay.filter(task => 
+              task.assigned_to && memberIds.includes(task.assigned_to)
+            );
+          }
+        } else {
+          // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
+          tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
+        }
+      }
       
       setTasks(tasksToDisplay);
     } catch (error) {
