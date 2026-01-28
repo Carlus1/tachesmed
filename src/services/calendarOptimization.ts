@@ -222,22 +222,36 @@ export const calendarOptimizationService = {
   async fetchGroupMembers(groupId: string): Promise<UserProfile[]> {
     const { data, error } = await supabase
       .from('group_members')
-      .select('user_id, users!inner(id, full_name, email, role, is_active)')
+      .select('user_id, users!inner(id, full_name, email, role, inactive_from, inactive_until)')
       .eq('group_id', groupId);
 
     if (error) throw error;
 
     // ✅ Filtrer UNIQUEMENT les utilisateurs actifs pour l'optimisation
+    const today = new Date();
     const allMembers = (data || []).map((item: any) => ({
       id: item.users.id,
       full_name: item.users.full_name,
       email: item.users.email,
       role: item.users.role,
-      is_active: item.users.is_active ?? true, // Par défaut actif si champ absent
+      inactive_from: item.users.inactive_from,
+      inactive_until: item.users.inactive_until,
     }));
 
-    const activeMembers = allMembers.filter(m => m.is_active);
-    const inactiveMembers = allMembers.filter(m => !m.is_active);
+    // Vérifier si l'utilisateur est actuellement actif
+    const activeMembers = allMembers.filter(m => {
+      if (!m.inactive_from) return true; // Pas d'absence planifiée
+      
+      const inactiveFrom = new Date(m.inactive_from);
+      if (today < inactiveFrom) return true; // Absence pas encore commencée
+      
+      if (!m.inactive_until) return false; // Absence indéfinie
+      
+      const inactiveUntil = new Date(m.inactive_until);
+      return today > inactiveUntil; // Absence terminée
+    });
+    
+    const inactiveMembers = allMembers.filter(m => !activeMembers.includes(m));
     
     console.log(`👥 ${allMembers.length} membre(s) dans le groupe:`);
     console.log(`   ✅ ${activeMembers.length} actif(s):`, activeMembers.map(m => m.full_name));

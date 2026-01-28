@@ -20,6 +20,32 @@ export function usePeriodicNotification({ user, intervalMinutes = 60 }: UsePerio
       if (wasNotificationSentToday()) return;
 
       try {
+        // ✅ VÉRIFIER SI L'UTILISATEUR EST ACTUELLEMENT ACTIF
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('inactive_from, inactive_until')
+          .eq('id', user.id)
+          .single();
+
+        if (userError) {
+          console.error('Erreur lors de la vérification du statut utilisateur:', userError);
+        }
+
+        // Si l'utilisateur est en période d'absence, ne pas envoyer de notification
+        if (userData) {
+          const today = new Date();
+          const inactiveFrom = userData.inactive_from ? new Date(userData.inactive_from) : null;
+          const inactiveUntil = userData.inactive_until ? new Date(userData.inactive_until) : null;
+
+          // Vérifier si l'utilisateur est actuellement inactif
+          if (inactiveFrom && today >= inactiveFrom) {
+            if (!inactiveUntil || today <= inactiveUntil) {
+              console.log('⏸️ Utilisateur absent - Pas de notification envoyée');
+              return; // ⚠️ Ne pas envoyer de notification
+            }
+          }
+        }
+
         // Récupérer la fréquence depuis les groupes de l'utilisateur
         let weeksPeriod = 2;
         
