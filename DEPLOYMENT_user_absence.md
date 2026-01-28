@@ -1,4 +1,4 @@
-# Déploiement: Gestion des absences utilisateurs
+# Déploiement: Gestion avancée des absences avec dates planifiées
 
 ## 📋 Étapes de déploiement
 
@@ -11,63 +11,150 @@
 
 **Vérification:**
 ```sql
--- Vérifier que la colonne existe
+-- Vérifier que les colonnes existent
 SELECT column_name, data_type, column_default 
 FROM information_schema.columns 
-WHERE table_name = 'users' AND column_name = 'is_active';
+WHERE table_name = 'users' 
+AND column_name IN ('inactive_from', 'inactive_until', 'inactive_reason');
 
--- Tous les utilisateurs doivent être actifs par défaut
-SELECT full_name, is_active FROM users;
+-- Vérifier la fonction helper
+SELECT is_user_active(NULL, NULL, CURRENT_DATE); -- Devrait retourner TRUE
+
+-- Vérifier la vue
+SELECT * FROM users_with_status LIMIT 5;
 ```
 
 ### 2. Tester la fonctionnalité
 
-1. **Aller dans "Gestion des utilisateurs"** (interface admin)
-2. **Nouvelle colonne "Disponibilité"** visible avec badge `✅ Actif`
-3. **Cliquer sur le badge** d'un utilisateur → devient `⏸️ Absent` (orange)
-4. **Générer une nouvelle proposition** → Utilisateur absent ne reçoit aucune tâche
-5. **Re-cliquer le badge** → Redevient `✅ Actif` (vert)
+**Scénario 1: Opération programmée dans 3 jours**
+1. Aller dans "Gestion des utilisateurs"
+2. Cliquer sur badge `✅ Actif` d'un utilisateur
+3. Planifier:
+   - Date début: Aujourd'hui + 3 jours
+   - Date retour: Aujourd'hui + 10 jours
+   - Raison: "Opération chirurgicale"
+4. Badge devient: `📅 Absence dans 3j` (bleu)
+5. Générer proposition → Utilisateur inclus (absence pas commencée)
+6. Attendre 3 jours (ou modifier date) → Badge devient `⏸️ Absent (7j)` (orange)
+7. Nouvelle génération → Utilisateur exclu
 
-### 3. Workflow admin
+**Scénario 2: Absence brusque indéfinie**
+1. Cliquer sur badge utilisateur
+2. Planifier:
+   - Date début: Aujourd'hui (ou vide)
+   - Date retour: Vide
+   - Raison: "Congé maladie"
+3. Badge devient: `⏸️ Absent (∞)` (orange)
+4. Générer proposition → Utilisateur exclu
+5. Aucun courriel envoyé pendant absence
 
-**Scénario: Utilisateur absent brusquement**
+**Scénario 3: Réactivation**
+1. Utilisateur absent avec badge `⏸️ Absent (Nj)`
+2. Cliquer sur "Annuler l'absence"
+3. Badge redevient `✅ Actif` (vert)
+4. Prochaines générations l'incluent
+5. Courriels reprennent
 
-1. Admin clique sur `✅ Actif` → `⏸️ Absent`
-2. Si période future déjà acceptée:
-   - Aller dans "Propositions calendrier"
-   - Supprimer la période acceptée
-   - Générer nouvelle période → Exclut l'utilisateur absent
-   - Accepter la nouvelle proposition
+### 3. Workflow admin complet
 
-**Scénario: Utilisateur de retour**
+**Utilisateur doit se faire opérer:**
 
-1. Admin clique sur `⏸️ Absent` → `✅ Actif`
-2. Prochaines générations incluent à nouveau cet utilisateur
+1. **Planifier l'absence** (3 jours avant):
+   ```
+   Date début: 30/01/2026
+   Date retour: 10/02/2026
+   Raison: Opération
+   ```
+
+2. **Période déjà acceptée?**
+   - Si oui: Supprimer période future → Régénérer sans l'utilisateur
+   - Si non: Rien à faire, prochaine génération l'exclura automatiquement
+
+3. **Pendant l'absence (30/01 → 10/02)**:
+   - Utilisateur ne reçoit aucune tâche
+   - Aucun courriel de rappel
+   - Badge affiche: `⏸️ Absent (Nj)` avec décompte
+
+4. **Retour anticipé?**
+   - Modifier date de retour dans le modal
+   - OU cliquer "Annuler l'absence"
 
 ## ✅ Fonctionnalités
 
-- **Badge cliquable**: Toggle direct dans le tableau
-- **Couleurs distinctes**: 
-  - Vert ✅ = Actif (inclus dans optimisations)
-  - Orange ⏸️ = Absent (exclu des optimisations)
-- **Persistance**: État sauvegardé en base de données
-- **Logs console**: Affiche membres actifs vs absents lors de l'optimisation
+### Badges intelligents
+- **✅ Actif** (vert): Utilisateur disponible
+- **📅 Absence dans Nj** (bleu): Absence planifiée future
+- **⏸️ Absent (Nj)** (orange): En absence avec décompte jours restants
+- **⏸️ Absent (∞)** (orange): Absence de durée indéterminée
 
-## 🔒 Sécurité
+### Modal de planification
+- Champs dates avec validation
+- Date début ≥ aujourd'hui
+- Date fin ≥ date début
+- Raison optionnelle (100 caractères max)
+- Instructions et avertissements
 
-- Seuls les admins peuvent modifier le statut
-- Utilisateurs absents restent dans l'équipe
-- Leurs tâches passées sont préservées
-- Aucune perte de données
+### Protection automatique
+- ❌ Pas de nouvelles assignations
+- ❌ Pas de courriels de rappel
+- ✅ Tâches passées préservées
+- ✅ Membre reste dans l'équipe
 
-## 📊 Impact base de données
+## 🔒 Base de données
 
+### Nouvelles colonnes
 ```sql
--- Nouvelle colonne
-users.is_active BOOLEAN DEFAULT TRUE NOT NULL
-
--- Nouvel index
-idx_users_is_active ON users(is_active)
+users.inactive_from    DATE        -- Date début absence
+users.inactive_until   DATE        -- Date fin (NULL = indéfini)
+users.inactive_reason  TEXT        -- Raison optionnelle
 ```
 
-Aucun impact sur données existantes - tous les utilisateurs deviennent `is_active = TRUE` par défaut.
+### Fonction SQL
+```sql
+is_user_active(inactive_from, inactive_until, check_date)
+-- Retourne TRUE si utilisateur actif à la date donnée
+```
+
+### Vue matérialisée
+```sql
+users_with_status
+-- Inclut: is_currently_active, status_display, upcoming_absence
+```
+
+## 💡 Exemples de requêtes
+
+```sql
+-- Lister tous les utilisateurs absents actuellement
+SELECT full_name, inactive_from, inactive_until, inactive_reason
+FROM users
+WHERE NOT is_user_active(inactive_from, inactive_until, CURRENT_DATE);
+
+-- Lister les absences planifiées futures
+SELECT full_name, inactive_from, inactive_reason
+FROM users
+WHERE inactive_from > CURRENT_DATE;
+
+-- Utilisateurs qui reviennent dans les 7 jours
+SELECT full_name, inactive_until
+FROM users
+WHERE inactive_until BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days';
+```
+
+## 🎯 Impact utilisateur final
+
+### Pour l'utilisateur absent:
+- ✅ Aucune nouvelle tâche pendant absence
+- ✅ Aucun rappel par courriel
+- ✅ Peut se concentrer sur rétablissement
+- ✅ Réintégration automatique après retour
+
+### Pour l'administrateur:
+- ✅ Planification anticipée (opérations, vacances)
+- ✅ Visibilité complète (badges, dates, raisons)
+- ✅ Gestion flexible (modifier dates, annuler)
+- ✅ Optimisations automatiques sans utilisateur absent
+
+### Pour l'équipe:
+- ✅ Transparence sur disponibilités
+- ✅ Répartition équitable entre membres actifs
+- ✅ Pas de surcharge sur personne absente
