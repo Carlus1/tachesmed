@@ -80,6 +80,12 @@ export default function Reports({ user: _user }: ReportsProps) {
     checkRole();
   }, []);
 
+  useEffect(() => {
+    if (userRole === 'owner' || userRole === 'admin') {
+      loadStats();
+    }
+  }, [selectedReport, userRole]);
+
   // Bloquer l'accès si pas admin ou owner
   if (userRole !== 'owner' && userRole !== 'admin') {
     return (
@@ -94,10 +100,6 @@ export default function Reports({ user: _user }: ReportsProps) {
       </div>
     );
   }
-
-  useEffect(() => {
-    loadStats();
-  }, [selectedReport]);
 
   const loadStats = async () => {
     try {
