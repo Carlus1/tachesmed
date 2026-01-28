@@ -13,6 +13,7 @@ interface UserProfile {
   full_name: string;
   role: string;
   subscription_status: string;
+  is_active: boolean;
   created_at: string;
   last_login?: string;
 }
@@ -164,6 +165,29 @@ export default function UserManagement({ user }: UserManagementProps) {
     }
   };
 
+  const toggleUserActive = async (userId: string, currentStatus: boolean) => {
+    try {
+      setProcessingAction(userId);
+      const newStatus = !currentStatus;
+      
+      const { error } = await supabase
+        .from('users')
+        .update({ is_active: newStatus })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      const statusText = newStatus ? 'activé' : 'désactivé (absent)';
+      addMessage('success', `Utilisateur ${statusText} avec succès`, userId);
+      loadUsers();
+    } catch (error: any) {
+      console.error('Erreur lors du changement de statut:', error);
+      addMessage('error', error.message, userId);
+    } finally {
+      setProcessingAction(null);
+    }
+  };
+
   const handleCreateUser = async () => {
     try {
       setProcessingAction('new');
@@ -288,6 +312,9 @@ export default function UserManagement({ user }: UserManagementProps) {
                       Rôle
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
+                      Disponibilité
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
                       Statut
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-bold text-primary-300 uppercase tracking-wider">
@@ -318,6 +345,20 @@ export default function UserManagement({ user }: UserManagementProps) {
                            user.role === 'admin' ? 'Administrateur' :
                            'Utilisateur'}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => toggleUserActive(user.id, user.is_active ?? true)}
+                          disabled={processingAction === user.id}
+                          className={`px-3 py-1 inline-flex items-center text-xs leading-5 font-bold rounded-xl shadow-sm border transition-colors ${
+                            user.is_active ?? true
+                              ? 'bg-success-100 text-success-700 border-success-200 hover:bg-success-200' 
+                              : 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200'
+                          } ${processingAction === user.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                          title={user.is_active ?? true ? 'Cliquer pour marquer absent' : 'Cliquer pour marquer actif'}
+                        >
+                          {user.is_active ?? true ? '✅ Actif' : '⏸️ Absent'}
+                        </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 inline-flex text-xs leading-5 font-bold rounded-xl shadow-sm border ${

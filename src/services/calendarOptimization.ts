@@ -222,21 +222,30 @@ export const calendarOptimizationService = {
   async fetchGroupMembers(groupId: string): Promise<UserProfile[]> {
     const { data, error } = await supabase
       .from('group_members')
-      .select('user_id, users!inner(id, full_name, email, role)')
+      .select('user_id, users!inner(id, full_name, email, role, is_active)')
       .eq('group_id', groupId);
 
     if (error) throw error;
 
-    const members = (data || []).map((item: any) => ({
+    // ✅ Filtrer UNIQUEMENT les utilisateurs actifs pour l'optimisation
+    const allMembers = (data || []).map((item: any) => ({
       id: item.users.id,
       full_name: item.users.full_name,
       email: item.users.email,
       role: item.users.role,
+      is_active: item.users.is_active ?? true, // Par défaut actif si champ absent
     }));
+
+    const activeMembers = allMembers.filter(m => m.is_active);
+    const inactiveMembers = allMembers.filter(m => !m.is_active);
     
-    console.log(`👥 ${members.length} membre(s) trouvé(s) dans le groupe:`, members.map(m => m.full_name));
+    console.log(`👥 ${allMembers.length} membre(s) dans le groupe:`);
+    console.log(`   ✅ ${activeMembers.length} actif(s):`, activeMembers.map(m => m.full_name));
+    if (inactiveMembers.length > 0) {
+      console.log(`   ⏸️  ${inactiveMembers.length} absent(s):`, inactiveMembers.map(m => m.full_name));
+    }
     
-    return members;
+    return activeMembers;
   },
 
   /**
