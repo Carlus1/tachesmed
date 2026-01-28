@@ -85,8 +85,6 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
     try {
       setLoading(true);
       
-      console.log('🔄 loadTasks - Params:', { showGlobal, currentUserId, selectedGroupId });
-      
       let start: Date;
       let end: Date;
       
@@ -134,13 +132,10 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
         return false;
       });
       
-      console.log('📊 Tâches avant filtrage:', tasksToDisplay.length);
-      
       // Filtrer selon la vue et les groupes de l'utilisateur
       if (currentUserId) {
         if (showGlobal) {
           // VUE ÉQUIPE: Récupérer les tâches de tous les membres des groupes
-          console.log('🌍 Mode: Vue équipe activée');
           
           // 1. Récupérer les groupes de l'utilisateur
           const { data: userGroups, error: groupError } = await supabase
@@ -148,18 +143,13 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
             .select('group_id')
             .eq('user_id', currentUserId);
           
-          console.log('📁 Groupes de l\'utilisateur:', userGroups, 'Error:', groupError);
-          
           if (userGroups && userGroups.length > 0) {
             let groupIdsToUse = userGroups.map(g => g.group_id);
             
             // Si un groupe spécifique est sélectionné, filtrer uniquement ce groupe
             if (selectedGroupId) {
               groupIdsToUse = [selectedGroupId];
-              console.log('🎯 Groupe spécifique sélectionné:', selectedGroupId);
             }
-            
-            console.log('📌 IDs groupes à utiliser:', groupIdsToUse);
             
             // 2. Récupérer tous les membres de ces groupes (sans jointure pour éviter filtrage RLS)
             const { data: groupMembers, error: memberError } = await supabase
@@ -167,46 +157,26 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
               .select('user_id')
               .in('group_id', groupIdsToUse);
             
-            console.log('👥 Membres trouvés (données brutes):', JSON.stringify(groupMembers, null, 2));
-            console.log('👥 Nombre total de lignes group_members:', groupMembers?.length);
-            console.log('👥 Error:', memberError);
-            
             if (groupMembers && groupMembers.length > 0) {
               const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
-              
-              console.log('✅ IDs membres uniques:', memberIds);
-              console.log('⚠️ ATTENTION: Votre groupe ne contient que', memberIds.length, 'membre(s)');
-              if (memberIds.length === 1 && memberIds[0] === currentUserId) {
-                console.warn('⚠️ Vous êtes le SEUL membre de votre groupe! Ajoutez d\'autres membres pour voir leurs tâches.');
-              }
-              console.log('📝 Nombre de tâches avant filtre équipe:', tasksToDisplay.length);
               
               // Filtrer les tâches assignées aux membres des groupes
               tasksToDisplay = tasksToDisplay.filter(task => 
                 task.assigned_to && memberIds.includes(task.assigned_to)
               );
-              
-              console.log('📝 Nombre de tâches après filtre équipe:', tasksToDisplay.length);
             } else {
-              // Pas de membres trouvés, afficher seulement ses tâches
-              console.log('⚠️ Aucun membre trouvé, affichage tâches personnelles');
               tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
             }
           } else {
             // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
-            console.log('⚠️ Utilisateur sans groupe, affichage tâches personnelles');
             tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
           }
         } else {
           // VUE PERSONNELLE: Seulement mes tâches
-          console.log('👤 Mode: Vue personnelle - User ID:', currentUserId);
-          console.log('📝 Nombre de tâches avant filtre perso:', tasksToDisplay.length);
           tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
-          console.log('📝 Nombre de tâches après filtre perso:', tasksToDisplay.length);
         }
       }
       
-      console.log('✨ Tâches finales à afficher:', tasksToDisplay.length);
       setTasks(tasksToDisplay);
     } catch (error) {
       console.error('Erreur lors du chargement des tâches:', error);
