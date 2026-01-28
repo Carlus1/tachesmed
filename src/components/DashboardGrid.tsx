@@ -42,10 +42,26 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string>('user');
 
   useEffect(() => {
     loadData();
+    loadUserRole();
   }, []);
+
+  const loadUserRole = async () => {
+    try {
+      const { data } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      setUserRole(data?.role || 'user');
+    } catch (err) {
+      console.error('Erreur lors de la vérification du rôle:', err);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -147,9 +163,20 @@ export default function DashboardGrid({ user }: DashboardGridProps) {
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TasksSection tasks={tasks} onAddTask={() => setShowTaskModal(true)} />
+        {/* Tâches - uniquement pour admin/owner */}
+        {(userRole === 'owner' || userRole === 'admin') && (
+          <TasksSection tasks={tasks} onAddTask={() => setShowTaskModal(true)} />
+        )}
+        
+        {/* Calendrier - pour tous */}
         <CalendarView view="month" />
-        <MyGroupsSection user={user} onCreateGroup={handleCreateGroup} />
+        
+        {/* Groupes - uniquement pour admin/owner */}
+        {(userRole === 'owner' || userRole === 'admin') && (
+          <MyGroupsSection user={user} onCreateGroup={handleCreateGroup} />
+        )}
+        
+        {/* Indisponibilités - pour tous */}
         <AvailabilityReminder user={user} />
       </div>
 
