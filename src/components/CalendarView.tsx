@@ -27,14 +27,6 @@ interface Task {
   };
 }
 
-interface OptimizationPeriod {
-  id: string;
-  group_id: string;
-  start_date: string;
-  end_date: string;
-  status: string;
-}
-
 interface CalendarViewProps {
   view?: 'week' | 'month';
   showGlobal?: boolean;
@@ -169,10 +161,10 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
             
             console.log('📌 IDs groupes à utiliser:', groupIdsToUse);
             
-            // 2. Récupérer tous les membres de ces groupes
+            // 2. Récupérer tous les membres de ces groupes (sans jointure pour éviter filtrage RLS)
             const { data: groupMembers, error: memberError } = await supabase
               .from('group_members')
-              .select('user_id, users!inner(id, full_name)')
+              .select('user_id')
               .in('group_id', groupIdsToUse);
             
             console.log('👥 Membres trouvés (données brutes):', JSON.stringify(groupMembers, null, 2));
