@@ -144,45 +144,49 @@ export default function CalendarView({ view = 'week', showGlobal = false, select
       
       // Filtrer selon la vue et les groupes de l'utilisateur
       if (currentUserId) {
-        // 1. Récupérer les groupes de l'utilisateur
-        const { data: userGroups } = await supabase
-          .from('group_members')
-          .select('group_id')
-          .eq('user_id', currentUserId);
-        
-        if (userGroups && userGroups.length > 0) {
-          let groupIdsToUse = userGroups.map(g => g.group_id);
+        if (showGlobal) {
+          // VUE ÉQUIPE: Récupérer les tâches de tous les membres des groupes
           
-          // Si un groupe spécifique est sélectionné, filtrer uniquement ce groupe
-          if (selectedGroupId) {
-            groupIdsToUse = [selectedGroupId];
-          }
-          
-          // 2. Récupérer tous les membres de ces groupes
-          const { data: groupMembers } = await supabase
+          // 1. Récupérer les groupes de l'utilisateur
+          const { data: userGroups } = await supabase
             .from('group_members')
-            .select('user_id')
-            .in('group_id', groupIdsToUse);
+            .select('group_id')
+            .eq('user_id', currentUserId);
           
-          if (groupMembers && groupMembers.length > 0) {
-            const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
+          if (userGroups && userGroups.length > 0) {
+            let groupIdsToUse = userGroups.map(g => g.group_id);
             
-            // 3. Filtrer selon vue personnelle ou équipe
-            if (showGlobal) {
-              // Vue équipe: Toutes les tâches des membres du/des groupe(s)
+            // Si un groupe spécifique est sélectionné, filtrer uniquement ce groupe
+            if (selectedGroupId) {
+              groupIdsToUse = [selectedGroupId];
+            }
+            
+            // 2. Récupérer tous les membres de ces groupes
+            const { data: groupMembers } = await supabase
+              .from('group_members')
+              .select('user_id')
+              .in('group_id', groupIdsToUse);
+            
+            if (groupMembers && groupMembers.length > 0) {
+              const memberIds = [...new Set(groupMembers.map(m => m.user_id))]; // Dédupliquer
+              
+              console.log('🌍 Vue équipe - Membres des groupes:', memberIds);
+              
+              // Filtrer les tâches assignées aux membres des groupes
               tasksToDisplay = tasksToDisplay.filter(task => 
                 task.assigned_to && memberIds.includes(task.assigned_to)
               );
             } else {
-              // Vue personnelle: Seulement mes tâches
+              // Pas de membres trouvés, afficher seulement ses tâches
               tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
             }
           } else {
-            // Pas de membres trouvés, afficher seulement ses tâches
+            // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
             tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
           }
         } else {
-          // Si l'utilisateur n'est dans aucun groupe, ne montrer que ses propres tâches
+          // VUE PERSONNELLE: Seulement mes tâches
+          console.log('👤 Vue personnelle - User ID:', currentUserId);
           tasksToDisplay = tasksToDisplay.filter(task => task.assigned_to === currentUserId);
         }
       }
